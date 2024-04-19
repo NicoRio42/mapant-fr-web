@@ -20,9 +20,6 @@
 				stroke: new Stroke({
 					color: 'yellow',
 					width: 1
-				}),
-				fill: new Fill({
-					color: 'rgba(255, 255, 0, 0.1)'
 				})
 			})
 		};
@@ -35,8 +32,7 @@
 		const lidarHdTiles = (await import('./lidar-hd.json')).default;
 
 		const vectorSource = new VectorSource({
-			features: new GeoJSON().readFeatures(lidarHdTiles),
-			projection: 'EPSG:2154'
+			features: new GeoJSON().readFeatures(lidarHdTiles)
 		});
 
 		vectorLayer = new VectorLayer({

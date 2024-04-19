@@ -37,6 +37,8 @@
 				const canvas = mbMap.getCanvas();
 				const viewState = frameState.viewState;
 
+				console.log(viewState);
+
 				const visible = mbLayer.getVisible();
 				canvas.style.display = visible ? 'block' : 'none';
 				canvas.style.position = 'absolute';
@@ -47,7 +49,7 @@
 				// adjust view parameters in mapbox
 				const rotation = viewState.rotation;
 				mbMap.jumpTo({
-					center: toLonLat(viewState.center),
+					center: toLonLat(viewState.center, viewState.projection),
 					zoom: viewState.zoom - 1,
 					bearing: (-rotation * 180) / Math.PI,
 					animate: false
@@ -68,8 +70,8 @@
 				attributions: [
 					'<a href="https://www.maptiler.com/copyright/" target="_blank">© MapTiler</a>',
 					'<a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap contributors</a>'
-				]
-				// projection: 'EPSG:4326'
+				],
+				projection: 'EPSG:3857'
 			})
 		});
 
