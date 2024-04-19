@@ -35,7 +35,8 @@
 		const lidarHdTiles = (await import('./lidar-hd.json')).default;
 
 		const vectorSource = new VectorSource({
-			features: new GeoJSON().readFeatures(lidarHdTiles)
+			features: new GeoJSON().readFeatures(lidarHdTiles),
+			projection: 'EPSG:2154'
 		});
 
 		vectorLayer = new VectorLayer({

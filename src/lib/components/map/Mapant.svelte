@@ -45,7 +45,6 @@
 			})
 		});
 
-		console.log(tileGrid);
 		map?.addLayer(tileLayer);
 	});
 
