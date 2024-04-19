@@ -7,13 +7,12 @@
 	import Stroke from 'ol/style/Stroke';
 	import Style from 'ol/style/Style';
 	import { getContext, onDestroy, onMount } from 'svelte';
-	import lidarHdTiles from './lidar-hd.json';
 
 	const getMap = getContext<() => Map>('map');
 	let map: Map;
 	let vectorLayer: VectorLayer<VectorSource>;
 
-	onMount(() => {
+	onMount(async () => {
 		map = getMap();
 
 		const styles = {
@@ -32,6 +31,8 @@
 			// @ts-ignore
 			return styles[feature.getGeometry().getType()];
 		};
+
+		const lidarHdTiles = (await import('./lidar-hd.json')).default;
 
 		const vectorSource = new VectorSource({
 			features: new GeoJSON().readFeatures(lidarHdTiles)
