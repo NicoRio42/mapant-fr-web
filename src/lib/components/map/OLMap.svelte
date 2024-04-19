@@ -5,6 +5,11 @@
 	import { register } from 'ol/proj/proj4.js';
 	import proj4 from 'proj4';
 	import { transform } from 'ol/proj.js';
+	import {
+		DblClickDragZoom,
+		defaults as defaultInteractions,
+		DoubleClickZoom
+	} from 'ol/interaction.js';
 
 	let map: Map;
 
@@ -18,6 +23,7 @@
 
 		map = new Map({
 			target: 'mapviewer',
+			interactions: defaultInteractions().extend([new DblClickDragZoom(), new DoubleClickZoom()]),
 			view: new View({
 				projection: 'EPSG:2154',
 				center,
