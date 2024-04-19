@@ -18,8 +18,8 @@
 		const styles = {
 			MultiPolygon: new Style({
 				stroke: new Stroke({
-					color: 'yellow',
-					width: 1
+					color: '#f56b3d',
+					width: 2
 				})
 			})
 		};

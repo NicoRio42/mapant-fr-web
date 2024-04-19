@@ -14,6 +14,7 @@ body {
 
 :root {
 	--pico-font-size: 14px;
+	--pico-primary-background: var(--pico-primary);
 }
 
 @media screen and (min-width: 576px) {
