@@ -11,7 +11,7 @@
 	setContext('map', () => map);
 
 	onMount(() => {
-		const center = transform([46.53972, 2.43028], 'EPSG:4326', 'EPSG:3857');
+		const center = transform([2.43028, 46.53972], 'EPSG:4326', 'EPSG:3857');
 
 		setupLambert93Projection();
 
@@ -19,8 +19,8 @@
 			target: 'mapviewer',
 			view: new View({
 				projection: 'EPSG:2154',
-				center: [0, 0],
-				zoom: 2
+				center,
+				zoom: 5
 			})
 		});
 	});

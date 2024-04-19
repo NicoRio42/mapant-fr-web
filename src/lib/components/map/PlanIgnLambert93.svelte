@@ -14,7 +14,7 @@
 
 		const parser = new WMTSCapabilities();
 
-		tileLayer = new TileLayer();
+		tileLayer = new TileLayer({ opacity: 0.5 });
 
 		const geoportailLambert93MetaDataUrl =
 			'https://data.geopf.fr/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities';
@@ -31,14 +31,15 @@
 			throw new Error('Option object returned from optionsFromCapabilities is null');
 		}
 
-		console.log(options);
 		options.crossOrigin = '';
 		options.projection = 'EPSG:2154';
 		options.wrapX = false;
-		tileLayer.setSource(new WMTS(options));
 
+		const wmts = new WMTS(options);
+		tileLayer.setSource(wmts);
+
+		console.log(wmts.tileGrid);
 		map?.addLayer(tileLayer);
-		console.log(map.getLayers());
 	});
 
 	onDestroy(() => {
