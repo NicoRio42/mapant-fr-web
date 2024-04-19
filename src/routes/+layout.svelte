@@ -7,9 +7,17 @@
 </script>
 
 <div flex="~ col" h-full>
-	<nav>
+	<nav shadow-xl>
 		<ul>
-			<li>Mapant.fr</li>
+			<li py-2>
+				<a href="/" flex items-center gap-2 py-0>
+					<div bg-primary w-10 h-10 flex items-center justify-center>
+						<i i-twemoji-ant block w6 h6 text-background-color class="-scale-x-100"></i>
+					</div>
+
+					Mapant.fr
+				</a>
+			</li>
 		</ul>
 	</nav>
 

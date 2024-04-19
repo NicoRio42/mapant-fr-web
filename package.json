@@ -30,6 +30,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@iconify-json/twemoji": "^1.1.15",
 		"ol": "^9.1.0",
 		"proj4": "^2.11.0"
 	}
