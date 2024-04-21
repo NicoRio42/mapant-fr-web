@@ -22,7 +22,7 @@
 
 		<ul>
 			<li py-0 flex>
-				<a href="" flex items-center gap-2 py-0>
+				<a href="/about" flex items-center gap-2 py-0>
 					<i i-carbon-information block w5 h5></i>
 
 					Infos
@@ -30,7 +30,7 @@
 			</li>
 
 			<li py-0 pr-0>
-				<a href="" role="button" class="!flex !py-1" items-center gap-2 m-0>
+				<a href="/contribute" role="button" class="!flex !py-1" items-center gap-2 m-0>
 					<i i-carbon-crop-growth block w5 h5></i>
 
 					Contribuer
