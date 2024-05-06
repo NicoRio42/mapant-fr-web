@@ -10,6 +10,10 @@
 		defaults as defaultInteractions,
 		DoubleClickZoom
 	} from 'ol/interaction.js';
+	import { FRANCE_CENTER } from '$lib/constants';
+
+	export let center = FRANCE_CENTER;
+	export let zoom = 6;
 
 	let map: Map;
 
@@ -17,16 +21,20 @@
 
 	onMount(() => {
 		setupLambert93Projection();
-		const center = transform([2.43028, 46.53972], 'EPSG:4326', 'EPSG:2154');
 
 		map = new Map({
 			target: 'mapviewer',
 			interactions: defaultInteractions().extend([new DblClickDragZoom(), new DoubleClickZoom()]),
 			view: new View({
 				projection: 'EPSG:2154',
-				center,
-				zoom: 6
+				center: transform(center, 'EPSG:4326', 'EPSG:2154'),
+				zoom
 			})
+		});
+
+		map.on('moveend', (event) => {
+			const newCenter = event.map.getView().getCenter();
+			if (newCenter !== undefined) center = newCenter;
 		});
 	});
 

@@ -10,13 +10,13 @@
 		<label>
 			Adresse email
 
-			<input type="email" name="email" />
+			<input type="email" name="email" required />
 		</label>
 
 		<label>
 			Mot de passe
 
-			<input type="password" name="password" />
+			<input type="password" name="password" required />
 		</label>
 
 		<label>
