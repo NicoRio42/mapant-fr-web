@@ -4,18 +4,21 @@
 	import Mapant from '$lib/components/map/Mapant.svelte';
 	import OLMap from '$lib/components/map/OLMap.svelte';
 	import Osm from '$lib/components/map/OSM.svelte';
+	import { marked } from 'marked';
 	import { onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
+	import welcomePopupContent from './welcome-popup.md?raw';
 
 	let isWelcomeDialogOpen = false;
 	let isMapantV1LayerDisplayed = true;
 	let isOpenTopoMapLayerDisplayed = true;
 	let isLidarHdTilesLayerDisplayed = true;
 
-	// onMount(() => setTimeout(() => (isWelcomeDialogOpen = true), 3000));
+	onMount(() => setTimeout(() => (isWelcomeDialogOpen = true), 3000));
 </script>
 
 {#if isWelcomeDialogOpen}
-	<dialog open>
+	<dialog open transition:fade>
 		<article>
 			<div flex>
 				<h2 grow>Bienvenu sur Mapant.fr !</h2>
@@ -25,41 +28,7 @@
 				</button>
 			</div>
 
-			<p>
-				Lorem ipsum dolor sit amet, consectetur adipisicing elit. Porro adipisci, repellendus dolor
-				veritatis labore numquam doloribus beatae magnam ullam officia iusto accusantium architecto
-				obcaecati expedita consequatur dicta asperiores nihil rem.
-			</p>
-
-			<p>
-				Lorem ipsum dolor sit amet, consectetur adipisicing elit. Porro adipisci, repellendus dolor
-				veritatis labore numquam doloribus beatae magnam ullam officia iusto accusantium architecto
-				obcaecati expedita consequatur dicta asperiores nihil rem.
-			</p>
-
-			<p>
-				Lorem ipsum dolor sit amet, consectetur adipisicing elit. Porro adipisci, repellendus dolor
-				veritatis labore numquam doloribus beatae magnam ullam officia iusto accusantium architecto
-				obcaecati expedita consequatur dicta asperiores nihil rem.
-			</p>
-
-			<p>
-				Lorem ipsum dolor sit amet, consectetur adipisicing elit. Porro adipisci, repellendus dolor
-				veritatis labore numquam doloribus beatae magnam ullam officia iusto accusantium architecto
-				obcaecati expedita consequatur dicta asperiores nihil rem.
-			</p>
-
-			<p>
-				Lorem ipsum dolor sit amet, consectetur adipisicing elit. Porro adipisci, repellendus dolor
-				veritatis labore numquam doloribus beatae magnam ullam officia iusto accusantium architecto
-				obcaecati expedita consequatur dicta asperiores nihil rem.
-			</p>
-
-			<p>
-				Lorem ipsum dolor sit amet, consectetur adipisicing elit. Porro adipisci, repellendus dolor
-				veritatis labore numquam doloribus beatae magnam ullam officia iusto accusantium architecto
-				obcaecati expedita consequatur dicta asperiores nihil rem.
-			</p>
+			{@html marked(welcomePopupContent)}
 		</article>
 	</dialog>
 {/if}

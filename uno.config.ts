@@ -1,8 +1,8 @@
-import { defineConfig, presetIcons, presetWind, presetAttributify } from 'unocss';
 import extractorSvelte from '@unocss/extractor-svelte';
+import { defineConfig, presetAttributify, presetIcons, presetUno } from 'unocss';
 
 export default defineConfig({
-	presets: [presetAttributify({ ignoreAttributes: ['font-size'] }), presetIcons(), presetWind()],
+	presets: [presetAttributify({ ignoreAttributes: ['font-size'] }), presetIcons(), presetUno()],
 	extractors: [extractorSvelte()],
 	theme: {
 		colors: {
