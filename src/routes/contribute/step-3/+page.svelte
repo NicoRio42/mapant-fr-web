@@ -51,29 +51,23 @@
 		}
 	];
 
-	const selectedFormula =
+	$: selectedFormula =
 		formulas.find((f) => f.id === $page.url.searchParams.get('formula')) ?? formulas[0];
 
-	$: coordinates = [
-		[
-			center[0] + (isLandscape ? selectedFormula.height : selectedFormula.width) / 2,
-			center[1] + (isLandscape ? selectedFormula.width : selectedFormula.height) / 2
-		],
-		[
-			center[0] + (isLandscape ? selectedFormula.height : selectedFormula.width) / 2,
-			center[1] - (isLandscape ? selectedFormula.width : selectedFormula.height) / 2
-		],
-		[
-			center[0] - (isLandscape ? selectedFormula.height : selectedFormula.width) / 2,
-			center[1] - (isLandscape ? selectedFormula.width : selectedFormula.height) / 2
-		],
-		[
-			center[0] - (isLandscape ? selectedFormula.height : selectedFormula.width) / 2,
-			center[1] + (isLandscape ? selectedFormula.width : selectedFormula.height) / 2
-		]
-	];
+	$: halfWidth = (isLandscape ? selectedFormula.height : selectedFormula.width) / 2;
+	$: halfHeight = (isLandscape ? selectedFormula.width : selectedFormula.height) / 2;
 
-	$: console.log(center);
+	$: minX = center[0] - halfWidth;
+	$: maxX = center[0] + halfWidth;
+	$: minY = center[1] - halfHeight;
+	$: maxY = center[1] + halfHeight;
+
+	$: coordinates = [
+		[minX, maxY],
+		[maxX, maxY],
+		[maxX, minY],
+		[minX, minY]
+	];
 </script>
 
 <Stepper selectedStepNumber={3} />
@@ -87,4 +81,13 @@
 	<VectorLayer>
 		<Polygon color="blue" width={2} coords={coordinates} />
 	</VectorLayer>
+
+	<form method="post" absolute right-4 bottom-4>
+		<input type="hidden" name="minX" value={minX} />
+		<input type="hidden" name="minY" value={minY} />
+		<input type="hidden" name="maxX" value={maxX} />
+		<input type="hidden" name="maxY" value={maxY} />
+
+		<button type="submit">Valider cette zone</button>
+	</form>
 </BaseMap>

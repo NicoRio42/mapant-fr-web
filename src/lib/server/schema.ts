@@ -12,22 +12,20 @@ export const contributionTable = sqliteTable('contribution', {
 		.notNull()
 		.references(() => userTable.id, { onDelete: 'cascade' }),
 	formula: text('hashed_password', { enum: ['1', '2', '3', '4'] }).notNull(),
-	topLeftX: real('top_left_x').notNull(),
-	topLeftY: real('top_left_y').notNull(),
-	topRightX: real('top_right_x').notNull(),
-	topRightY: real('top_right_y').notNull(),
-	bottomRightX: real('bottom_right_x').notNull(),
-	bottomRightY: real('bottom_right_y').notNull(),
-	bottomLeftX: real('bottom_left_x').notNull(),
-	bottomLeftY: real('bottom_left_y').notNull(),
+	minX: real('min_x').notNull(),
+	minY: real('min_y').notNull(),
+	maxX: real('max_x').notNull(),
+	maxY: real('max_y').notNull(),
 	paied: integer('paied', { mode: 'boolean' }).default(false)
 });
 
+export type Contribution = typeof contributionTable.$inferSelect;
+
 export const userTable = sqliteTable('user', {
 	id,
-	username: text('username').notNull(),
 	email: text('email').notNull(),
-	hashedPassword: text('hashed_password').notNull()
+	hashedPassword: text('hashed_password').notNull(),
+	allowedSendingEmail: integer('allowed_sending_email', { mode: 'boolean' }).notNull()
 });
 
 export type User = typeof userTable.$inferSelect;

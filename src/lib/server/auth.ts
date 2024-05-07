@@ -10,7 +10,6 @@ export const auth = new Lucia(adapter, {
 	sessionCookie: { attributes: { secure: !dev } },
 	getUserAttributes: (attributes) => ({
 		id: attributes.id,
-		username: attributes.username,
 		email: attributes.email
 	})
 });

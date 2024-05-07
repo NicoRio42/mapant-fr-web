@@ -1,6 +1,9 @@
 import { error } from '@sveltejs/kit';
 import Stripe from 'stripe';
 import { STRIPE_API_KEY, STRIPE_WEBHOOK_SECRET } from '$env/static/private';
+import { db } from '$lib/server/db.js';
+import { contributionTable } from '$lib/server/schema.js';
+import { eq } from 'drizzle-orm';
 
 const stripe = new Stripe(STRIPE_API_KEY);
 
@@ -16,10 +19,23 @@ export async function POST({ request }) {
 		throw error(400, `Webhook Error: ${(err as any).message}`);
 	}
 
-	setTimeout(() => {
+	setTimeout(async () => {
 		if (event.type !== 'checkout.session.completed') return;
-		event.data.object.client_reference_id;
-		// Save in DB
+
+		if (event.data.object.client_reference_id === null) {
+			console.error('client_reference_id not defined.');
+			return;
+		}
+
+		const [contribution] = await db
+			.update(contributionTable)
+			.set({ paied: true })
+			.where(eq(contributionTable.id, event.data.object.client_reference_id))
+			.returning();
+
+		if (contribution === undefined) {
+			console.error('No contribution matches the given client_reference_id.');
+		}
 	});
 
 	return new Response(null, { status: 200 });

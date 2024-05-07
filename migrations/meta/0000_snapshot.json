@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "8b064275-5632-4d21-a01b-5fd44fd7cc79",
+  "id": "7cfeea97-a78a-46ff-b61d-c2fe04444a62",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "contribution": {
@@ -28,57 +28,29 @@
           "notNull": true,
           "autoincrement": false
         },
-        "top_left_x": {
-          "name": "top_left_x",
+        "min_x": {
+          "name": "min_x",
           "type": "real",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "top_left_y": {
-          "name": "top_left_y",
+        "min_y": {
+          "name": "min_y",
           "type": "real",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "top_right_x": {
-          "name": "top_right_x",
+        "max_x": {
+          "name": "max_x",
           "type": "real",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "top_right_y": {
-          "name": "top_right_y",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "bottom_right_x": {
-          "name": "bottom_right_x",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "bottom_right_y": {
-          "name": "bottom_right_y",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "bottom_left_x": {
-          "name": "bottom_left_x",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "bottom_left_y": {
-          "name": "bottom_left_y",
+        "max_y": {
+          "name": "max_y",
           "type": "real",
           "primaryKey": false,
           "notNull": true,
@@ -166,13 +138,6 @@
           "notNull": true,
           "autoincrement": false
         },
-        "username": {
-          "name": "username",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "email": {
           "name": "email",
           "type": "text",
@@ -183,6 +148,13 @@
         "hashed_password": {
           "name": "hashed_password",
           "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "allowed_sending_email": {
+          "name": "allowed_sending_email",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
