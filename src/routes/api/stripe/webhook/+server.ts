@@ -1,5 +1,6 @@
 import { error } from '@sveltejs/kit';
 import Stripe from 'stripe';
+import { STRIPE_API_KEY, STRIPE_WEBHOOK_SECRET } from '$env/static/private';
 
 const stripe = new Stripe(STRIPE_API_KEY);
 

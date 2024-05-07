@@ -9,16 +9,21 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check .",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"migrations:generate": "drizzle-kit generate:sqlite",
+		"migrations:apply:local": "node scripts/migrate-local.js",
+		"migrations:apply:prod": "node --env-file=.env scripts/migrate-prod.js"
 	},
 	"devDependencies": {
 		"@iconify-json/carbon": "^1.1.31",
+		"@iconify-json/twemoji": "^1.1.15",
 		"@picocss/pico": "^2.0.6",
 		"@sveltejs/adapter-cloudflare": "^4.4.0",
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@types/proj4": "^2.5.5",
 		"@unocss/extractor-svelte": "^0.59.4",
+		"drizzle-kit": "^0.20.18",
 		"prettier": "^3.1.1",
 		"prettier-plugin-svelte": "^3.1.2",
 		"svelte": "^4.2.7",
@@ -26,11 +31,14 @@
 		"tslib": "^2.4.1",
 		"typescript": "^5.0.0",
 		"unocss": "^0.59.4",
-		"vite": "^5.0.3",
-		"@iconify-json/twemoji": "^1.1.15"
+		"vite": "^5.0.3"
 	},
 	"type": "module",
 	"dependencies": {
+		"@libsql/client": "^0.6.0",
+		"@lucia-auth/adapter-drizzle": "^1.0.7",
+		"drizzle-orm": "^0.30.10",
+		"lucia": "^3.2.0",
 		"maplibre-gl": "^4.1.3",
 		"marked": "^12.0.2",
 		"ol": "^9.1.0",
