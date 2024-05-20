@@ -2,32 +2,28 @@
 	import LidarHdTiles from '$lib/components/map/LidarHdTiles.svelte';
 	import Mapant from '$lib/components/map/Mapant.svelte';
 	import OLMap from '$lib/components/map/OLMap.svelte';
-	import Osm from '$lib/components/map/OSM.svelte';
 	import { FRANCE_CENTER } from '$lib/constants';
+	import Scan25IgnWebMercator from './Scan25IgnWebMercator.svelte';
 
 	export let center = FRANCE_CENTER;
 	export let zoom = 6;
 
 	let isMapantV1LayerDisplayed = true;
-	let isOpenTopoMapLayerDisplayed = true;
+	let isIgnScan25LayerDisplayed = true;
 	let isLidarHdTilesLayerDisplayed = true;
+
+	let mapantV1LayerOpacity = 1;
+	let ignScan25LayerOpacity = 0.5;
+	let lidarHdTilesLayerOpacity = 1;
 </script>
 
-<main grow relative>
+<main grow relative bg-white>
 	<OLMap bind:center {zoom}>
-		{#key (isOpenTopoMapLayerDisplayed ? 'osm-on' : 'osm-off') + '-' + (isMapantV1LayerDisplayed ? 'mapant-on' : 'mapant-off') + '-' + (isLidarHdTilesLayerDisplayed ? 'lidar-on' : 'lidar-off')}
-			{#if isOpenTopoMapLayerDisplayed}
-				<Osm />
-			{/if}
+		<Scan25IgnWebMercator visible={isIgnScan25LayerDisplayed} opacity={ignScan25LayerOpacity} />
 
-			{#if isMapantV1LayerDisplayed}
-				<Mapant />
-			{/if}
+		<Mapant visible={isMapantV1LayerDisplayed} opacity={mapantV1LayerOpacity} />
 
-			{#if isLidarHdTilesLayerDisplayed}
-				<LidarHdTiles />
-			{/if}
-		{/key}
+		<LidarHdTiles visible={isLidarHdTilesLayerDisplayed} opacity={lidarHdTilesLayerOpacity} />
 
 		<slot></slot>
 	</OLMap>
@@ -45,13 +41,31 @@
 						Mapant.fr V1
 						<input mr-2 type="checkbox" bind:checked={isMapantV1LayerDisplayed} />
 					</label>
+
+					<input
+						dir="ltr"
+						type="range"
+						min="0"
+						max="1"
+						step="0.01"
+						bind:value={mapantV1LayerOpacity}
+					/>
 				</li>
 
 				<li text-left>
 					<label>
-						OpenTopoMap
-						<input mr-2 type="checkbox" bind:checked={isOpenTopoMapLayerDisplayed} />
+						IGN Scan25
+						<input mr-2 type="checkbox" bind:checked={isIgnScan25LayerDisplayed} />
 					</label>
+
+					<input
+						dir="ltr"
+						type="range"
+						min="0"
+						max="1"
+						step="0.01"
+						bind:value={ignScan25LayerOpacity}
+					/>
 				</li>
 
 				<li text-left>
@@ -59,6 +73,15 @@
 						Données LiDAR disponible
 						<input mr-2 type="checkbox" bind:checked={isLidarHdTilesLayerDisplayed} />
 					</label>
+
+					<input
+						dir="ltr"
+						type="range"
+						min="0"
+						max="1"
+						step="0.01"
+						bind:value={lidarHdTilesLayerOpacity}
+					/>
 				</li>
 			</ul>
 		</details>

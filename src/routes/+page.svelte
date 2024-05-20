@@ -14,7 +14,7 @@
 	<dialog open transition:fade>
 		<article>
 			<div flex>
-				<h2 grow>Bienvenu sur Mapant.fr !</h2>
+				<h1 grow>Bienvenu sur Mapant.fr !</h1>
 
 				<button type="button" p-2 class="outline" on:click={() => (isWelcomeDialogOpen = false)}>
 					<i i-carbon-close-large w-5 h-5 block></i>

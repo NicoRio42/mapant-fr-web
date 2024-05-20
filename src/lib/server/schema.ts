@@ -11,12 +11,13 @@ export const contributionTable = sqliteTable('contribution', {
 	fkUser: text('fk_user')
 		.notNull()
 		.references(() => userTable.id, { onDelete: 'cascade' }),
-	formula: text('hashed_password', { enum: ['1', '2', '3', '4'] }).notNull(),
+	formula: text('formula', { enum: ['1', '2', '3', '4'] }).notNull(),
 	minX: real('min_x').notNull(),
 	minY: real('min_y').notNull(),
 	maxX: real('max_x').notNull(),
 	maxY: real('max_y').notNull(),
-	paied: integer('paied', { mode: 'boolean' }).default(false)
+	paied: integer('paied', { mode: 'boolean' }).default(false),
+	processed: integer('processed', { mode: 'boolean' }).default(false)
 });
 
 export type Contribution = typeof contributionTable.$inferSelect;

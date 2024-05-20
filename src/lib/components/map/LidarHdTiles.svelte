@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import type { Feature, Map } from 'ol';
 	import GeoJSON from 'ol/format/GeoJSON.js';
 	import VectorLayer from 'ol/layer/Vector';
@@ -8,9 +9,15 @@
 	import Style from 'ol/style/Style';
 	import { getContext, onDestroy, onMount } from 'svelte';
 
+	export let visible = true;
+	export let opacity = 1;
+
 	const getMap = getContext<() => Map>('map');
 	let map: Map;
 	let vectorLayer: VectorLayer<VectorSource>;
+
+	$: if (browser && vectorLayer) vectorLayer.setVisible(visible);
+	$: if (browser && vectorLayer) vectorLayer.setOpacity(opacity);
 
 	onMount(async () => {
 		map = getMap();
@@ -38,7 +45,10 @@
 		vectorLayer = new VectorLayer({
 			source: vectorSource,
 			// @ts-ignore
-			style: styleFunction
+			style: styleFunction,
+			zIndex: 1,
+			visible,
+			opacity
 		});
 
 		map?.addLayer(vectorLayer);

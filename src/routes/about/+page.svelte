@@ -33,7 +33,7 @@
 		une zone qui sera traitée en priorité.
 	</p>
 
-	<a href="/contribute" role="button" class="!flex !py-1" items-center gap-2 w-fit>
+	<a href="/contribute/step-1" role="button" class="!flex !py-1" items-center gap-2 w-fit>
 		<i i-carbon-crop-growth block w5 h5></i>
 
 		Contribuer

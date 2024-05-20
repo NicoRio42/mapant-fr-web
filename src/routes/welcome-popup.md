@@ -2,13 +2,13 @@ Avis aux orienteurs et amateurs de cartes, aidez moi à créer la carte de Franc
 
 Version courte : je relance le projet mapant.fr et j'en appelle à votre généreuse contribution.
 
-<a href="/contribute/step-1" role="button" class="!flex items-center gap-2 w-fit">N'en dis pas plus, go contribuer !<i i-carbon-arrow-right block h-5 w-5></i></a>
+<a href="/contribute/step-1" role="button" class="!flex items-center gap-2 w-fit">N'en dis pas plus, je veux contribuer !<i i-carbon-arrow-right block h-5 w-5></i></a>
 
 ## Un peu d'historique
 
 En 2021, avec l'aide de Olivier Blanc-Tranchant, j'ai créé le site mapant.fr. Il était inspiré par les projets mapant.fi (Finlande), mapant.no (Norvège) et d'autres déclinaisons nationales. Le principe est simple, utiliser des données LiDAR accessibles publiquement pour générer une carte de course d'orientation à l'échelle d'un pays.
 
-A cette époque là, il n'y a pas de base de données LiDAR pour la France entière. Il existe cependant des jeu de données régionaux, notamment autour du Grand Genève. J'utilise ces données pour valider la faisabilité du projet et me familiariser avec les outils de traitement LiDAR.
+A cette époque là, il n'y a pas de base de données LiDAR pour la France entière. Il existe cependant des jeux de données régionaux, notamment autour du Grand Genève. J'utilise ces données pour valider la faisabilité du projet et me familiariser avec les outils de traitement LiDAR.
 
 ## Et maintenant
 

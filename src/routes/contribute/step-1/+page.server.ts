@@ -5,8 +5,14 @@ import { Scrypt } from '$lib/server/scrypt.js';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 
+export async function load({ locals }) {
+	if (locals.user !== null) throw redirect(302, '/contribute/step-2');
+}
+
 export const actions = {
-	default: async ({ request, cookies }) => {
+	default: async ({ request, cookies, locals }) => {
+		if (locals.user !== null) throw redirect(302, '/contribute/step-2');
+
 		const { email, password, keepInTouch } = await extractAndValidateFormData(request);
 
 		const existingUser = await db.select().from(userTable).where(eq(userTable.email, email)).get();
@@ -33,6 +39,7 @@ export const actions = {
 		throw redirect(302, '/contribute/step-2');
 	}
 };
+
 async function extractAndValidateFormData(request: any) {
 	const formData = await request.formData();
 

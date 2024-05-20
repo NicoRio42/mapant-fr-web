@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "7cfeea97-a78a-46ff-b61d-c2fe04444a62",
+  "id": "f6739c19-21ea-4746-9370-7f541a9de2e0",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "contribution": {
@@ -21,8 +21,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "hashed_password": {
-          "name": "hashed_password",
+        "formula": {
+          "name": "formula",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -58,6 +58,14 @@
         },
         "paied": {
           "name": "paied",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": false
+        },
+        "processed": {
+          "name": "processed",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,

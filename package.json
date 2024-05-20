@@ -3,7 +3,9 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "pnpm run '/^dev:.*/'",
+		"dev:kit": "vite dev",
+		"dev:stripe": "stripe listen --forward-to localhost:5173/api/stripe/webhook --skip-verify",
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",

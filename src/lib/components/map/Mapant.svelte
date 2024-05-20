@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { TILES_BASE_URL } from '$lib/constants';
 	import { type Map } from 'ol';
 	import TileLayer from 'ol/layer/Tile';
@@ -6,9 +7,15 @@
 	import { TileGrid } from 'ol/tilegrid';
 	import { getContext, onDestroy, onMount } from 'svelte';
 
+	export let visible = true;
+	export let opacity = 1;
+
 	const getMap = getContext<() => Map>('map');
 	let map: Map;
 	let tileLayer: TileLayer<XYZ>;
+
+	$: if (browser && tileLayer) tileLayer.setVisible(visible);
+	$: if (browser && tileLayer) tileLayer.setOpacity(opacity);
 
 	/**
 	 * Constants computed to cover the whole metropolitan France
@@ -42,7 +49,10 @@
 				url,
 				projection: 'EPSG:2154',
 				tileGrid
-			})
+			}),
+			zIndex: 1,
+			visible,
+			opacity
 		});
 
 		map?.addLayer(tileLayer);
