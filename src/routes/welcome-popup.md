@@ -2,7 +2,7 @@ Avis aux orienteurs et amateurs de cartes, aidez moi à créer la carte de Franc
 
 Version courte : je relance le projet mapant.fr et j'en appelle à votre généreuse contribution.
 
-<a href="/contribute/step-1" role="button" class="!flex items-center gap-2 w-fit">N'en dis pas plus, je veux contribuer !<i i-carbon-arrow-right block h-5 w-5></i></a>
+<p flex justify-end><a href="/contribute/step-1" role="button" class="!flex items-center gap-2 w-fit">N'en dis pas plus, je veux contribuer !<i i-carbon-arrow-right block h-5 w-5></i></a></p>
 
 ## Un peu d'historique
 

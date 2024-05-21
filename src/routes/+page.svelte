@@ -46,7 +46,7 @@
 					Fermer
 				</button>
 
-				<a href="/contribute/step-1" role="button" class="!flex items-center gap-2 w-fit">
+				<a href="/contribute/step-1" role="button" flex="!~" items-center gap-2 w-fit>
 					Contribuer
 
 					<i i-carbon-arrow-right block h-5 w-5></i>

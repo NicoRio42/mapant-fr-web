@@ -3,11 +3,14 @@
 	import Mapant from '$lib/components/map/Mapant.svelte';
 	import OLMap from '$lib/components/map/OLMap.svelte';
 	import { FRANCE_CENTER } from '$lib/constants';
+	import type { Feature } from 'ol';
 	import Osm from './OSM.svelte';
 	import Scan25IgnWebMercator from './Scan25IgnWebMercator.svelte';
 
 	export let center = FRANCE_CENTER;
 	export let zoom = 6;
+	export let allowLidarTileSelection = false;
+	export let selected: Feature | null = null;
 
 	let isOsmLayerDisplayed = false;
 	let isIgnScan25LayerDisplayed = true;
@@ -28,7 +31,12 @@
 
 		<Mapant visible={isMapantV1LayerDisplayed} opacity={mapantV1LayerOpacity} />
 
-		<LidarHdTiles visible={isLidarHdTilesLayerDisplayed} opacity={lidarHdTilesLayerOpacity} />
+		<LidarHdTiles
+			visible={isLidarHdTilesLayerDisplayed}
+			opacity={lidarHdTilesLayerOpacity}
+			allowSelection={allowLidarTileSelection}
+			bind:selected
+		/>
 
 		<slot></slot>
 	</OLMap>
@@ -36,7 +44,7 @@
 	<div absolute top-2 right-2>
 		<details class="dropdown">
 			<!-- svelte-ignore a11y-no-redundant-roles -->
-			<summary role="button" p-2.5>
+			<summary role="button" p-2.5 bg-white class="outline">
 				<i i-carbon-layers w-5 h-5 block></i>
 			</summary>
 
