@@ -1,14 +1,20 @@
-<script type="ts">
+<script>
+	import SubMenus from './SubMenus.svelte';
+
 	import '@picocss/pico/css/pico.orange.css';
 	// Do not remove this comment, it is there to prevent the formatter to change the order of the style sheets
 	import './global-styles.css';
 	// Do not remove this comment, it is there to prevent the formatter to change the order of the style sheets
-	import 'uno.css';
-	import { navigating } from '$app/stores';
 	import { enhance } from '$app/forms';
+	import { navigating } from '$app/stores';
+	import 'uno.css';
+	import { clickOutside } from '$lib/actions/click-outside';
+	import { fade } from 'svelte/transition';
+	import { afterNavigate } from '$app/navigation';
 
 	export let data;
 
+	let showMenu = false;
 	let tooFast = false;
 
 	$: {
@@ -17,6 +23,8 @@
 			setTimeout(() => (tooFast = false), 250);
 		}
 	}
+
+	afterNavigate(() => (showMenu = false));
 </script>
 
 {#if $navigating !== null && !tooFast}
@@ -38,42 +46,9 @@
 		</ul>
 
 		<ul>
-			<li py-0 flex>
-				<a href="/about" flex items-center gap-2 py-0>
-					<i i-carbon-information block w5 h5></i>
-
-					Infos
-				</a>
-			</li>
-
-			{#if !data.isUserConnected}
-				<li py-0 flex>
-					<a href="/login" flex items-center gap-2 py-0>
-						<i i-carbon-login block w5 h5></i>
-
-						Login
-					</a>
-				</li>
-			{:else}
-				<li py-0 flex>
-					<form action="/logout" method="post" use:enhance>
-						<button
-							type="submit"
-							flex
-							items-center
-							gap-2
-							p="x-0 y-1"
-							mb-0
-							border-none
-							class="outline"
-						>
-							<i i-carbon-logout block w5 h5></i>
-
-							Logout
-						</button>
-					</form>
-				</li>
-			{/if}
+			<div class="hidden sm:contents">
+				<SubMenus isUserConnected={data.isUserConnected} />
+			</div>
 
 			<li py-0 pr-0>
 				<a
@@ -89,8 +64,44 @@
 					Contribuer
 				</a>
 			</li>
+
+			<li py-0 pr-0 class="block sm:hidden">
+				<button
+					type="button"
+					border-none
+					class="outline focus:shadow-none"
+					on:click={() => {
+						// To make clickOutside work
+						if (showMenu === false) setTimeout(() => (showMenu = true));
+					}}
+				>
+					<i i-carbon-overflow-menu-vertical block w-5 h-5></i>
+				</button>
+			</li>
 		</ul>
 	</nav>
+
+	{#if showMenu}
+		<ul
+			absolute
+			top-13
+			right-2
+			z-1
+			bg-background-color
+			p-3
+			rounded
+			shadow
+			flex="~ col"
+			gap-2
+			transition:fade={{ duration: 125 }}
+			use:clickOutside={() => {
+				// To make clickOutside work
+				if (showMenu) showMenu = false;
+			}}
+		>
+			<SubMenus isUserConnected={data.isUserConnected} />
+		</ul>
+	{/if}
 
 	<slot></slot>
 </div>
