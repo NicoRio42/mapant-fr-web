@@ -38,5 +38,3 @@ Si vous voulez accélérer le projet, vous pouvez contribuer financièrement. En
 - Vous avez la possibilité de sélectionner une zone sur la carte de France
 - Elle sera traitée en priorité lors de la génération de la carte.
 - Vous me permettez de travailler sereinement sur un projet qui me motive
-
-<a href="/contribute/step-1" role="button" class="!flex items-center gap-2 w-fit">Contribuer !<i i-carbon-arrow-right block h-5 w-5></i></a>

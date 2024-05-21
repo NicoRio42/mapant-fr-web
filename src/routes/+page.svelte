@@ -1,3 +1,9 @@
+<script lang="ts" context="module">
+	import { writable } from 'svelte/store';
+
+	const welcomeDialogHasBeenShown = writable(false);
+</script>
+
 <script lang="ts">
 	import BaseMap from '$lib/components/map/BaseMap.svelte';
 	import { marked } from 'marked';
@@ -7,11 +13,17 @@
 
 	let isWelcomeDialogOpen = false;
 
-	onMount(() => setTimeout(() => (isWelcomeDialogOpen = true), 3000));
+	onMount(() => {
+		if (!$welcomeDialogHasBeenShown) {
+			setTimeout(() => (isWelcomeDialogOpen = true), 2000);
+		}
+
+		$welcomeDialogHasBeenShown = true;
+	});
 </script>
 
 {#if isWelcomeDialogOpen}
-	<dialog open transition:fade>
+	<dialog open transition:fade={{ duration: 125 }}>
 		<article>
 			<div flex>
 				<h1 grow>Bienvenu sur Mapant.fr !</h1>
@@ -22,8 +34,40 @@
 			</div>
 
 			{@html marked(welcomePopupContent)}
+
+			<p flex justify-end gap-4>
+				<button
+					type="button"
+					p-2
+					m-0
+					class="outline"
+					on:click={() => (isWelcomeDialogOpen = false)}
+				>
+					Fermer
+				</button>
+
+				<a href="/contribute/step-1" role="button" class="!flex items-center gap-2 w-fit">
+					Contribuer
+
+					<i i-carbon-arrow-right block h-5 w-5></i>
+				</a>
+			</p>
 		</article>
 	</dialog>
 {/if}
 
-<BaseMap />
+<BaseMap>
+	<button
+		on:click={() => (isWelcomeDialogOpen = true)}
+		type="button"
+		absolute
+		bottom-2
+		right-2
+		m-0
+		p="x-2 y-1"
+		bg-white
+		class="outline"
+	>
+		Message d'accueil
+	</button>
+</BaseMap>

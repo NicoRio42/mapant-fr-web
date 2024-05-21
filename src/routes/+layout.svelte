@@ -57,7 +57,16 @@
 			{:else}
 				<li py-0 flex>
 					<form action="/logout" method="post" use:enhance>
-						<button type="submit" flex items-center gap-2 py-1 mb-0>
+						<button
+							type="submit"
+							flex
+							items-center
+							gap-2
+							p="x-0 y-1"
+							mb-0
+							border-none
+							class="outline"
+						>
 							<i i-carbon-logout block w5 h5></i>
 
 							Logout

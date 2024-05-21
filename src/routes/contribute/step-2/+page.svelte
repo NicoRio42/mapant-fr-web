@@ -7,12 +7,12 @@
 <Stepper selectedStepNumber={2} />
 
 <main px-4>
-	<p max-w-200 m-x-auto>
+	<p max-w-200 m="x-auto t-6">
 		En contrepartie de votre contribution, vous pouvez sélectionner une zone sur la carte de France.
 		Elle sera traitée en priorité lors de la génération de la carte à partir des données LiDAR.
 	</p>
 
-	<div grid="~ md:cols-2 lg:cols-4" gap-8>
+	<div grid="~ md:cols-2 xl:cols-3" gap-8 mt-12>
 		<Formula title="Format A4" price={10} linkText="Choisir le format A4" formulaId="1">
 			La surface équivalente à une carte au format A4 à l'échelle 1:10000
 		</Formula>
@@ -37,9 +37,9 @@
 		<Formula
 			title="Format méga tuile"
 			price={500}
-			linkText="Choisir le format A4"
+			linkText="Choisir le format méga tuile"
 			formulaId="5"
-			colspan={2}
+			class="md:col-span-2"
 		>
 			Une méga tuile de 50km par 50km
 		</Formula>
