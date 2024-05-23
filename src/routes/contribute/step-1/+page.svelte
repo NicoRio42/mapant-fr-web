@@ -4,6 +4,8 @@
 
 	export let form;
 
+	let loading = false;
+	let tooFast = false;
 	let showPassword = false;
 	let passwordInput: HTMLInputElement;
 </script>
@@ -11,7 +13,22 @@
 <Stepper selectedStepNumber={1} />
 
 <main>
-	<form method="post" use:enhance max-w-100 px-4 mx-auto mt-8>
+	<form
+		method="post"
+		use:enhance={() => {
+			loading = true;
+			tooFast = true;
+			setTimeout(() => (tooFast = false), 250);
+			return ({ update }) => {
+				loading = false;
+				update();
+			};
+		}}
+		max-w-100
+		px-4
+		mx-auto
+		mt-8
+	>
 		<label>
 			Adresse email
 
@@ -64,7 +81,7 @@
 			Me tenir informé de la progression du projet
 		</label>
 
-		<button type="submit" mt-8> Valider </button>
+		<button type="submit" aria-busy={loading && !tooFast} mt-8> Valider </button>
 
 		<p>
 			Vous avez déjà un compte ? <a
