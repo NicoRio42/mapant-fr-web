@@ -1,6 +1,6 @@
 import { dev } from '$app/environment';
 import type { Contribution } from './server/schema';
-import { CF_PAGES_BRANCH } from '$env/static/public';
+import { PUBLIC_CF_PAGES_BRANCH } from '$env/static/public';
 
 // export const TILES_BASE_URL = 'http://127.0.0.1:5000';
 export const TILES_BASE_URL = 'https://mapant-tiles.ovh/tiles';
@@ -43,7 +43,7 @@ export const CONTRIBUTION_FORMULAS: ContributionFormula[] = [
 		height: A4_HEIGHT,
 		paiementLink: dev
 			? 'https://buy.stripe.com/test_9AQ8wV91wco89RS14a'
-			: CF_PAGES_BRANCH === STAGING_BRANCH_NAME
+			: PUBLIC_CF_PAGES_BRANCH === STAGING_BRANCH_NAME
 				? 'https://buy.stripe.com/test_cN27sR2D81Jue883cj'
 				: 'https://buy.stripe.com/fZe2bp0tIbmH7bqeUZ'
 	},
@@ -55,7 +55,7 @@ export const CONTRIBUTION_FORMULAS: ContributionFormula[] = [
 		height: A3_HEIGHT,
 		paiementLink: dev
 			? 'https://buy.stripe.com/test_aEU4gFb9E1Ju5BC5km'
-			: CF_PAGES_BRANCH === STAGING_BRANCH_NAME
+			: PUBLIC_CF_PAGES_BRANCH === STAGING_BRANCH_NAME
 				? 'https://buy.stripe.com/test_fZeeVj4Lg87Se886ow'
 				: 'https://buy.stripe.com/8wM3ft90e9ezcvKbIJ'
 	},
@@ -67,7 +67,7 @@ export const CONTRIBUTION_FORMULAS: ContributionFormula[] = [
 		height: A1_HEIGHT,
 		paiementLink: dev
 			? 'https://buy.stripe.com/test_aEU8wV91w4VGggg003'
-			: CF_PAGES_BRANCH === STAGING_BRANCH_NAME
+			: PUBLIC_CF_PAGES_BRANCH === STAGING_BRANCH_NAME
 				? 'https://buy.stripe.com/test_9AQ4gFgtY2Nyd448wF'
 				: 'https://buy.stripe.com/8wM7vJa4iduP8fuaEG'
 	},
@@ -79,7 +79,7 @@ export const CONTRIBUTION_FORMULAS: ContributionFormula[] = [
 		height: DOUBLE_A0_HEIGHT,
 		paiementLink: dev
 			? 'https://buy.stripe.com/test_6oE9AZ0v01Jue88148'
-			: CF_PAGES_BRANCH === STAGING_BRANCH_NAME
+			: PUBLIC_CF_PAGES_BRANCH === STAGING_BRANCH_NAME
 				? 'https://buy.stripe.com/test_6oE00pelQ1Ju9RS5ku'
 				: 'https://buy.stripe.com/8wMeYb1xM1M7dzO6or'
 	},
@@ -91,7 +91,7 @@ export const CONTRIBUTION_FORMULAS: ContributionFormula[] = [
 		height: 50000,
 		paiementLink: dev
 			? 'https://buy.stripe.com/test_00g5kJcdIdsc3tu4gl'
-			: CF_PAGES_BRANCH === STAGING_BRANCH_NAME
+			: PUBLIC_CF_PAGES_BRANCH === STAGING_BRANCH_NAME
 				? 'https://buy.stripe.com/test_eVa4gF5Pk87Sc00aEP'
 				: 'https://buy.stripe.com/8wM3ftgsGbmH2VaaEI'
 	}

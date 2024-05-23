@@ -8,7 +8,7 @@ declare global {
 }
 
 declare module '$env/static/public' {
-	export const CF_PAGES_BRANCH: string;
+	export const PUBLIC_CF_PAGES_BRANCH: string;
 }
 
 declare module '$env/static/private' {
