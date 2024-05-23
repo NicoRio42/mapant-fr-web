@@ -10,6 +10,7 @@ export default defineConfig({
 			whiteWithPrimary: 'hwb(159.34deg 90% 0%)',
 			whiteWithPrimaryLight: 'hwb(159.34deg 95% 0%)',
 			primaryUnderline: 'var(--pico-primary-underline)',
+			primaryBackground: 'var(--pico-primary-background)',
 			tableBorderColor: 'var(--pico-table-border-color)',
 			backgroundColor: 'var(--pico-background-color)',
 			delColor: 'var(--pico-del-color)'

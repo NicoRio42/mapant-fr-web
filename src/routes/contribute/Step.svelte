@@ -5,7 +5,7 @@
 </script>
 
 <li list-none flex items-center gap-2>
-	<span bg-primary flex items-center justify-center w-9 h-9 rounded-full>
+	<span bg-primary-background flex items-center justify-center w-9 h-9 rounded-full text-white>
 		{stepNumber}
 	</span>
 
