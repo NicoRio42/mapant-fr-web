@@ -1,9 +1,8 @@
-import { error } from '@sveltejs/kit';
-import Stripe from 'stripe';
 import { STRIPE_API_KEY, STRIPE_WEBHOOK_SECRET } from '$env/static/private';
 import { db } from '$lib/server/db.js';
 import { contributionTable } from '$lib/server/schema.js';
 import { eq } from 'drizzle-orm';
+import Stripe from 'stripe';
 
 const stripe = new Stripe(STRIPE_API_KEY);
 
@@ -11,7 +10,7 @@ export async function POST({ request }) {
 	const sig = request.headers.get('stripe-signature');
 	if (sig === null) {
 		console.error('[STRIPE_WEBHOOK] No stripe-signature header');
-		throw error(400, 'No signature');
+		return new Response(null, { status: 400 });
 	}
 
 	let event: Stripe.Event;
@@ -24,7 +23,7 @@ export async function POST({ request }) {
 		);
 	} catch (err) {
 		console.error(`[STRIPE_WEBHOOK] ${(err as any).message}`);
-		throw error(400, (err as any).message);
+		return new Response(null, { status: 400 });
 	}
 
 	setTimeout(async () => {
@@ -42,7 +41,7 @@ export async function POST({ request }) {
 			.returning();
 
 		if (contribution === undefined) {
-			console.error('No contribution matches the given client_reference_id.');
+			console.error('[STRIPE_WEBHOOK] No contribution matches the given client_reference_id.');
 		}
 	});
 
