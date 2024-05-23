@@ -9,14 +9,18 @@ const stripe = new Stripe(STRIPE_API_KEY);
 
 export async function POST({ request }) {
 	const sig = request.headers.get('stripe-signature');
-	if (sig === null) throw error(400, 'No signature');
+	if (sig === null) {
+		console.error('[STRIPE_WEBHOOK] No stripe-signature header');
+		throw error(400, 'No signature');
+	}
 
 	let event: Stripe.Event;
 
 	try {
 		event = stripe.webhooks.constructEvent(await request.text(), sig, STRIPE_WEBHOOK_SECRET);
 	} catch (err) {
-		throw error(400, `Webhook Error: ${(err as any).message}`);
+		console.error(`[STRIPE_WEBHOOK] ${(err as any).message}`);
+		throw error(400, (err as any).message);
 	}
 
 	setTimeout(async () => {
