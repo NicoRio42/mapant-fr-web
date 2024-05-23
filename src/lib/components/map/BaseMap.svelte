@@ -54,17 +54,25 @@
 				<i i-carbon-layers w-5 h-5 block></i>
 			</summary>
 
-			<ul dir="rtl">
-				<li text-left bg="hover:transparent">
+			<ul dir="rtl" py="!4">
+				<li text-left bg="!hover:transparent">
 					<label>
 						OpenStreetMap
 						<input mr-2 type="checkbox" bind:checked={isOsmLayerDisplayed} />
 					</label>
 
-					<input dir="ltr" type="range" min="0" max="1" step="0.01" bind:value={osmLayerOpacity} />
+					<input
+						dir="ltr"
+						type="range"
+						min="0"
+						max="1"
+						step="0.01"
+						bind:value={osmLayerOpacity}
+						mb="!0"
+					/>
 				</li>
 
-				<li text-left>
+				<li text-left bg="!hover:transparent">
 					<div flex items-center dir="ltr" mb="[calc(var(--pico-spacing)*0.375)]">
 						<label grow dir="rtl" mb-0>
 							Mapant.fr V1
@@ -95,10 +103,11 @@
 						max="1"
 						step="0.01"
 						bind:value={mapantV1LayerOpacity}
+						mb="!0"
 					/>
 				</li>
 
-				<li text-left>
+				<li text-left bg="!hover:transparent">
 					<label>
 						IGN Scan25
 						<input mr-2 type="checkbox" bind:checked={isIgnScan25LayerDisplayed} />
@@ -111,10 +120,11 @@
 						max="1"
 						step="0.01"
 						bind:value={ignScan25LayerOpacity}
+						mb="!0"
 					/>
 				</li>
 
-				<li text-left>
+				<li text-left bg="!hover:transparent">
 					<label>
 						Données LiDAR disponible
 						<input mr-2 type="checkbox" bind:checked={isLidarHdTilesLayerDisplayed} />
@@ -127,6 +137,7 @@
 						max="1"
 						step="0.01"
 						bind:value={lidarHdTilesLayerOpacity}
+						mb="!0"
 					/>
 				</li>
 			</ul>

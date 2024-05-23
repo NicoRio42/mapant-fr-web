@@ -27,7 +27,7 @@
 	<p>
 		<a role="button" class="outline !flex" items-center gap-2 w-fit href="/contributions">
 			<i i-carbon-view block w-5 h-5></i>
-			Voir vos contributions
+			Voir mes contributions
 		</a>
 	</p>
 </main>

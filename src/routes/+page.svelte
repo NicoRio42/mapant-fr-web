@@ -26,9 +26,15 @@
 	<dialog open transition:fade={{ duration: 125 }}>
 		<article>
 			<div flex>
-				<h1 grow>Bienvenu sur Mapant.fr !</h1>
+				<h1 grow>Road to Mapant.fr V2 !</h1>
 
-				<button type="button" p-2 class="outline" on:click={() => (isWelcomeDialogOpen = false)}>
+				<button
+					type="button"
+					p-2
+					h-fit
+					class="outline"
+					on:click={() => (isWelcomeDialogOpen = false)}
+				>
 					<i i-carbon-close-large w-5 h-5 block></i>
 				</button>
 			</div>

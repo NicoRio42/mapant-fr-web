@@ -15,8 +15,6 @@ body {
 :root {
 	--pico-font-size: 14px;
 	--pico-primary-background: var(--pico-primary);
-	--pico-form-element-spacing-vertical: 0.25rem;
-	--pico-form-element-spacing-horizontal: 0.5rem;
 }
 
 @media screen and (min-width: 576px) {
@@ -57,4 +55,17 @@ a.no-decoration:focus,
 a.no-decoration:active {
 	text-decoration: none !important;
 	color: var(--pico-primary) !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	--pico-font-weight: 500;
+}
+
+p {
+	text-align: justify;
 }
