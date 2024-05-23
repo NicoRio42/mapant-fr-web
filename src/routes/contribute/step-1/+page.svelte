@@ -28,7 +28,7 @@
 
 		<label for="signup-password" grow> Mot de passe </label>
 
-		<div relative m-b="[var(--pico-spacing)]">
+		<div relative m-b-spacing>
 			<input
 				id="signup-password"
 				bind:this={passwordInput}
@@ -62,7 +62,7 @@
 			Me tenir informé de la progression du projet
 		</label>
 
-		<button type="submit" mt-8 w="md:!fit"> Valider </button>
+		<button type="submit" mt-8> Valider </button>
 
 		<p>Vous avez déjà un compte ? <a href="#">Connectez vous !</a></p>
 	</form>

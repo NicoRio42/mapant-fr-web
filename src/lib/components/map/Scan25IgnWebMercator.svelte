@@ -47,7 +47,8 @@
 			tileLoadFunction: (tile, src) => {
 				// @ts-ignore
 				tile.getImage().src = src + '&apikey=ign_scan_ws';
-			}
+			},
+			attributions: '© <a href="https://www.ign.fr/" target="_blank">IGN</a>'
 		});
 
 		tileLayer.setSource(wmts);

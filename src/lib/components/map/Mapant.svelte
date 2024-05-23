@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { TILES_BASE_URL } from '$lib/constants';
+	import { MAPANT_V1_EXTENT, TILES_BASE_URL } from '$lib/constants';
 	import { type Map } from 'ol';
 	import TileLayer from 'ol/layer/Tile';
 	import XYZ from 'ol/source/XYZ';
@@ -25,11 +25,6 @@
 	const MIN_Y = 5619537;
 	const MAX_Y = 7667537;
 	const TILE_SIZE = 256;
-
-	const EXTENT_MIN_X = 907636.8207740805;
-	const EXTENT_MAX_X = 972720.8671417263;
-	const EXTENT_MIN_Y = 6542186.808607884;
-	const EXTENT_MAX_Y = 6596005.251042297;
 
 	const maxResolution = (MAX_X - MIN_X) / TILE_SIZE;
 	const resolutions: number[] = [];
@@ -58,7 +53,7 @@
 			zIndex: 1,
 			visible,
 			opacity,
-			extent: [EXTENT_MIN_X, EXTENT_MIN_Y, EXTENT_MAX_X, EXTENT_MAX_Y]
+			extent: MAPANT_V1_EXTENT
 		});
 
 		map?.addLayer(tileLayer);

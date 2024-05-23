@@ -1,16 +1,18 @@
-<script>
+<script lang="ts">
+	import { afterNavigate, onNavigate } from '$app/navigation';
+	import { navigating } from '$app/stores';
+	import { clickOutside } from '$lib/actions/click-outside';
+	import type { OnNavigate } from '@sveltejs/kit';
+	import { fade } from 'svelte/transition';
 	import SubMenus from './SubMenus.svelte';
 
 	import '@picocss/pico/css/pico.orange.css';
-	// Do not remove this comment, it is there to prevent the formatter to change the order of the style sheets
+	// Do not remove this comment, it prevent prettier to reorder imports
 	import './global-styles.css';
-	// Do not remove this comment, it is there to prevent the formatter to change the order of the style sheets
-	import { enhance } from '$app/forms';
-	import { navigating } from '$app/stores';
+	// Do not remove this comment, it prevent prettier to reorder imports
+	import './global-view-transitions.css';
+	// Do not remove this comment, it prevent prettier to reorder imports
 	import 'uno.css';
-	import { clickOutside } from '$lib/actions/click-outside';
-	import { fade } from 'svelte/transition';
-	import { afterNavigate } from '$app/navigation';
 
 	export let data;
 
@@ -24,6 +26,47 @@
 		}
 	}
 
+	function isBackNavigation({ from, to }: OnNavigate): boolean {
+		if (from === null || to === null) return false;
+
+		return from.url.pathname !== to.url.pathname && from.url.pathname.startsWith(to.url.pathname);
+	}
+
+	function isSamePageNavigation({ from, to }: OnNavigate): boolean {
+		if (from === null || to === null) return false;
+
+		return from.url.pathname === to.url.pathname;
+	}
+
+	onNavigate((navigation) => {
+		//@ts-ignore
+		if (!document.startViewTransition) return;
+
+		if (isBackNavigation(navigation)) {
+			document.documentElement.classList.add('back-transition');
+		}
+
+		if (isSamePageNavigation(navigation)) {
+			document.documentElement.classList.add('same-page-navigation');
+		}
+
+		return new Promise(async (resolve) => {
+			//@ts-ignore
+			const transition = document.startViewTransition(async () => {
+				resolve();
+				await navigation.complete;
+			});
+
+			try {
+				await transition.finished;
+			} catch (e) {
+				console.error(e);
+			} finally {
+				document.documentElement.classList.remove('back-transition', 'same-page-navigation');
+			}
+		});
+	});
+
 	afterNavigate(() => (showMenu = false));
 </script>
 
@@ -32,7 +75,7 @@
 {/if}
 
 <div flex="~ col" h-full>
-	<nav shadow-xl class="container-fluid" pl-0>
+	<nav shadow-xl class="container-fluid [view-transition-name:top-nav]" pl-0>
 		<ul>
 			<li py-2>
 				<a href="/" flex items-center gap-2 py-0>

@@ -12,6 +12,9 @@ export default defineConfig({
 			primaryUnderline: 'var(--pico-primary-underline)',
 			tableBorderColor: 'var(--pico-table-border-color)',
 			backgroundColor: 'var(--pico-background-color)'
+		},
+		spacing: {
+			spacing: 'var(--pico-spacing)'
 		}
 	}
 });

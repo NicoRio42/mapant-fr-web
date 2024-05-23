@@ -1,6 +1,6 @@
-import { STRIPE_CHECKOUT_LINKS } from '$lib/constants.js';
+import { CONTRIBUTION_FORMULAS } from '$lib/constants.js';
 import { db } from '$lib/server/db.js';
-import { contributionTable, type Contribution } from '$lib/server/schema.js';
+import { contributionTable } from '$lib/server/schema.js';
 import { error, redirect } from '@sveltejs/kit';
 
 export async function load({ locals }) {
@@ -17,23 +17,20 @@ export const actions = {
 		const maxX = parseFormDataNumber(formData, 'maxX');
 		const maxY = parseFormDataNumber(formData, 'maxY');
 
-		const formula = url.searchParams.get('formula');
-		if (!isFormula(formula)) throw error(400);
+		const formulaId = url.searchParams.get('formula');
+		const formula = CONTRIBUTION_FORMULAS.find((f) => f.id === formulaId);
+		if (formula === undefined) throw error(400);
 
 		const [newContribution] = await db
 			.insert(contributionTable)
-			.values({ fkUser: locals.user.id, formula, minX, minY, maxX, maxY })
+			.values({ fkUser: locals.user.id, formula: formula.id, minX, minY, maxX, maxY })
 			.returning();
 
-		const paiementLinkUrl = `${STRIPE_CHECKOUT_LINKS[formula]}?client_reference_id=${newContribution.id}`;
+		const paiementLinkUrl = `${formula.paiementLink}?client_reference_id=${newContribution.id}`;
 
 		throw redirect(303, paiementLinkUrl);
 	}
 };
-
-function isFormula(formula: string | null): formula is Contribution['formula'] {
-	return contributionTable.formula.enumValues.includes(formula as any);
-}
 
 function parseFormDataNumber(formData: FormData, key: string): number {
 	const rawValue = formData.get(key);

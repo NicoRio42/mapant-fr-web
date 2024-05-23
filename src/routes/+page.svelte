@@ -61,7 +61,7 @@
 		on:click={() => (isWelcomeDialogOpen = true)}
 		type="button"
 		absolute
-		bottom-2
+		bottom-6
 		right-2
 		m-0
 		p="x-2 y-1"

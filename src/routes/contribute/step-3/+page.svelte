@@ -4,7 +4,7 @@
 	import BaseMap from '$lib/components/map/BaseMap.svelte';
 	import Polygon from '$lib/components/map/Polygon.svelte';
 	import VectorLayer from '$lib/components/map/VectorLayer.svelte';
-	import { FRANCE_CENTER } from '$lib/constants';
+	import { CONTRIBUTION_FORMULAS, FRANCE_CENTER } from '$lib/constants';
 	import type { Feature } from 'ol';
 	import Stepper from '../Stepper.svelte';
 	import { clickOutside } from '$lib/actions/click-outside';
@@ -14,62 +14,14 @@
 	let isLandscape = false;
 	let selected: Feature | null = null;
 	let showDropdown = false;
-
-	const A4_WIDTH = 21 * 100; // metter
-	const A4_HEIGHT = 29.7 * 100; // metter
-
-	const A3_WIDTH = A4_HEIGHT; // metter
-	const A3_HEIGHT = A4_WIDTH * 2; // metter
-
-	const A2_WIDTH = A3_HEIGHT; // metter
-	const A2_HEIGHT = A3_WIDTH * 2; // metter
-
-	const A1_WIDTH = A2_HEIGHT; // metter
-	const A1_HEIGHT = A2_WIDTH * 2; // metter
-
-	const A0_WIDTH = A1_HEIGHT; // metter
-	const A0_HEIGHT = A1_WIDTH * 2; // metter
-
-	const MINUS_A1_WIDTH = A0_HEIGHT; // metter
-	const MINUS_A1_HEIGHT = A0_WIDTH * 2; // metter
-
-	const formulas = [
-		{
-			id: '1',
-			label: 'A4 10€',
-			width: A4_WIDTH,
-			height: A4_HEIGHT
-		},
-		{
-			id: '2',
-			label: 'A3 20€',
-			width: A3_WIDTH,
-			height: A3_HEIGHT
-		},
-		{
-			id: '3',
-			label: 'A1 50€',
-			width: A1_WIDTH,
-			height: A1_HEIGHT
-		},
-		{
-			id: '4',
-			label: 'Double A0 100€',
-			width: MINUS_A1_WIDTH,
-			height: MINUS_A1_HEIGHT
-		},
-		{
-			id: '5',
-			label: 'Méga tuile 500€',
-			width: 50000,
-			height: 50000
-		}
-	];
+	let isLidarHdTilesLayerDisplayed = true;
 
 	$: selectedFormula =
-		formulas.find((f) => f.id === $page.url.searchParams.get('formula')) ?? formulas[0];
+		CONTRIBUTION_FORMULAS.find((f) => f.id === $page.url.searchParams.get('formula')) ??
+		CONTRIBUTION_FORMULAS[0];
 
 	$: isMegaTileFormula = selectedFormula.id === '5';
+	$: if (isMegaTileFormula) isLidarHdTilesLayerDisplayed = true;
 
 	$: halfWidth = (isLandscape ? selectedFormula.height : selectedFormula.width) / 2;
 	$: halfHeight = (isLandscape ? selectedFormula.width : selectedFormula.height) / 2;
@@ -89,7 +41,13 @@
 
 <Stepper selectedStepNumber={3} />
 
-<BaseMap bind:center zoom={7} allowLidarTileSelection={isMegaTileFormula} bind:selected>
+<BaseMap
+	bind:center
+	bind:selected
+	bind:isLidarHdTilesLayerDisplayed
+	zoom={7}
+	allowLidarTileSelection={isMegaTileFormula}
+>
 	{#if !isMegaTileFormula}
 		<VectorLayer>
 			<Polygon color="blue" width={2} coords={coordinates} fill="#60a5fa4a" />
@@ -100,10 +58,21 @@
 		<div class="dropdown" use:clickOutside={() => (showDropdown = false)}>
 			{#if showDropdown}
 				<ul bg-white mb-0 rounded p="y-2 x-3">
-					{#each formulas as formula (formula.id)}
+					{#each CONTRIBUTION_FORMULAS as formula (formula.id)}
 						<li list-none m-0>
-							<a block p-y-1 on:click={() => (showDropdown = false)} href="?formula={formula.id}">
-								{formula.label}
+							<a
+								block
+								p-y-1
+								text-nowrap
+								decoration-none
+								flex
+								justify-between
+								on:click={() => (showDropdown = false)}
+								href="?formula={formula.id}"
+							>
+								<span>{formula.label}</span>
+
+								<span>{formula.priceInEuros} €</span>
 							</a>
 						</li>
 					{/each}
@@ -120,9 +89,11 @@
 				class="outline"
 				on:click={() => (showDropdown = !showDropdown)}
 			>
-				{selectedFormula.label}
+				<span grow text-left>{selectedFormula.label}</span>
 
-				<i i-carbon-chevron-down block w-5 h-5></i>
+				<span>{selectedFormula.priceInEuros} €</span>
+
+				<i i-carbon-chevron-down block w-5 h-5 ml-2></i>
 			</button>
 		</div>
 

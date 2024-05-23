@@ -124,7 +124,8 @@
 
 		vectorLayer = new VectorLayer({
 			source: new VectorSource({
-				features: new GeoJSON().readFeatures(lidarHdTiles)
+				features: new GeoJSON().readFeatures(lidarHdTiles),
+				attributions: '© <a href="https://www.ign.fr/" target="_blank">IGN</a>'
 			}),
 			// @ts-ignore
 			style: styleFunction,

@@ -8,7 +8,11 @@
 <article flex="~ col" justify-between class={$$restProps.class}>
 	<div contents>
 		<header flex items-center py-6>
-			<h2 grow mb-0>{title}</h2>
+			<h2 grow mb-0 flex items-center gap-2>
+				<i i-carbon-document-blank block w-8 h-8></i>
+
+				{title}
+			</h2>
 
 			<p mb-0 text-8 font-700>{price} €</p>
 		</header>

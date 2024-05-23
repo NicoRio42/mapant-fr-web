@@ -1,35 +1,45 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
+	import { FRANCE_CENTER } from '$lib/constants';
 	import { Map, View } from 'ol';
-	import 'ol/ol.css';
-	import { onDestroy, onMount, setContext } from 'svelte';
-	import { register } from 'ol/proj/proj4.js';
-	import proj4 from 'proj4';
-	import { transform } from 'ol/proj.js';
+	import type { Extent } from 'ol/extent';
+	import type { SimpleGeometry } from 'ol/geom';
 	import {
 		DblClickDragZoom,
-		defaults as defaultInteractions,
-		DoubleClickZoom
+		DoubleClickZoom,
+		defaults as defaultInteractions
 	} from 'ol/interaction.js';
-	import { FRANCE_CENTER } from '$lib/constants';
+	import 'ol/ol.css';
+	import { transform } from 'ol/proj.js';
+	import { register } from 'ol/proj/proj4.js';
+	import proj4 from 'proj4';
+	import { onDestroy, onMount, setContext } from 'svelte';
 
 	export let center = FRANCE_CENTER;
 	export let zoom = 6;
+	export let fit: SimpleGeometry | Extent | undefined = undefined;
+	export let map: Map | undefined = undefined;
 
-	let map: Map;
+	let view: View;
+
+	$: if (browser && view !== undefined && fit !== undefined)
+		view.fit(fit, { padding: [20, 20, 20, 20] });
 
 	setContext('map', () => map);
 
 	onMount(() => {
 		setupLambert93Projection();
 
+		view = new View({
+			projection: 'EPSG:2154',
+			center: transform(center, 'EPSG:4326', 'EPSG:2154'),
+			zoom
+		});
+
 		map = new Map({
 			target: 'mapviewer',
 			interactions: defaultInteractions().extend([new DblClickDragZoom(), new DoubleClickZoom()]),
-			view: new View({
-				projection: 'EPSG:2154',
-				center: transform(center, 'EPSG:4326', 'EPSG:2154'),
-				zoom
-			})
+			view
 		});
 
 		map.on('moveend', (event) => {
