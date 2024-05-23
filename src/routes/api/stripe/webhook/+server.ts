@@ -8,6 +8,7 @@ const stripe = new Stripe(STRIPE_API_KEY);
 
 export async function POST({ request }) {
 	const sig = request.headers.get('stripe-signature');
+
 	if (sig === null) {
 		console.error('[STRIPE_WEBHOOK] No stripe-signature header');
 		return new Response(null, { status: 400 });
@@ -26,14 +27,12 @@ export async function POST({ request }) {
 		return new Response(null, { status: 400 });
 	}
 
-	if (event.type !== 'checkout.session.completed') return;
+	if (event.type !== 'checkout.session.completed') return new Response(null, { status: 400 });
 
 	if (event.data.object.client_reference_id === null) {
 		console.error('[STRIPE_WEBHOOK] client_reference_id not defined.');
 		return new Response(null, { status: 400 });
 	}
-
-	console.log('client_reference_id', event.data.object.client_reference_id);
 
 	const [contribution] = await db
 		.update(contributionTable)

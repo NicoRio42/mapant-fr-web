@@ -5,9 +5,9 @@
 	export let formulaId: string;
 </script>
 
-<article flex="~ col" justify-between class={$$restProps.class}>
+<article flex="~ col" justify-between m-0 px-8 class={$$restProps.class}>
 	<div contents>
-		<header flex items-center py-6>
+		<header flex items-center pb-6>
 			<h2 grow mb-0 flex items-center gap-2>
 				<i i-carbon-document-blank block w-8 h-8></i>
 

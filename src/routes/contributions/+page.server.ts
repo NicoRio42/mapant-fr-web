@@ -4,7 +4,7 @@ import { redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 
 export async function load({ locals }) {
-	if (locals.user === null) throw redirect(302, `/login?redirectUrl=/contributions`);
+	if (locals.user === null) throw redirect(302, `/login?redirect-url=/contributions`);
 
 	const contributions = await db
 		.select()
