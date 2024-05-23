@@ -20,7 +20,9 @@
 
 		{#if form?.emailAlllreadyUsed}
 			<label for="signup-email">
-				Cette adresse email est déjà utilisée. <a href="/login">
+				Cette adresse email est déjà utilisée.
+
+				<a href="/login?redirect-url={encodeURIComponent('/contribute/step-2')}">
 					Connectez vous avec votre compte !
 				</a>
 			</label>
@@ -64,6 +66,10 @@
 
 		<button type="submit" mt-8> Valider </button>
 
-		<p>Vous avez déjà un compte ? <a href="#">Connectez vous !</a></p>
+		<p>
+			Vous avez déjà un compte ? <a
+				href="/login?redirect-url={encodeURIComponent('/contribute/step-2')}">Connectez vous !</a
+			>
+		</p>
 	</form>
 </main>

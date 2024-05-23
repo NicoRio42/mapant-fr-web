@@ -14,7 +14,8 @@
 		"format": "prettier --write .",
 		"migrations:generate": "drizzle-kit generate:sqlite",
 		"migrations:apply:local": "node scripts/migrate-local.js",
-		"migrations:apply:prod": "node --env-file=.env scripts/migrate-prod.js"
+		"migrations:apply:prod": "node --env-file=.env scripts/migrate-prod.js",
+		"migrations:apply:staging": "node --env-file=.env.staging scripts/migrate-prod.js"
 	},
 	"devDependencies": {
 		"@iconify-json/carbon": "^1.1.31",

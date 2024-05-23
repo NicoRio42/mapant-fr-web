@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 
+	export let form;
+
 	let loading = false;
 	let tooFast = false;
 </script>
@@ -31,6 +33,10 @@
 		</label>
 
 		<button type="submit" aria-busy={loading && !tooFast}>Connexion</button>
+
+		{#if form?.wrongPasswordOrEmail}
+			<p text="del-color 3.5">Email ou mot de passe erroné</p>
+		{/if}
 	</form>
 
 	<p>Vous n'avez pas encore de compte ? <a href="/signup">Créer un compte</a></p>
