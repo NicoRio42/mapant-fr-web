@@ -71,3 +71,10 @@
 		Message d'accueil
 	</button>
 </BaseMap>
+
+<style>
+	article {
+		max-height: calc(100vh - var(--pico-spacing) * 2);
+		max-height: calc(100svh - var(--pico-spacing) * 2);
+	}
+</style>
