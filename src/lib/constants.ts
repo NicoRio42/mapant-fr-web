@@ -1,9 +1,11 @@
 import { dev } from '$app/environment';
 import type { Contribution } from './server/schema';
+import { CF_PAGES_BRANCH } from '$env/static/public';
 
 // export const TILES_BASE_URL = 'http://127.0.0.1:5000';
 export const TILES_BASE_URL = 'https://mapant-tiles.ovh/tiles';
 export const FRANCE_CENTER = [2.43028, 46.53972];
+const STAGING_BRANCH_NAME = 'staging';
 
 const A4_WIDTH = 21 * 100; // metter
 const A4_HEIGHT = 29.7 * 100; // metter
@@ -41,7 +43,9 @@ export const CONTRIBUTION_FORMULAS: ContributionFormula[] = [
 		height: A4_HEIGHT,
 		paiementLink: dev
 			? 'https://buy.stripe.com/test_9AQ8wV91wco89RS14a'
-			: 'https://buy.stripe.com/fZe2bp0tIbmH7bqeUZ'
+			: CF_PAGES_BRANCH === STAGING_BRANCH_NAME
+				? 'https://buy.stripe.com/test_cN27sR2D81Jue883cj'
+				: 'https://buy.stripe.com/fZe2bp0tIbmH7bqeUZ'
 	},
 	{
 		id: '2',
@@ -51,7 +55,9 @@ export const CONTRIBUTION_FORMULAS: ContributionFormula[] = [
 		height: A3_HEIGHT,
 		paiementLink: dev
 			? 'https://buy.stripe.com/test_aEU4gFb9E1Ju5BC5km'
-			: 'https://buy.stripe.com/8wM3ft90e9ezcvKbIJ'
+			: CF_PAGES_BRANCH === STAGING_BRANCH_NAME
+				? 'https://buy.stripe.com/test_fZeeVj4Lg87Se886ow'
+				: 'https://buy.stripe.com/8wM3ft90e9ezcvKbIJ'
 	},
 	{
 		id: '3',
@@ -61,7 +67,9 @@ export const CONTRIBUTION_FORMULAS: ContributionFormula[] = [
 		height: A1_HEIGHT,
 		paiementLink: dev
 			? 'https://buy.stripe.com/test_aEU8wV91w4VGggg003'
-			: 'https://buy.stripe.com/8wM7vJa4iduP8fuaEG'
+			: CF_PAGES_BRANCH === STAGING_BRANCH_NAME
+				? 'https://buy.stripe.com/test_9AQ4gFgtY2Nyd448wF'
+				: 'https://buy.stripe.com/8wM7vJa4iduP8fuaEG'
 	},
 	{
 		id: '4',
@@ -71,7 +79,9 @@ export const CONTRIBUTION_FORMULAS: ContributionFormula[] = [
 		height: DOUBLE_A0_HEIGHT,
 		paiementLink: dev
 			? 'https://buy.stripe.com/test_6oE9AZ0v01Jue88148'
-			: 'https://buy.stripe.com/8wMeYb1xM1M7dzO6or'
+			: CF_PAGES_BRANCH === STAGING_BRANCH_NAME
+				? 'https://buy.stripe.com/test_6oE00pelQ1Ju9RS5ku'
+				: 'https://buy.stripe.com/8wMeYb1xM1M7dzO6or'
 	},
 	{
 		id: '5',
@@ -81,7 +91,9 @@ export const CONTRIBUTION_FORMULAS: ContributionFormula[] = [
 		height: 50000,
 		paiementLink: dev
 			? 'https://buy.stripe.com/test_00g5kJcdIdsc3tu4gl'
-			: 'https://buy.stripe.com/8wM3ftgsGbmH2VaaEI'
+			: CF_PAGES_BRANCH === STAGING_BRANCH_NAME
+				? 'https://buy.stripe.com/test_eVa4gF5Pk87Sc00aEP'
+				: 'https://buy.stripe.com/8wM3ftgsGbmH2VaaEI'
 	}
 ];
 

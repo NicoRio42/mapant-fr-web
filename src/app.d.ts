@@ -7,6 +7,10 @@ declare global {
 	}
 }
 
+declare module '$env/static/public' {
+	export const CF_PAGES_BRANCH: string;
+}
+
 declare module '$env/static/private' {
 	export const TURSO_DB_URL: string;
 	export const TURSO_DB_TOKEN: string;
