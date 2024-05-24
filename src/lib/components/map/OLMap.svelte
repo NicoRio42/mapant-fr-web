@@ -11,8 +11,6 @@
 	import proj4 from 'proj4';
 	import { onDestroy, onMount, setContext } from 'svelte';
 
-	import 'ol/ol.css';
-
 	export let center = FRANCE_CENTER;
 	export let zoom = 6;
 	export let fit: SimpleGeometry | Extent | undefined = undefined;
@@ -78,9 +76,115 @@
 		height: 100%;
 	}
 
+	:global(.ol-control) {
+		position: absolute;
+	}
+
+	:global(.ol-control button) {
+		--pico-background-color: white;
+		--pico-color: var(--pico-primary-hover);
+		--pico-border-color: var(--pico-primary-hover);
+		margin: 0;
+		font-size: 1.5rem;
+		padding: 0.25rem;
+		line-height: 0.5rem;
+		width: 2.375rem;
+		height: 2.375rem;
+	}
+
+	:global(.ol-zoom) {
+		top: 0.5rem;
+		left: 0.5rem;
+		display: flex;
+		flex-direction: column;
+	}
+
+	:global(.ol-zoom .ol-zoom-in) {
+		border-bottom-left-radius: 0;
+		border-bottom-right-radius: 0;
+		border-bottom-width: 0;
+	}
+
+	:global(.ol-zoom .ol-zoom-out) {
+		border-top-left-radius: 0;
+		border-top-right-radius: 0;
+	}
+
 	:global(.ol-rotate) {
-		right: initial;
-		left: 0.5em;
-		top: 4rem;
+		top: 5.75rem;
+		left: 0.5rem;
+	}
+
+	:global(.ol-compass) {
+		display: block;
+		font-weight: normal;
+		will-change: transform;
+	}
+
+	/* Attribution */
+	:global(.ol-attribution) {
+		position: absolute;
+		text-align: right;
+		bottom: 0.5em;
+		right: 0.5em;
+		max-width: calc(100% - 1.3em);
+		display: flex;
+		flex-flow: row-reverse;
+		align-items: center;
+	}
+
+	:global(.ol-attribution a) {
+		color: var(--ol-subtle-foreground-color);
+		text-decoration: none;
+	}
+
+	:global(.ol-attribution ul) {
+		margin: 0;
+		padding: 1px 0.5em;
+		color: var(--ol-foreground-color);
+		text-shadow: 0 0 2px var(--ol-background-color);
+		font-size: 12px;
+	}
+
+	:global(.ol-attribution li) {
+		display: inline;
+		list-style: none;
+	}
+
+	:global(.ol-attribution li:not(:last-child):after) {
+		content: ' ';
+	}
+
+	:global(.ol-attribution img) {
+		max-height: 2em;
+		max-width: inherit;
+		vertical-align: middle;
+	}
+
+	:global(.ol-attribution button) {
+		flex-shrink: 0;
+	}
+
+	:global(.ol-attribution.ol-collapsed ul) {
+		display: none;
+	}
+
+	:global(.ol-attribution:not(.ol-collapsed)) {
+		background: var(--ol-partial-background-color);
+	}
+
+	:global(.ol-attribution.ol-uncollapsible) {
+		bottom: 0;
+		right: 0;
+		border-radius: 4px 0 0;
+	}
+
+	:global(.ol-attribution.ol-uncollapsible img) {
+		margin-top: -0.2em;
+		max-height: 1.6em;
+	}
+
+	:global(.ol-attribution.ol-uncollapsible button) {
+		display: none;
 	}
 </style>
