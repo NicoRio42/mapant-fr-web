@@ -1,4 +1,4 @@
-Avis aux **orienteurs** et **amateurs de cartes**, aidez moi à créer la carte de France la plus précise de tous les temps (en toute modestie) !
+Avis aux **orienteurs** et **amateurs de cartes**, contribuez à créer la carte de France la plus précise de tous les temps (en toute modestie) !
 
 **Version courte** : je relance le projet mapant.fr et j'en appelle à votre généreuse contribution.
 
@@ -28,14 +28,16 @@ Le but : créer une carte de course d'orientation de la **France entière** acce
 
 Vous l'imaginez bien, tout cela a un coût :
 
-- L'hébergement de la carte nécessite la **location de serveurs**
+- L'hébergement de la carte et le traitement des données nécessitent la **location de serveurs**
 - Lorsque je travaille sur mapant.fr, je ne suis pas rémunéré. Je dois donc travailler en parallèle pour payer les factures (et le café, très important pour écrire du code).
 
 ## Ce que je vous propose
 
-Si vous voulez accélérer le projet, vous pouvez contribuer financièrement. En contrepartie&nbsp;:
+Si vous voulez **accélérer le projet**, vous pouvez contribuer financièrement. En contrepartie&nbsp;:
 
-- Vous avez la possibilité de sélectionner une zone sur la carte de France
-- Elle sera (dans la mesure du possible) traitée en priorité lors de la génération de la carte.
+- Vous avez la possibilité de **sélectionner une zone** sur la carte de France
+- Elle sera (dans la mesure du possible) **traitée en priorité** lors de la génération de la carte.
 
-Ainsi, vous aurez Vous me permettez de travailler sereinement sur un projet qui me motive
+Plus il y aura de contributions, plus je pourrai me concentrer sur mapant.fr (et moins je travaillerai la nuit). 
+
+En vous remerciant d'avance !

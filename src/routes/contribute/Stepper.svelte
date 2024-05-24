@@ -2,11 +2,26 @@
 	import Step from './Step.svelte';
 
 	export let selectedStepNumber: number;
+
+	const labels = ['Créer un compte', 'Choisir une formule', 'Choisir la zone', 'Merci'];
 </script>
 
-<ul px-0 flex gap-4 justify-center mt-6>
-	<Step stepNumber={1} title="Créer un compte" selected={selectedStepNumber === 1} />
-	<Step stepNumber={2} title="Choisir une formule" selected={selectedStepNumber === 2} />
-	<Step stepNumber={3} title="Choisir la zone" selected={selectedStepNumber === 3} />
-	<Step stepNumber={4} title="Merci" selected={selectedStepNumber === 4} />
-</ul>
+<div flex="~ col" items-center my-4>
+	<ul px-0 flex gap-2 justify-center m-0>
+		<Step stepNumber={1} {selectedStepNumber} />
+
+		<hr w-8 border-b="solid 1 primary" />
+
+		<Step stepNumber={2} {selectedStepNumber} />
+
+		<hr w-8 border-b="solid 1 primary" />
+
+		<Step stepNumber={3} {selectedStepNumber} />
+
+		<hr w-8 border-b="solid 1 primary" />
+
+		<Step stepNumber={4} {selectedStepNumber} />
+	</ul>
+
+	<h1 m-0 text-6 leading-6>{labels[selectedStepNumber - 1]}</h1>
+</div>
