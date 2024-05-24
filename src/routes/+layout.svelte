@@ -88,7 +88,7 @@
 					text="hover:primary focus:primary"
 				>
 					<div bg-primary-background w-11 h-11 flex items-center justify-center>
-						<i i-twemoji-ant block w6 h6 text-background-color class="-scale-x-100"></i>
+						<i i-twemoji-ant block w6 h6 class="-scale-x-100"></i>
 					</div>
 
 					Mapant.fr

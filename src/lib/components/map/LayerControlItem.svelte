@@ -7,9 +7,9 @@
 <li text-left bg="!hover:transparent" list-none>
 	<div flex items-center mb="[calc(var(--pico-spacing)*0.375)]">
 		<label grow mb-0>
-			{label}
-
 			<input mr-2 type="checkbox" bind:checked={displayed} />
+
+			{label}
 		</label>
 
 		<slot></slot>
