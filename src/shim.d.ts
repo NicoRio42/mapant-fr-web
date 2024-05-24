@@ -3,3 +3,7 @@ declare namespace svelteHTML {
 
 	type HTMLAttributes = AttributifyAttributes;
 }
+
+declare module '*.md' {
+	export default string;
+}

@@ -6,10 +6,9 @@
 
 <script lang="ts">
 	import BaseMap from '$lib/components/map/BaseMap.svelte';
-	import { marked } from 'marked';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import welcomePopupContent from './welcome-popup.md?raw';
+	import welcomePopupContent from './welcome-popup.md';
 
 	let isWelcomeDialogOpen = false;
 
@@ -39,7 +38,7 @@
 				</button>
 			</div>
 
-			{@html marked(welcomePopupContent)}
+			{@html welcomePopupContent}
 
 			<p flex justify-end gap-4>
 				<button
