@@ -1,6 +1,5 @@
 <script lang="ts">
-	import LayerControlItem from './LayerControlItem.svelte';
-
+	import { clickOutside } from '$lib/actions/click-outside';
 	import LidarHdTiles from '$lib/components/map/LidarHdTiles.svelte';
 	import Mapant from '$lib/components/map/Mapant.svelte';
 	import OLMap from '$lib/components/map/OLMap.svelte';
@@ -8,10 +7,10 @@
 	import type { Feature, Map } from 'ol';
 	import type { Extent } from 'ol/extent';
 	import type { SimpleGeometry } from 'ol/geom';
+	import { fade } from 'svelte/transition';
+	import LayerControlItem from './LayerControlItem.svelte';
 	import Osm from './OSM.svelte';
 	import Scan25IgnWebMercator from './Scan25IgnWebMercator.svelte';
-	import { fade } from 'svelte/transition';
-	import { clickOutside } from '$lib/actions/click-outside';
 
 	export let center = FRANCE_CENTER;
 	export let zoom = 6;
@@ -99,7 +98,7 @@
 							const view = map.getView();
 							const resolution = view.getResolutionForExtent(MAPANT_V1_EXTENT);
 							showLayerDropDown = false;
-							view.animate({ resolution, center: MAPANT_V1_CENTER });
+							view.animate({ resolution, center: MAPANT_V1_CENTER, rotation: 0 });
 						}}
 					>
 						<i i-carbon-zoom-fit block w-6 h-6></i>
