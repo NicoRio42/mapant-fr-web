@@ -6,13 +6,13 @@ Avis aux **orienteurs** et **amateurs de cartes**, aidez moi à créer la carte 
 
 ## Un peu d'historique
 
-En 2021, j'ai créé le site [mapant.fr](https://mapant.fr). Il était inspiré par les projets [mapant.fi](https://mapant.fi) (Finlande), [mapant.no](https://mapant.no) (Norvège) et d'autres déclinaisons nationales. Le principe est simple, utiliser des [données LiDAR](https://fr.wikipedia.org/wiki/Lidar) accessibles publiquement pour générer une [carte de course d'orientation](https://www.ffcorientation.fr/decouvrir/comment/carte/) à l'échelle d'un pays.
+En 2021, j'ai créé le site [mapant.fr](https://mapant.fr){target=_blank}. Il était inspiré par les projets [mapant.fi](https://mapant.fi){target=_blank} (Finlande), [mapant.no](https://mapant.no){target=_blank} (Norvège) et d'autres déclinaisons nationales. Le principe est simple, utiliser des [données LiDAR](https://fr.wikipedia.org/wiki/Lidar){target=_blank} accessibles publiquement pour générer une [carte de course d'orientation](https://www.ffcorientation.fr/decouvrir/comment/carte/){target=_blank} à l'échelle d'un pays.
 
 A cette époque là, il n'y a pas de base de données LiDAR pour la France entière. Une campagne d'aquisition a cependant été réalisée sur une partie des **département de l'Ain et de la Haute-Savoie**. J'utilise ces données pour valider la **faisabilité** du projet et me familiariser avec les **outils de traitement** LiDAR.
 
 ## Et maintenant
 
-Depuis, l'[Institut national de l'information géographique et forestière](https://geoservices.ign.fr/lidarhd) (IGN) a lancé le [programme LiDAR HD](https://geoservices.ign.fr/lidarhd). Il a pour ambition de couvrir tout le pays en données LiDAR de haute définition, et il est déjà [bien avancé](https://macarte.ign.fr/carte/322ea69dab4c7e5afabc6ec7043b5994/acquisitionslidarhd) !
+Depuis, l'[Institut national de l'information géographique et forestière](https://geoservices.ign.fr/lidarhd){target=_blank} (IGN) a lancé le [programme LiDAR HD](https://geoservices.ign.fr/lidarhd){target=_blank}. Il a pour ambition de couvrir tout le pays en données LiDAR de haute définition, et il est déjà [bien avancé](https://macarte.ign.fr/carte/322ea69dab4c7e5afabc6ec7043b5994/acquisitionslidarhd){target=_blank} !
 
 Depuis janvier je travaille à mon compte en tant que **développeur indépendant**. Je compte en profiter de cette flexibilité pour développer des projets qui me **tiennent à cœur** ! C'est dans ce contexte que je relance le projet mapant.fr.
 
