@@ -51,8 +51,26 @@
 		<slot></slot>
 	</OLMap>
 
-	<div absolute top-2 right-2 text-right use:clickOutside={() => (showLayerDropDown = false)}>
-		<button p-2 bg-white class="outline" on:click={() => (showLayerDropDown = !showLayerDropDown)}>
+	<div
+		absolute
+		top-2
+		right-2
+		flex="~ col"
+		items-end
+		gap-2
+		use:clickOutside={() => (showLayerDropDown = false)}
+	>
+		<button
+			flex
+			items-center
+			justify-center
+			w-8
+			h-8
+			p-0
+			bg-white
+			class="outline"
+			on:click={() => (showLayerDropDown = !showLayerDropDown)}
+		>
 			<i i-carbon-layers w-5 h-5 block></i>
 		</button>
 

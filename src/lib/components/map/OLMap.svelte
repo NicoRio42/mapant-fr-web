@@ -80,16 +80,24 @@
 		position: absolute;
 	}
 
-	:global(.ol-control button) {
+	:global(.ol-control button),
+	:global(.ol-control button:hover),
+	:global(.ol-control button:focus) {
 		--pico-background-color: white;
 		--pico-color: var(--pico-primary-hover);
 		--pico-border-color: var(--pico-primary-hover);
+	}
+
+	:global(.ol-control button) {
 		margin: 0;
 		font-size: 1.5rem;
 		padding: 0.25rem;
-		line-height: 0.5rem;
-		width: 2.375rem;
-		height: 2.375rem;
+		line-height: 1.5rem;
+		display: flex;
+		width: 2rem;
+		height: 2rem;
+		justify-content: center;
+		align-items: center;
 	}
 
 	:global(.ol-zoom) {

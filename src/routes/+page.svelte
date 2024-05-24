@@ -29,7 +29,9 @@
 
 				<button
 					type="button"
-					p-2
+					m-0
+					p-1
+					border-none
 					h-fit
 					class="outline"
 					on:click={() => (isWelcomeDialogOpen = false)}
@@ -41,13 +43,7 @@
 			{@html welcomePopupContent}
 
 			<p flex justify-end gap-4>
-				<button
-					type="button"
-					p-2
-					m-0
-					class="outline"
-					on:click={() => (isWelcomeDialogOpen = false)}
-				>
+				<button type="button" m-0 class="outline" on:click={() => (isWelcomeDialogOpen = false)}>
 					Fermer
 				</button>
 

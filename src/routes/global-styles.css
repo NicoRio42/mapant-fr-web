@@ -38,6 +38,12 @@ a[role='button'].unpico {
 	color: var(--pico-h1-color);
 }
 
+button,
+[type='button'],
+[role='button'] {
+	padding: 0.25rem 0.5rem;
+}
+
 .error-msg {
 	display: block;
 	color: var(--pico-del-color);
