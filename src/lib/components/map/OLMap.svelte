@@ -2,15 +2,16 @@
 	import { browser } from '$app/environment';
 	import { FRANCE_CENTER } from '$lib/constants';
 	import { Map, View } from 'ol';
+	import { defaults as defaultControls } from 'ol/control/defaults.js';
 	import type { Extent } from 'ol/extent';
 	import type { SimpleGeometry } from 'ol/geom';
 	import { DblClickDragZoom, defaults as defaultInteractions } from 'ol/interaction.js';
-	import 'ol/ol.css';
 	import { transform } from 'ol/proj.js';
 	import { register } from 'ol/proj/proj4.js';
 	import proj4 from 'proj4';
 	import { onDestroy, onMount, setContext } from 'svelte';
-	import { defaults as defaultControls } from 'ol/control/defaults.js';
+
+	import 'ol/ol.css';
 
 	export let center = FRANCE_CENTER;
 	export let zoom = 6;
@@ -80,6 +81,6 @@
 	:global(.ol-rotate) {
 		right: initial;
 		left: 0.5em;
-		top: 4em;
+		top: 4rem;
 	}
 </style>
