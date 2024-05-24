@@ -124,8 +124,14 @@
 	}
 
 	:global(.ol-compass) {
-		display: block;
-		font-weight: normal;
+		content: '';
+		width: 1.5rem;
+		height: 1.5rem;
+		mask: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxZW0iIGhlaWdodD0iMWVtIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggZmlsbD0iY3VycmVudENvbG9yIiBkPSJNNTAuMDMgNWEyLjUxNiAyLjUxNiAwIDAgMC0yLjQzIDEuNzZMMzQuNDkzIDQ4LjU0OGEyLjUxIDIuNTEgMCAwIDAtLjM3MiAxLjQ1NGMtLjAyNi41MS4xMDQgMS4wMTcuMzcyIDEuNDUybDEzLjEwNSA0MS43ODJjLjczNyAyLjM1MiA0LjA2NSAyLjM1MiA0LjgwMiAwbDEzLjEwNS00MS43ODVjLjI3LS40MzYuMzk5LS45NDUuMzcyLTEuNDU2YTIuNTEzIDIuNTEzIDAgMCAwLS4zNzItMS40NUw1Mi40MDEgNi43NkEyLjUxMyAyLjUxMyAwIDAgMCA1MC4wMyA1TTM5LjQwMyA1MC4yODhoNi4yMDVjLjE1MiAyLjMwNiAyLjA0OCA0LjEzNCA0LjM5MiA0LjEzNGMyLjM0NCAwIDQuMjQtMS44MjggNC4zOTItNC4xMzRoNi40NjFMNTAgODQuMDc4WiIgY29sb3I9ImN1cnJlbnRDb2xvciIvPjwvc3ZnPg==)
+			no-repeat;
+		mask-position: center;
+		mask-size: 100% 100%;
+		background-color: currentColor;
 		will-change: transform;
 	}
 
