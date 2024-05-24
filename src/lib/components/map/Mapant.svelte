@@ -17,13 +17,15 @@
 	$: if (browser && tileLayer) tileLayer.setVisible(visible);
 	$: if (browser && tileLayer) tileLayer.setOpacity(opacity);
 
-	/**
-	 * Constants computed to cover the whole metropolitan France
-	 */
-	const MIN_X = -343646;
-	const MAX_X = 1704354;
-	const MIN_Y = 5619537;
-	const MAX_Y = 7667537;
+	// Quick fix to solve a for now unexplained offset problem
+	const OFFSET_X = 934407.1834580749 - 934553.3735946362;
+	const OFFSET_Y = 6592214.102672428 - 6592176.256494943;
+
+	// Constants computed to cover the whole metropolitan France
+	const MIN_X = -343646 - OFFSET_X;
+	const MAX_X = 1704354 - OFFSET_X;
+	const MIN_Y = 5619537 - OFFSET_Y;
+	const MAX_Y = 7667537 - OFFSET_Y;
 	const TILE_SIZE = 256;
 
 	const maxResolution = (MAX_X - MIN_X) / TILE_SIZE;
