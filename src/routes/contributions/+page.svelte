@@ -41,7 +41,7 @@
 					{formula.label}
 				</h2>
 
-				<p>
+				<p text-left>
 					{#if contribution.paied}
 						Payée
 					{:else}

@@ -33,7 +33,7 @@ Vous l'imaginez bien, tout cela a un coût :
 
 ## Ce que je vous propose
 
-Si vous voulez accélérer le projet, vous pouvez contribuer financièrement. En contrepartie :
+Si vous voulez accélérer le projet, vous pouvez contribuer financièrement. En contrepartie&nbsp;:
 
 - Vous avez la possibilité de sélectionner une zone sur la carte de France
 - Elle sera (dans la mesure du possible) traitée en priorité lors de la génération de la carte.

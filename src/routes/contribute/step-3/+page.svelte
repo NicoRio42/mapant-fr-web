@@ -57,7 +57,7 @@
 	<div absolute right-2 bottom-2 flex="~ col" gap-2>
 		<div class="dropdown" use:clickOutside={() => (showDropdown = false)}>
 			{#if showDropdown}
-				<ul bg-white mb-0 rounded p="y-2 x-3">
+				<ul bg-white mb-0 rounded p="y-2 x-3" shadow-2xl>
 					{#each CONTRIBUTION_FORMULAS as formula (formula.id)}
 						<li list-none m-0>
 							<a

@@ -9,8 +9,8 @@
 <main p="x-4 b-12" mx-auto max-w-300>
 	<p max-w-200 m="x-auto t-4" text-5>
 		En contrepartie de votre contribution, vous pouvez sélectionner une zone sur la carte de France.
-		Elle sera <span text-primary> traitée en priorité</span> lors de la génération de la carte à partir
-		des données LiDAR (dans limite du possible).
+		Elle sera <strong> traitée en priorité</strong> lors de la génération de la carte à partir des données
+		LiDAR (dans limite du possible).
 	</p>
 
 	<div grid="~ md:cols-2 xl:cols-6" gap-8 mt-12>

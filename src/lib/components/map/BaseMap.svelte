@@ -1,4 +1,6 @@
 <script lang="ts">
+	import LayerControlItem from './LayerControlItem.svelte';
+
 	import LidarHdTiles from '$lib/components/map/LidarHdTiles.svelte';
 	import Mapant from '$lib/components/map/Mapant.svelte';
 	import OLMap from '$lib/components/map/OLMap.svelte';
@@ -8,6 +10,8 @@
 	import type { SimpleGeometry } from 'ol/geom';
 	import Osm from './OSM.svelte';
 	import Scan25IgnWebMercator from './Scan25IgnWebMercator.svelte';
+	import { fade } from 'svelte/transition';
+	import { clickOutside } from '$lib/actions/click-outside';
 
 	export let center = FRANCE_CENTER;
 	export let zoom = 6;
@@ -16,7 +20,7 @@
 	export let fit: SimpleGeometry | Extent | undefined = undefined;
 
 	let map: Map | undefined = undefined;
-	let layersDropdown: HTMLDetailsElement;
+	let showLayerDropDown = false;
 
 	let isOsmLayerDisplayed = false;
 	let isIgnScan25LayerDisplayed = true;
@@ -47,106 +51,55 @@
 		<slot></slot>
 	</OLMap>
 
-	<div absolute top-2 right-2>
-		<details class="dropdown" bind:this={layersDropdown}>
-			<!-- svelte-ignore a11y-no-redundant-roles -->
-			<summary role="button" p-2.5 bg-white class="outline">
-				<i i-carbon-layers w-5 h-5 block></i>
-			</summary>
+	<div absolute top-2 right-2 text-right use:clickOutside={() => (showLayerDropDown = false)}>
+		<button p-2 bg-white class="outline" on:click={() => (showLayerDropDown = !showLayerDropDown)}>
+			<i i-carbon-layers w-5 h-5 block></i>
+		</button>
 
-			<ul dir="rtl" py="!4">
-				<li text-left bg="!hover:transparent">
-					<label>
-						OpenStreetMap
-						<input mr-2 type="checkbox" bind:checked={isOsmLayerDisplayed} />
-					</label>
+		{#if showLayerDropDown}
+			<ul p-4 m-0 rounded shadow-2xl bg-background-color transition:fade={{ duration: 125 }}>
+				<LayerControlItem
+					label="OpenStreetMap"
+					bind:displayed={isOsmLayerDisplayed}
+					bind:opacity={osmLayerOpacity}
+				/>
 
-					<input
-						dir="ltr"
-						type="range"
-						min="0"
-						max="1"
-						step="0.01"
-						bind:value={osmLayerOpacity}
-						mb="!0"
-					/>
-				</li>
+				<LayerControlItem
+					label="Mapant.fr V1"
+					bind:displayed={isMapantV1LayerDisplayed}
+					bind:opacity={mapantV1LayerOpacity}
+				>
+					<button
+						type="button"
+						class="outline"
+						p-1
+						m-0
+						on:click={() => {
+							if (map === undefined) return;
+							isMapantV1LayerDisplayed = true;
+							mapantV1LayerOpacity = 1;
+							const view = map.getView();
+							const resolution = view.getResolutionForExtent(MAPANT_V1_EXTENT);
+							showLayerDropDown = false;
+							view.animate({ resolution, center: MAPANT_V1_CENTER });
+						}}
+					>
+						<i i-carbon-zoom-fit block w-6 h-6></i>
+					</button>
+				</LayerControlItem>
 
-				<li text-left bg="!hover:transparent">
-					<div flex items-center dir="ltr" mb="[calc(var(--pico-spacing)*0.375)]">
-						<label grow dir="rtl" mb-0>
-							Mapant.fr V1
-							<input mr-2 type="checkbox" bind:checked={isMapantV1LayerDisplayed} />
-						</label>
+				<LayerControlItem
+					label="IGN Scan25"
+					bind:displayed={isIgnScan25LayerDisplayed}
+					bind:opacity={ignScan25LayerOpacity}
+				/>
 
-						<button
-							type="button"
-							class="outline"
-							p-1
-							m-0
-							on:click={() => {
-								if (map === undefined) return;
-								const view = map.getView();
-								const resolution = view.getResolutionForExtent(MAPANT_V1_EXTENT);
-								layersDropdown.removeAttribute('open');
-								view.animate({ resolution, center: MAPANT_V1_CENTER });
-							}}
-						>
-							<i i-carbon-zoom-fit block w-6 h-6></i>
-						</button>
-					</div>
-
-					<input
-						dir="ltr"
-						type="range"
-						min="0"
-						max="1"
-						step="0.01"
-						bind:value={mapantV1LayerOpacity}
-						mb="!0"
-					/>
-				</li>
-
-				<li text-left bg="!hover:transparent">
-					<label>
-						IGN Scan25
-						<input mr-2 type="checkbox" bind:checked={isIgnScan25LayerDisplayed} />
-					</label>
-
-					<input
-						dir="ltr"
-						type="range"
-						min="0"
-						max="1"
-						step="0.01"
-						bind:value={ignScan25LayerOpacity}
-						mb="!0"
-					/>
-				</li>
-
-				<li text-left bg="!hover:transparent">
-					<label>
-						Données LiDAR disponible
-						<input mr-2 type="checkbox" bind:checked={isLidarHdTilesLayerDisplayed} />
-					</label>
-
-					<input
-						dir="ltr"
-						type="range"
-						min="0"
-						max="1"
-						step="0.01"
-						bind:value={lidarHdTilesLayerOpacity}
-						mb="!0"
-					/>
-				</li>
+				<LayerControlItem
+					label="Données LiDAR disponibles"
+					bind:displayed={isLidarHdTilesLayerDisplayed}
+					bind:opacity={lidarHdTilesLayerOpacity}
+				/>
 			</ul>
-		</details>
+		{/if}
 	</div>
 </main>
-
-<style>
-	summary::after {
-		display: none !important;
-	}
-</style>

@@ -6,7 +6,7 @@
 
 <Stepper selectedStepNumber={4} />
 
-<main px-4 mx-auto max-w-150>
+<main px-4 mx-auto max-w-150 mt-4>
 	<h1>
 		<i i-twemoji-folded-hands inline-block w-7 h-7></i>
 
