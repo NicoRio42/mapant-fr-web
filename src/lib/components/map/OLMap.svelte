@@ -35,7 +35,7 @@
 		map = new Map({
 			target: 'mapviewer',
 			interactions: defaultInteractions({ doubleClickZoom: true }).extend([
-				new DblClickDragZoom({ delta: -0.1 })
+				new DblClickDragZoom({ delta: -0.01 })
 			]),
 			view,
 			controls: defaultControls({ rotate: true, rotateOptions: { autoHide: false } })
