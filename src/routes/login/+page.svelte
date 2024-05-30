@@ -39,5 +39,5 @@
 		{/if}
 	</form>
 
-	<p>Vous n'avez pas encore de compte ? <a href="/signup">Créer un compte</a></p>
+	<p>Vous n'avez pas encore de compte ? <a href="/contribute/step-1">Créer un compte</a></p>
 </article>
