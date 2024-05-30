@@ -3,7 +3,7 @@
 
 	export let selectedStepNumber: number;
 
-	const labels = ['Créer un compte', 'Choisir une formule', 'Choisir la zone', 'Merci'];
+	const labels = ['Créer un compte', 'Choisir une formule', 'Choisir la zone', null];
 </script>
 
 <div flex="~ col" items-center my-4>
@@ -23,5 +23,7 @@
 		<Step stepNumber={4} {selectedStepNumber} />
 	</ul>
 
-	<h1 m-0 text-6 leading-6>{labels[selectedStepNumber - 1]}</h1>
+	{#if labels[selectedStepNumber - 1]}
+		<h1 m-0 mt-2 text-6 leading-6>{labels[selectedStepNumber - 1]}</h1>
+	{/if}
 </div>

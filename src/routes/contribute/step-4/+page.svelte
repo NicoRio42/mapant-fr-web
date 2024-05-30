@@ -1,7 +1,5 @@
 <script>
 	import Stepper from '../Stepper.svelte';
-
-	export let data;
 </script>
 
 <Stepper selectedStepNumber={4} />
@@ -15,6 +13,11 @@
 
 	<p>
 		Nous vous tiendrons informé par email si vous avez coché cette option lors de votre inscription.
+	</p>
+
+	<p>
+		Si vous avez besoins d'une facture, ou pour toute autre question, n'hésitez pas à envoyer un
+		mail à <a href="mailto:contact@mapant.fr" target="_blank">contact@mapant.fr</a>.
 	</p>
 
 	<p>

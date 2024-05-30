@@ -2,7 +2,6 @@ import { dev } from '$app/environment';
 import type { Contribution } from './server/schema';
 import { PUBLIC_CF_PAGES_BRANCH } from '$env/static/public';
 
-// export const TILES_BASE_URL = 'http://127.0.0.1:5000';
 export const TILES_BASE_URL = 'https://mapant-tiles.ovh/tiles';
 export const FRANCE_CENTER = [2.43028, 46.53972];
 const STAGING_BRANCH_NAME = 'staging';
@@ -69,7 +68,7 @@ export const CONTRIBUTION_FORMULAS: ContributionFormula[] = [
 			? 'https://buy.stripe.com/test_aEU8wV91w4VGggg003'
 			: PUBLIC_CF_PAGES_BRANCH === STAGING_BRANCH_NAME
 				? 'https://buy.stripe.com/test_9AQ4gFgtY2Nyd448wF'
-				: 'https://buy.stripe.com/8wM7vJa4iduP8fuaEG'
+				: 'https://buy.stripe.com/cN2cQ33FUeyT1R6006'
 	},
 	{
 		id: '4',
@@ -81,7 +80,7 @@ export const CONTRIBUTION_FORMULAS: ContributionFormula[] = [
 			? 'https://buy.stripe.com/test_6oE9AZ0v01Jue88148'
 			: PUBLIC_CF_PAGES_BRANCH === STAGING_BRANCH_NAME
 				? 'https://buy.stripe.com/test_6oE00pelQ1Ju9RS5ku'
-				: 'https://buy.stripe.com/8wMeYb1xM1M7dzO6or'
+				: 'https://buy.stripe.com/fZe3ft4JYcqLcvKbIP'
 	},
 	{
 		id: '5',
@@ -93,7 +92,7 @@ export const CONTRIBUTION_FORMULAS: ContributionFormula[] = [
 			? 'https://buy.stripe.com/test_00g5kJcdIdsc3tu4gl'
 			: PUBLIC_CF_PAGES_BRANCH === STAGING_BRANCH_NAME
 				? 'https://buy.stripe.com/test_eVa4gF5Pk87Sc00aEP'
-				: 'https://buy.stripe.com/8wM3ftgsGbmH2VaaEI'
+				: 'https://buy.stripe.com/dR68zN2BQaiDeDS8wE'
 	}
 ];
 
