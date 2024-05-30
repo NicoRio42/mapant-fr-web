@@ -1,6 +1,7 @@
 import { STRIPE_API_KEY, STRIPE_WEBHOOK_SECRET } from '$env/static/private';
 import { db } from '$lib/server/db.js';
-import { contributionTable } from '$lib/server/schema.js';
+import { sendEmail } from '$lib/server/email.js';
+import { contributionTable, userTable } from '$lib/server/schema.js';
 import { eq } from 'drizzle-orm';
 import Stripe from 'stripe';
 
@@ -42,6 +43,16 @@ export async function POST({ request }) {
 
 	if (contribution === undefined) {
 		console.error('[STRIPE_WEBHOOK] No contribution matches the given client_reference_id.');
+	}
+
+	const user = await db.select().from(userTable).where(eq(userTable.id, contribution.fkUser)).get();
+
+	if (user !== undefined) {
+		await sendEmail(
+			'Merci !',
+			'Merci pour votre contribution au développement de Mapant.fr !',
+			user.email
+		);
 	}
 
 	return new Response(null, { status: 200 });
