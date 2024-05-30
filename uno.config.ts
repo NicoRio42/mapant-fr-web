@@ -13,7 +13,8 @@ export default defineConfig({
 			primaryBackground: 'var(--pico-primary-background)',
 			tableBorderColor: 'var(--pico-table-border-color)',
 			backgroundColor: 'var(--pico-background-color)',
-			delColor: 'var(--pico-del-color)'
+			delColor: 'var(--pico-del-color)',
+			h1Color: 'var(--pico-h1-color)'
 		},
 		spacing: {
 			spacing: 'var(--pico-spacing)'

@@ -4,10 +4,11 @@
 	import BaseMap from '$lib/components/map/BaseMap.svelte';
 	import Polygon from '$lib/components/map/Polygon.svelte';
 	import VectorLayer from '$lib/components/map/VectorLayer.svelte';
-	import { CONTRIBUTION_FORMULAS, FRANCE_CENTER } from '$lib/constants';
+	import { CONTRIBUTION_FORMULAS, FRANCE_CENTER, type ContributionFormula } from '$lib/constants';
 	import type { Feature } from 'ol';
 	import Stepper from '../Stepper.svelte';
 	import { clickOutside } from '$lib/actions/click-outside';
+	import { fade } from 'svelte/transition';
 
 	export let center = FRANCE_CENTER;
 
@@ -15,10 +16,16 @@
 	let selected: Feature | null = null;
 	let showDropdown = false;
 	let isLidarHdTilesLayerDisplayed = true;
+	let showHelp = true;
+	let selectedFormula: ContributionFormula;
 
-	$: selectedFormula =
-		CONTRIBUTION_FORMULAS.find((f) => f.id === $page.url.searchParams.get('formula')) ??
-		CONTRIBUTION_FORMULAS[0];
+	$: {
+		selectedFormula =
+			CONTRIBUTION_FORMULAS.find((f) => f.id === $page.url.searchParams.get('formula')) ??
+			CONTRIBUTION_FORMULAS[0];
+
+		showHelp = true;
+	}
 
 	$: isMegaTileFormula = selectedFormula.id === '5';
 	$: if (isMegaTileFormula) isLidarHdTilesLayerDisplayed = true;
@@ -133,4 +140,57 @@
 			</button>
 		</form>
 	</div>
+
+	<button
+		type="button"
+		class="outline"
+		bg-white
+		absolute
+		right-2
+		top-12
+		mb-0
+		w-8
+		h-8
+		p-0
+		flex
+		items-center
+		justify-center
+		on:click={() => (showHelp = !showHelp)}
+	>
+		<i i-carbon-help block w-5 h-5></i>
+	</button>
+
+	{#if showHelp}
+		<article
+			absolute
+			top-2
+			left-14
+			right-12
+			max-w-100
+			bg-green
+			mb-0
+			mr-2
+			transition:fade={{ duration: 125 }}
+		>
+			<button
+				type="button"
+				mb-0
+				p-0
+				float-right
+				border-none
+				shadow="focus:none"
+				text-h1-color
+				class="outline"
+				on:click={() => (showHelp = false)}
+			>
+				<i i-carbon-close-large block w-5 h-5></i>
+			</button>
+
+			{#if selectedFormula.id === '5'}
+				Sélectionnez une dalle de 50km par 50km en cliquant sur une tuile orange.
+			{:else}
+				Centrez le rectangle bleu sur la zone qui vous intéresse en zoomant et déplaçant la carte.
+			{/if}
+		</article>
+	{/if}
 </BaseMap>
