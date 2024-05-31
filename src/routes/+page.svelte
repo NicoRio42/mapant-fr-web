@@ -31,7 +31,10 @@
 	openGraph={{
 		url: new URL($page.url.pathname, $page.url.origin).href,
 		locale: 'fr_FR',
-		images: [{ url: '/mapant-needs-you.jpg' }]
+		images: [
+			{ url: '/facebook.png', width: 1200, height: 630, alt: 'A LiDAR generated orienteering map' },
+			{ url: '/whatsapp.png', width: 400, height: 400, alt: 'A LiDAR generated orienteering map' }
+		]
 	}}
 	twitter={{ cardType: 'summary_large_image' }}
 />
