@@ -38,7 +38,8 @@
 		"tslib": "^2.4.1",
 		"typescript": "^5.0.0",
 		"unocss": "^0.59.4",
-		"vite": "^5.0.3"
+		"vite": "^5.0.3",
+		"svelte-meta-tags": "^3.1.2"
 	},
 	"type": "module",
 	"dependencies": {
@@ -49,7 +50,6 @@
 		"ol": "^9.1.0",
 		"oslo": "^1.2.0",
 		"proj4": "^2.11.0",
-		"stripe": "^15.5.0",
-		"svelte-meta-tags": "^3.1.2"
+		"stripe": "^15.5.0"
 	}
 }
