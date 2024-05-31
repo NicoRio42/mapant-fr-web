@@ -9,6 +9,9 @@
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import welcomePopupContent from './welcome-popup.md';
+	import { MetaTags } from 'svelte-meta-tags';
+	import { WEBSITE_NAME } from '$lib/constants';
+	import { page } from '$app/stores';
 
 	let isWelcomeDialogOpen = false;
 
@@ -20,6 +23,18 @@
 		$welcomeDialogHasBeenShown = true;
 	});
 </script>
+
+<MetaTags
+	title={WEBSITE_NAME}
+	description="Une carte de course d'orientation de la France entière (en cours de création)"
+	canonical={new URL($page.url.pathname, $page.url.origin).href}
+	openGraph={{
+		url: new URL($page.url.pathname, $page.url.origin).href,
+		locale: 'fr_FR',
+		images: [{ url: '/mapant-needs-you.jpg' }]
+	}}
+	twitter={{ cardType: 'summary_large_image' }}
+/>
 
 {#if isWelcomeDialogOpen}
 	<dialog open transition:fade={{ duration: 125 }}>
@@ -41,6 +56,8 @@
 			</div>
 
 			{@html welcomePopupContent}
+
+			<p text="right 5 gray-6"><em>Nicolas Rio</em></p>
 
 			<p flex justify-end gap-4>
 				<button type="button" m-0 class="outline" on:click={() => (isWelcomeDialogOpen = false)}>

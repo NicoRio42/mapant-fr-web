@@ -61,7 +61,7 @@
 			formulaId="5"
 			class="md:col-span-2 xl:col-span-3"
 		>
-			Une méga tuile de 50km par 50km
+			Soyons fou, une méga tuile de 50km par 50km
 		</Formula>
 	</div>
 </main>
