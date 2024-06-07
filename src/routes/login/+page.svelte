@@ -1,42 +1,31 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import { superForm } from 'sveltekit-superforms';
+	import { zodClient } from 'sveltekit-superforms/adapters';
+	import { loginSchema } from './login-schema.js';
+	import EmailField from '$lib/components/form-fields/EmailField.svelte';
+	import PasswordField from '$lib/components/form-fields/PasswordField.svelte';
 
-	export let form;
+	export let data;
 
-	let loading = false;
-	let tooFast = false;
+	const form = superForm(data.form, { validators: zodClient(loginSchema) });
+	const { enhance, delayed, errors } = form;
 </script>
 
 <article class="max-w-120 mx-auto mt-0 sm:mt-8">
 	<h1>Connexion</h1>
 
-	<form
-		method="post"
-		use:enhance={() => {
-			loading = true;
-			tooFast = true;
-			setTimeout(() => (tooFast = false), 250);
-			return ({ update }) => {
-				loading = false;
-				update();
-			};
-		}}
-	>
-		<label>
-			Adresse email
-			<input type="email" name="email" />
-		</label>
+	<form method="post" use:enhance>
+		<EmailField {form} field="email" label="Adresse email" />
 
-		<label>
-			Mot de passe
-			<input type="password" name="password" />
-		</label>
+		<PasswordField {form} field="password" label="Mot de passe" />
 
-		<button type="submit" aria-busy={loading && !tooFast}>Connexion</button>
+		<button type="submit" aria-busy={$delayed}>Connexion</button>
 
-		{#if form?.wrongPasswordOrEmail}
-			<p text="del-color 3.5">Email ou mot de passe erroné</p>
-		{/if}
+		{#each $errors._errors ?? [] as globalError}
+			<p>
+				<small class="text-del-color mb-0">{globalError}</small>
+			</p>
+		{/each}
 	</form>
 
 	<p>Vous n'avez pas encore de compte ? <a href="/contribute/step-1">Créer un compte</a></p>

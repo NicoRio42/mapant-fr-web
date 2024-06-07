@@ -35,11 +35,11 @@
 		"prettier-plugin-svelte": "^3.1.2",
 		"svelte": "^4.2.7",
 		"svelte-check": "^3.6.0",
+		"svelte-meta-tags": "^3.1.2",
 		"tslib": "^2.4.1",
 		"typescript": "^5.0.0",
 		"unocss": "^0.59.4",
-		"vite": "^5.0.3",
-		"svelte-meta-tags": "^3.1.2"
+		"vite": "^5.0.3"
 	},
 	"type": "module",
 	"dependencies": {
@@ -50,6 +50,8 @@
 		"ol": "^9.1.0",
 		"oslo": "^1.2.0",
 		"proj4": "^2.11.0",
-		"stripe": "^15.5.0"
+		"stripe": "^15.5.0",
+		"sveltekit-superforms": "^2.14.0",
+		"zod": "^3.23.8"
 	}
 }

@@ -1,87 +1,33 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import { superForm } from 'sveltekit-superforms';
 	import Stepper from '../Stepper.svelte';
+	import { zodClient } from 'sveltekit-superforms/adapters';
+	import { signUpSchema } from './signup-schema';
+	import EmailField from '$lib/components/form-fields/EmailField.svelte';
+	import PasswordField from '$lib/components/form-fields/PasswordField.svelte';
+	import CheckboxField from '$lib/components/form-fields/CheckboxField.svelte';
 
-	export let form;
+	export let data;
 
-	let loading = false;
-	let tooFast = false;
-	let showPassword = false;
-	let passwordInput: HTMLInputElement;
+	const form = superForm(data.form, { validators: zodClient(signUpSchema) });
+	const { enhance, delayed } = form;
 </script>
 
 <Stepper selectedStepNumber={1} />
 
 <main>
-	<form
-		method="post"
-		use:enhance={() => {
-			loading = true;
-			tooFast = true;
-			setTimeout(() => (tooFast = false), 250);
-			return ({ update }) => {
-				loading = false;
-				update();
-			};
-		}}
-		max-w-100
-		px-4
-		mx-auto
-		mt-8
-	>
-		<label>
-			Adresse email
+	<form method="post" use:enhance max-w-100 px-4 mx-auto mt-8>
+		<EmailField {form} field="email" label="Adresse email" />
 
-			<input id="signup-email" type="email" name="email" required />
-		</label>
+		<PasswordField {form} field="password" label="Mot de passe" />
 
-		{#if form?.emailAlllreadyUsed}
-			<label for="signup-email">
-				Cette adresse email est déjà utilisée.
+		<CheckboxField
+			{form}
+			field="keepInTouch"
+			label="Me tenir informé de la progression du projet"
+		/>
 
-				<a href="/login?redirect-url={encodeURIComponent('/contribute/step-2')}">
-					Connectez vous avec votre compte !
-				</a>
-			</label>
-		{/if}
-
-		<label for="signup-password" grow> Mot de passe </label>
-
-		<div relative m-b-spacing>
-			<input
-				id="signup-password"
-				bind:this={passwordInput}
-				type="password"
-				name="password"
-				required
-				minlength="12"
-				maxlength="20"
-				class="!m-b-0"
-			/>
-
-			<label absolute top="50%" translate-y="-50%" right-4 m-0>
-				{#if showPassword}
-					<i i-carbon-view-off block h-6 w-6></i>
-				{:else}
-					<i i-carbon-view block h-6 w-6></i>
-				{/if}
-
-				<input
-					hidden
-					type="checkbox"
-					bind:checked={showPassword}
-					on:change={passwordInput.setAttribute('type', showPassword ? 'text' : 'password')}
-				/>
-			</label>
-		</div>
-
-		<label>
-			<input type="checkbox" name="keep-in-touch" />
-
-			Me tenir informé de la progression du projet
-		</label>
-
-		<button type="submit" aria-busy={loading && !tooFast} mt-8> Valider </button>
+		<button type="submit" aria-busy={$delayed} mt-8> Valider </button>
 
 		<p>
 			Vous avez déjà un compte ? <a

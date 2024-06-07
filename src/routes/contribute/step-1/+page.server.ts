@@ -4,21 +4,32 @@ import { userTable } from '$lib/server/schema.js';
 import { Scrypt } from '$lib/server/scrypt.js';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
+import { setError, superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
+import { signUpSchema } from './signup-schema.js';
 
 export async function load({ locals }) {
 	if (locals.user !== null) throw redirect(302, '/contribute/step-2');
+	const form = await superValidate(zod(signUpSchema));
+
+	return { form };
 }
 
 export const actions = {
 	default: async ({ request, cookies, locals }) => {
 		if (locals.user !== null) throw redirect(302, '/contribute/step-2');
 
-		const { email, password, keepInTouch } = await extractAndValidateFormData(request);
+		const form = await superValidate(request, zod(signUpSchema));
+		const { email, password, keepInTouch } = form.data;
 
 		const existingUser = await db.select().from(userTable).where(eq(userTable.email, email)).get();
 
 		if (existingUser !== undefined) {
-			return fail(400, { emailAlllreadyUsed: true });
+			return setError(
+				form,
+				'email',
+				'Cette adresse email est déjà utilisée, connectez vous avec votre compte ! Si vous avez oublié votre mot de passe envoyez un mail à contact@mapant.fr'
+			);
 		}
 
 		const hashedPassword = await new Scrypt().hash(password);
@@ -39,18 +50,3 @@ export const actions = {
 		throw redirect(302, '/contribute/step-2');
 	}
 };
-
-async function extractAndValidateFormData(request: any) {
-	const formData = await request.formData();
-
-	const email = formData.get('email');
-	if (typeof email !== 'string') throw error(400);
-
-	const password = formData.get('password');
-	if (typeof password !== 'string' || password.length < 12 || password.length > 20) {
-		throw error(400);
-	}
-
-	const keepInTouch = formData.get('keep-in-touch') === 'on';
-	return { email, password, keepInTouch };
-}

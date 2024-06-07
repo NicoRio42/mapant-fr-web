@@ -1,14 +1,16 @@
-# Comment générer automatiquement une carte de course d'orientation avec des données LiDAR
+# Comment fonctionne la génération automatiquement de cartes de course d'orientation avec de données LiDAR
 
-Si vous êtes orienteur et que vous vous intéressez à la cartographie, vous avez sûrement entendu parlé du LiDAR. Derière cet acronyme mystérieux se cache une technologie permettant de grandement faciliter la création de cartes de course d'orientation. Il éxiste même des solutions pour générer automatiquement des cartes seulement à partir de ces données, sans passage d'un cartogrpahe sur le terrain. Les cartes qui en résultent, même si leur qualité n'égale pas le travail d'un vrai cartographe, permettent de se faire une idée du terrain.
+Si vous êtes orienteur et que vous vous intéressez à la cartographie, vous avez sûrement entendu parlé du LiDAR. Derrière cet acronyme mystérieux se cache une technologie permettant de grandement faciliter la création de cartes de course d'orientation. Il éxiste même des solutions pour générer automatiquement des cartes seulement à partir de ces données, sans passage d'un cartogrpahe sur le terrain. Les cartes qui en résultent, même si leur qualité n'égale pas le travail d'un vrai cartographe, permettent de se faire une idée du terrain.
 
-Dans cet article, je vais essayer de vous expliquer comment fonctionne le processus de génération d'une carte à partir de données LiDAR. Pour comprendre ce qui est dit, il est nécessaire de connaitre la légende des cartes de course d'orientation.
+Dans cet article, je vais essayer de vous expliquer comment fonctionne le processus de génération d'une carte à partir de données LiDAR. Pour comprendre ce qui est dit, il est nécessaire de connaître la légende des cartes de course d'orientation.
 
 ## Le LiDAR kesako
 
 [LiDAR](https://fr.wikipedia.org/wiki/Lidar){target=_blank} est l'acronyme de "light detection and ranging", soit en français "détection et estimation de la distance par la lumière". La principale application du LiDAR est la télémétrie, c'est à dire la détermination de la distance d’un objet. Pour simplifier, on pointe un laser sur un objet, et on mesure le temps que met la lumière pour "rebondir" et revenir jusqu'à l'émetteur. En connaissant la vitesse de la lumière, la position et la direction du dispositif d'émission, on peut déduire la position absolue du "point d'impact".
 
 Pour les applications en topographie telles que le programme [programme LiDAR HD](https://geoservices.ign.fr/lidarhd){target=_blank} de l'[Institut national de l'information géographique et forestière](https://geoservices.ign.fr/lidarhd){target=_blank}, le dispositif d'aquisition LiDAR est embarqué dans un avion. Cet avion survole un zone géographique donnée, et la "bombarde" avec des faiseaux laser. En fonction de leur direction, ceux-ci sont réfléchis par le sol, la végétation, les bâtiments... Il en résulte un nuage de point brute en 3 dimensions.
+
+![lidar-plane](./lidar-plane.png)
 
 ## La classification des points
 
@@ -18,7 +20,7 @@ Une fois ce nuage de points généré, s'en suit une étape dite de classificati
 
 ## Les courbes de niveau
 
-Pour générer les courbes de niveau, on utilise les points correspondant au sol. Grâce à ces points, on génère un Model Numérique de Terrain (MNT). Cela consiste à découper la zone en petits carrés de taille fixe, et de leur associé l'altitude moyenne des point sol contenu dans ce carré (encore une fois je simplifie).
+Pour générer les courbes de niveau, on utilise les points correspondant au sol. Grâce à ces points, on génère un Modèle Numérique de Terrain (MNT). Cela consiste à découper la zone en petits carrés de taille fixe, et de leur associé l'altitude moyenne des point sol contenu dans ce carré (encore une fois je simplifie).
 
 Le MNT est ensuite utilisé pour générer les courbes de niveau. Si on représente le MNT par une surface en 3D, les courbes de niveau sont à l'intersection entre cette surface et des plans horizontaux disposés à altitudes régulières.
 
