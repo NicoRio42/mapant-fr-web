@@ -8,7 +8,7 @@
 
 <BaseMap>
 	<VectorLayer>
-		{#each data.contributions as contribution (contribution.id)}
+		{#each data.contributions as { contribution, user } (contribution.id)}
 			{@const coordinates = [
 				[contribution.minX, contribution.maxY],
 				[contribution.maxX, contribution.maxY],
@@ -16,7 +16,7 @@
 				[contribution.minX, contribution.minY]
 			]}
 
-			<Polygon color="blue" width={2} coords={coordinates} fill="#60a5fa4a" />
+			<Polygon color="blue" width={2} coords={coordinates} fill="#60a5fa4a" text={user.email} />
 		{/each}
 	</VectorLayer>
 </BaseMap>

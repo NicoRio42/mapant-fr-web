@@ -1,6 +1,6 @@
 import { dev } from '$app/environment';
 import { db } from '$lib/server/db.js';
-import { contributionTable } from '$lib/server/schema.js';
+import { contributionTable, userTable } from '$lib/server/schema.js';
 import { redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 
@@ -10,6 +10,7 @@ export async function load({ locals }) {
 	const contributions = await db
 		.select()
 		.from(contributionTable)
+		.innerJoin(userTable, eq(userTable.id, contributionTable.fkUser))
 		.where(eq(contributionTable.paied, true))
 		.all();
 
