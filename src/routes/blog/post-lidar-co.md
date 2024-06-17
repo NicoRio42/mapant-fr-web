@@ -1,10 +1,12 @@
 # Comment fonctionne la génération automatiquement de cartes de course d'orientation avec de données LiDAR
 
-Si vous êtes orienteur et que vous vous intéressez à la cartographie, vous avez sûrement entendu parlé du LiDAR. Derrière cet acronyme mystérieux se cache une technologie permettant de grandement faciliter la création de cartes de course d'orientation. Il éxiste même des solutions pour générer automatiquement des cartes seulement à partir de ces données, sans passage d'un cartogrpahe sur le terrain. Les cartes qui en résultent, même si leur qualité n'égale pas le travail d'un vrai cartographe, permettent de se faire une idée du terrain.
+Si vous êtes orienteur et que vous vous intéressez à la cartographie, vous avez sûrement entendu parlé du LiDAR. Derrière cet acronyme mystérieux se cache une technologie permettant notamment de grandement faciliter la création de cartes de course d'orientation. Il existe même des solutions pour générer automatiquement des cartes seulement à partir de ces données, sans passage d'un cartographe sur le terrain. Ces cartes, même si leur qualité n'égale pas le travail d'un vrai cartographe, permettent de se faire une idée du terrain.
 
-Dans cet article, je vais essayer de vous expliquer comment fonctionne le processus de génération d'une carte à partir de données LiDAR. Pour comprendre ce qui est dit, il est nécessaire de connaître la légende des cartes de course d'orientation.
+Dans cet article, je vais essayer de vous expliquer comment fonctionne le processus de génération d'une carte à partir de données LiDAR. 
 
-## Le LiDAR kesako
+Pour comprendre ce qui est dit, il est nécessaire de connaître la légende des cartes de course d'orientation.
+
+## LiDAR, mais encore ?
 
 [LiDAR](https://fr.wikipedia.org/wiki/Lidar){target=_blank} est l'acronyme de "light detection and ranging", soit en français "détection et estimation de la distance par la lumière". La principale application du LiDAR est la télémétrie, c'est à dire la détermination de la distance d’un objet. Pour simplifier, on pointe un laser sur un objet, et on mesure le temps que met la lumière pour "rebondir" et revenir jusqu'à l'émetteur. En connaissant la vitesse de la lumière, la position et la direction du dispositif d'émission, on peut déduire la position absolue du "point d'impact".
 
