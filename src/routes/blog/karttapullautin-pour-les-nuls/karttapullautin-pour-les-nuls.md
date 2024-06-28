@@ -8,7 +8,7 @@ Karttapullautin est un **programme en ligne de commande**, il s’utilise via un
 
 > **_Bon à savoir_** : Si les cartes générées à partir de données LiDAR sont d’une **qualité impressionnante**, elles ne remplacent pas le travail d’un **vrai cartographe**. Pensez à embaucher un vrai cartographe de course d’orientation si vous avez besoin d’une **carte de qualité supérieure**.
 
-> **_Attention_** : La possession d’une carte **n’implique pas un droit d’accès à la zone cartographiée**. Avant d’aller sur le terrain, assurez vous d’avoir l’autorisation de son propriétaire.
+> **_Attention_** : La possession d’une carte **n’implique pas un droit d’accès à la zone cartographiée**. Avant d’aller sur le terrain, assurez vous d’avoir l’autorisation de son ou ses propriétaire.
 
 ## Le téléchargement des données LiDAR
 
@@ -28,7 +28,7 @@ Une fois les tuiles sélectionnées, **téléchargez les fichiers LiDAR** corres
 
 Pour générer une carte de course d’orientation complète avec Karttapullautin, il faut aussi des **données vectorielles**. En effet, les données LiDAR permettent de générer les courbes de niveau, les buttes, les dépressions, la végétation et les falaises, mais pas les **éléments créés par à l’homme** (bâtiments, routes, lignes electriques…). Certains éléments naturels tels que les **rivières et les lacs** sont aussi difficiles à générer à partir des données LiDAR. Pour qu’ils apparaissent sur la carte, il faut donc une **autre source de données**.
 
-Karttapullautin permet l’utilisation de fichiers [ERSI Shapefiles](https://fr.wikipedia.org/wiki/Shapefile) pour l’incorporation de ces données. Ces fichiers peuvent être obtenus à partir de la base de données géographique ouverte [OpenStreetMap](https://www.openstreetmap.org/). Pour les obtenir, rendez vous sur son [portail de téléchargement](https://www.openstreetmap.org/export). **Zoomez** sur la zone pour laquelle vous avez téléchargé les fichiers LiDAR. Dans la barre latérale de gauche, **cliquez** sur `Sélectionnez manuellement une autre zone`. Sélectionnez la zone en prenant de la **marge sur les côtés** et appuyez sur le bouton `Exporter`. Le téléchargement d’un fichier `map.osm` devrait se lancer.
+Karttapullautin permet l’utilisation de fichiers [ERSI Shapefiles](https://fr.wikipedia.org/wiki/Shapefile) pour l’incorporation de ces données. Ces fichiers peuvent être obtenus à partir de la base de données géographique ouverte [OpenStreetMap](https://www.openstreetmap.org/). Pour les obtenir, rendez vous sur son [portail de téléchargement](https://www.openstreetmap.org/export). **Zoomez** sur la zone pour laquelle vous avez téléchargé les fichiers LiDAR. Dans la barre latérale de gauche, **cliquez** sur `Sélectionner manuellement une autre zone`. Sélectionnez la zone en prenant de la **marge sur les côtés** et appuyez sur le bouton `Exporter`. Le téléchargement d’un fichier `map.osm` devrait se lancer.
 
 Il faut ensuite transformer ce fichier au format `ESRI Shapefiles`. Pour cela, téléchargez le [logiciel QGIS](https://qgis.org/fr/site/forusers/download.html). Lancez le, et **importez le fichier** `map.osm` en le faisant glisser sur la zone principale de la fenêtre. Une boîte de dialogue s’ouvre, cliquez sur `Ajouter une couche` en bas à droite. **5 lignes** devraient apparaître dans la barre latérale de gauche :
 - map – points

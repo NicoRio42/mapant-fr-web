@@ -8,7 +8,7 @@
 	<enhanced:img
 		src="./exemple.jpg"
 		alt="Une carte de course d'orientation générée avec Karttapullautin"
-		class="max-w-150 my-4"
+		class="my-4"
 	/>
 
 	{@html content}
