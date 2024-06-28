@@ -3,6 +3,7 @@ import { defineConfig, type Plugin } from 'vite';
 import UnoCSS from 'unocss/vite';
 import MarkdownIt from 'markdown-it';
 import markdownItAttrs from 'markdown-it-attrs';
+import { enhancedImages } from '@sveltejs/enhanced-img';
 
 function markdown(): Plugin {
 	const md = new MarkdownIt({ html: true }).use(markdownItAttrs);
@@ -21,6 +22,6 @@ function markdown(): Plugin {
 }
 
 export default defineConfig({
-	plugins: [UnoCSS(), sveltekit(), markdown()],
+	plugins: [UnoCSS(), enhancedImages(), sveltekit(), markdown()],
 	build: { sourcemap: true }
 });
