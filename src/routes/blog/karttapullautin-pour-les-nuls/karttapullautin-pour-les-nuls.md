@@ -8,7 +8,7 @@ Karttapullautin est un **programme en ligne de commande**, il s’utilise via un
 
 > **_Bon à savoir_** : Si les cartes générées à partir de données LiDAR sont d’une **qualité impressionnante**, elles ne remplacent pas le travail d’un **vrai cartographe**. Pensez à embaucher un vrai cartographe de course d’orientation si vous avez besoin d’une **carte de qualité supérieure**.
 
-> **_Attention_** : La possession d’une carte **n’implique pas un droit d’accès à la zone cartographiée**. Avant d’aller sur le terrain, assurez vous d’avoir l’autorisation de son ou ses propriétaire.
+> **_Attention_** : La possession d’une carte **n’implique pas un droit d’accès à la zone cartographiée**. Avant d’aller sur le terrain, assurez vous d’avoir l’autorisation de son ou ses propriétaires.
 
 ## Le téléchargement des données LiDAR
 
