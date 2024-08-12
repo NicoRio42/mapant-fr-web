@@ -5,7 +5,7 @@ import { PUBLIC_CF_PAGES_BRANCH } from '$env/static/public';
 export const WEBSITE_NAME = 'Mapant.fr';
 export const TILES_BASE_URL = 'https://mapant-tiles.ovh/tiles';
 export const FRANCE_CENTER = [2.43028, 46.53972];
-const STAGING_BRANCH_NAME = 'staging';
+export const STAGING_BRANCH_NAME = 'staging';
 
 const A4_WIDTH = 21 * 100; // metter
 const A4_HEIGHT = 29.7 * 100; // metter

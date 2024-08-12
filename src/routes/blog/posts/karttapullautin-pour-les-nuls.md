@@ -1,3 +1,11 @@
+---
+title: Karttapullautin pour les nuls
+desciption: Tutoriel pour générer une carte de course d'orientation avec Karttapullautin
+banner: /images/karttapullautin-exemple.jpg
+date: 2024-06-28
+author: Nicolas Rio
+---
+
 [Karttapullautin](https://github.com/rphlo/karttapullautin) est un logiciel permettant de **générer une carte de [course d’orientation](https://www.ffcorientation.fr/decouvrir/comment/)** (presque) prête à l’emploi à partir de [données LiDAR](https://fr.wikipedia.org/wiki/Lidar) et de fichiers vectoriels. Le projet [LiDAR HD](https://geoservices.ign.fr/lidarhd) de l’[IGN](https://www.ign.fr/) a pour ambition de couvrir la **France entière** en données LiDAR haute définition. La campagne étant déjà aux deux tiers terminée, cela ouvre de nombreuses possibilités de génération de carte de course d’orientation en France !
 
 Il existe d’**autres alternatives à Karttapullautin** pour la génération de cartes à partir de données LiDAR. Notamment, les **dernières versions d’[OCAD](https://www.ocad.com/en/)** (logiciel de cartographie payant) intègrent cette fonctionnalité nativement. Dans le cadre du projet mapant.fr, je développe aussi [mon propre générateur de carte](https://github.com/NicoRio42/map-generator) adapté au traitement distribué de grandes quantités de données (le projet est pour l’instant au stade d’expérimentation, utilisez le à vos risques et périls).
@@ -38,13 +46,13 @@ Il faut ensuite transformer ce fichier au format `ESRI Shapefiles`. Pour cela, t
 - map – lines
 
 
-![Vue couche de QGIS](/qgis-layers.png)
+![Vue couche de QGIS](./images/qgis-layers.png)
 
 Pour **chacune de ces lignes** (sauf la ligne “map – other_relations”), vous devez générer un **export Shapefiles**. Pour cela, effectuez un **clic droit** sur la ligne. Dans le menu contextuel, survolez `Exporter`, puis cliquez sur `Sauvegarder les entités sous`. Une **boîte de dialogue s’ouvre**.
 
 Sélectionnez le format `ESRI Shapefiles`. Ensuite, cliquez sur les **trois petits points** à droite du champ `Nom de fichier` et indiquez un **emplacement** sur votre ordinateur et un **nom de fichier**. Enfin, dans le menu `SRC` (Systèmes de Coordonnées de Références), sélectionnez `EPSG:2154 - RGF93 v1 / Lambert 93`. Si l’option n'apparaît pas dans le menu, cliquez sur le petit bouton représentant un **globe terrestre** à droite du champ, pour la sélectionner via la **boîte de dialogue de recherche des SRC**. Cette dernière étape est **très importante**, et les données vectorielles ne s’afficheront pas sur la carte si elle n’est pas réalisée correctement.
 
-![Boîte de dialogue d'export dans QGIS](/qgis-export-dialog.png)
+![Boîte de dialogue d'export dans QGIS](/images/qgis-export-dialog.png)
 
 Lorsque vous avez effectué les **4 exports** (points, multipolygons, multilinestrings et lines), ouvrez l’**explorateur de fichier** et rendez vous dans le dossier ou vous avez exporté vos Shapefiles. Il devrait contenir **24 fichiers** avec des extensions barbares (“.cpg”, “.dbf”, “.prj”...). Sélectionnez tous les fichiers et **compressez les dans une archive au format** `.zip` (sous Windows : `CTRL + A`, clic droit, `Envoyer vers`, puis `Dossier compressé`).
 

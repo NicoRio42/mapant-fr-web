@@ -30,8 +30,7 @@
 		"@types/proj4": "^2.5.5",
 		"@unocss/extractor-svelte": "^0.59.4",
 		"drizzle-kit": "^0.20.18",
-		"markdown-it": "^14.1.0",
-		"markdown-it-attrs": "^4.1.6",
+		"marked": "^14.0.0",
 		"prettier": "^3.1.1",
 		"prettier-plugin-svelte": "^3.1.2",
 		"svelte": "^4.2.7",
@@ -39,6 +38,7 @@
 		"svelte-meta-tags": "^3.1.2",
 		"tslib": "^2.4.1",
 		"typescript": "^5.0.0",
+		"ultramatter": "^0.0.4",
 		"unocss": "^0.59.4",
 		"vite": "^5.0.3"
 	},

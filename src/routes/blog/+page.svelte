@@ -2,6 +2,8 @@
 	import { page } from '$app/stores';
 	import { WEBSITE_NAME } from '$lib/constants';
 	import { MetaTags } from 'svelte-meta-tags';
+
+	export let data;
 </script>
 
 <MetaTags
@@ -15,8 +17,10 @@
 	<h1>Blog</h1>
 
 	<ul>
-		<li>
-			<a href="/blog/karttapullautin-pour-les-nuls">Karttapullautin pour les nuls</a>
-		</li>
+		{#each data.posts as post (post.slug)}
+			<li>
+				<a href="/blog/{post.slug}">{post.frontmatter.title}</a>
+			</li>
+		{/each}
 	</ul>
 </main>

@@ -6,4 +6,5 @@ declare namespace svelteHTML {
 
 declare module '*.md' {
 	export default string;
+	export const frontmatter: Record<string, any>;
 }

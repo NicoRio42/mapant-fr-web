@@ -1,20 +1,50 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig, type Plugin } from 'vite';
 import UnoCSS from 'unocss/vite';
-import MarkdownIt from 'markdown-it';
-import markdownItAttrs from 'markdown-it-attrs';
 import { enhancedImages } from '@sveltejs/enhanced-img';
+import { parse } from 'ultramatter';
+import { marked } from 'marked';
+
+function cleanUrl(href: string) {
+	try {
+		href = encodeURI(href).replace(/%25/g, '%');
+	} catch {
+		return null;
+	}
+	return href;
+}
 
 function markdown(): Plugin {
-	const md = new MarkdownIt({ html: true }).use(markdownItAttrs);
+	marked.use({
+		renderer: {
+			image({ href, title, text }) {
+				const cleanHref = cleanUrl(href);
+				if (cleanHref === null) {
+					return text;
+				}
+				href = cleanHref;
+
+				let out = `<img src="${href}" alt="${text}"`;
+				if (title) {
+					out += ` title="${title}"`;
+				}
+				out += '>';
+				return out;
+			}
+		}
+	});
 
 	return {
 		name: 'vite-markdown',
 		transform(src, id) {
 			if (!id.endsWith('.md')) return;
 
+			const output = parse(src);
+			const frontmatter = output.frontmatter ? JSON.stringify(output.frontmatter) : '{}';
+			const content = marked.parse(output.content);
+
 			return {
-				code: `const htmlContent = \`${md.render(src)}\`;export default htmlContent;`,
+				code: `const htmlContent = \`${content}\`;export const frontmatter = ${frontmatter}; export default htmlContent;`,
 				map: null
 			};
 		}
@@ -22,6 +52,6 @@ function markdown(): Plugin {
 }
 
 export default defineConfig({
-	plugins: [UnoCSS(), enhancedImages(), sveltekit(), markdown()],
+	plugins: [markdown(), UnoCSS(), enhancedImages(), sveltekit()],
 	build: { sourcemap: true }
 });
