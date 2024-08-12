@@ -1,19 +1,19 @@
 ---
 title: Comment fonctionne la génération automatiquement de cartes de course d'orientation avec des données LiDAR
 desciption: Tutoriel pour générer une carte de course d'orientation avec Karttapullautin
-banner: /images/karttapullautin-exemple.jpg
+banner: https://www.ign.fr/files/default/styles/1240_330/public/2023-03/foret_mont_d_ardeche_lidar_bandeau2.jpg?itok=rho5sTwj
 date: 2024-06-28
 author: Nicolas Rio
 draft: true
 ---
-
-Si vous êtes orienteur ou que vous vous intéressez à la cartographie, vous avez sûrement entendu parlé du LiDAR. Derrière cet acronyme mystérieux se cache une technologie permettant (notamment) de faciliter la création de cartes de course d'orientation. Des logiciels tels que [Karttapullautin](https://github.com/rphlo/karttapullautin/tree/master) ou les dernières versions de [OCAD](https://www.ocad.com/en/), permettent de générer automatiquement des cartes seulement à partir de données LiDAR, sans passage d'un cartographe sur le terrain. Ce sont ces solutions qui sont utilisées pour le projet [Mapant.fr](https://mapant.fr).
+Si vous êtes orienteur ou que vous vous intéressez à la cartographie, vous avez sûrement entendu parler du LiDAR. Derrière cet acronyme mystérieux se cache une technologie permettant (notamment) de faciliter la création de cartes de course d'orientation. Des logiciels tels que [Karttapullautin](https://github.com/rphlo/karttapullautin/tree/master) ou les dernières versions de [OCAD](https://www.ocad.com/en/), permettent de générer automatiquement des cartes seulement à partir de données LiDAR, sans passage d'un cartographe sur le terrain. Ce sont ces solutions qui sont utilisées pour le projet [Mapant.fr](https://mapant.fr).
 
 Dans cet article, je vais essayer de démystifier le processus de génération d'une carte à partir de données LiDAR. Pour comprendre ce qui est dit, il est nécessaire de connaître la légende des cartes de course d'orientation.
 
 Disclaimer :
+
 - Cet article reflète ma compréhension du LiDAR et de ses applications cartographiques. N'étant pas un professionnel du secteur, et ayant appris tout cela par moi même en me documentant sur internet et en expérimentant, les informations et analogies peuvent être erronées. N'hésitez pas à me contacter si vous pensez que certaines parties sont inexactes et doivent être modifiées.
-- Les logiciels de génération automatique de carte à partir de donnée LiDAR donnent des résultats impressionnants. Cependant, rien n'égale le travail de relevé et d'interprétation d'un vrai cartographe. Si vous 
+- Les logiciels de génération automatique de carte à partir de donnée LiDAR donnent des résultats impressionnants. Cependant, rien n'égale le travail de relevé et d'interprétation d'un vrai cartographe. Si vous
 
 ## LiDAR, mais encore ?
 
@@ -21,11 +21,12 @@ Disclaimer :
 
 Pour les applications en topographie telles que le programme [programme LiDAR HD](https://geoservices.ign.fr/lidarhd) de l'[Institut national de l'information géographique et forestière](https://geoservices.ign.fr/lidarhd), le dispositif d’acquisition LiDAR est embarqué dans un avion. Cet avion crible une zone géographique donnée de faiseaux laser en la survolant. En fonction de leur direction, les faiseaux laser sont réfléchis par le sol, la végétation, les bâtiments... Il en résulte un nuage de point brut en 3 dimensions.
 
-![lidar-plane](/images/lidar-plane.png)
+![lidar-plane](https://www.ign.fr/files/default/2021-12/09.jpg)
 
 ## La classification des points
 
 Une fois ce nuage de points généré, s'en suit une étape dite de classification. Avec différents algorithmes, on vient retrouver sur quoi le point a "rebondi". Ces algorithmes sont plus ou moins complexes, mais on peut imaginer l'idée générale :
+
 - Les points les plus bas correspondent au sol.
 - Les points au dessus du sol correspondent à la végétation.
 
@@ -59,11 +60,10 @@ On réalise une opération similaire pour détecter les zones de végétation ba
 
 ## Les données vectorielles
 
-Pour avoir une carte de course d'orientation "clefs en main", il faut aussi représenter les éléments créés par l'homme. S'il éxiste des algorithmes pour détecter ces éléments à partir de données LiDAR, un bon compromis consite est d'utiliser des données vectorielles issues de bases de données ouvertes. En France, on peut utiliser les données de la BD_TOPO de l'IGN, ou encore celle du projet OpenStreetMap.
+Pour avoir une carte de course d'orientation "clefs en main", il faut aussi représenter les éléments liés à l'homme. S'il éxiste des algorithmes pour détecter ces éléments à partir de données LiDAR, un bon compromis consite est d'utiliser des données vectorielles issues de bases de données ouvertes. En France, on peut utiliser les données de la BD_TOPO de l'IGN, ou encore celle du projet OpenStreetMap.
 
 ## Assemblage et génération de la carte
 
 La dernière étape est l'assemblage de toutes ces données pour générer la carte. Chaque symbole est dessiné sur une image en fonction des données précédemment gérérées.
 
 ## Conclusion
-
