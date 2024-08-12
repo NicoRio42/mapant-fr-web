@@ -13,13 +13,7 @@
 	openGraph={{
 		url: new URL($page.url.pathname, $page.url.origin).href,
 		locale: 'fr_FR',
-		images: [
-			{
-				url: data.post.frontmatter.banner,
-				width: 1107,
-				height: 499
-			}
-		]
+		images: [{ url: data.post.frontmatter.banner }]
 	}}
 	twitter={{ cardType: 'summary_large_image' }}
 />
