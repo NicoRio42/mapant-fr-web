@@ -46,7 +46,7 @@ Il faut ensuite transformer ce fichier au format `ESRI Shapefiles`. Pour cela, t
 - map – lines
 
 
-![Vue couche de QGIS](./images/qgis-layers.png)
+![Vue couche de QGIS](/images/qgis-layers.png)
 
 Pour **chacune de ces lignes** (sauf la ligne “map – other_relations”), vous devez générer un **export Shapefiles**. Pour cela, effectuez un **clic droit** sur la ligne. Dans le menu contextuel, survolez `Exporter`, puis cliquez sur `Sauvegarder les entités sous`. Une **boîte de dialogue s’ouvre**.
 
