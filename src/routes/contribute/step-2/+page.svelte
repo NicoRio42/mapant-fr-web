@@ -14,6 +14,40 @@
 	</p>
 
 	<div grid="~ md:cols-2 xl:cols-6" gap-8 mt-12>
+		<article flex="~ col" justify-between m-0 px-8 class="xl:col-span-2">
+			<div contents>
+				<header flex items-center pb-6>
+					<h2 grow mb-0 flex items-center gap-2 mt-2>
+						<i i-twemoji-folded-hands block w-8 h-8></i>
+
+						Sans contrepartie
+					</h2>
+				</header>
+
+				<p></p>
+			</div>
+
+			<form method="post">
+				<label>
+					<select name="formula" value="2">
+						<option value="1">10 €</option>
+						<option value="2">20 €</option>
+						<option value="3">50 €</option>
+						<option value="4">100 €</option>
+						<option value="5">500 €</option>
+					</select>
+				</label>
+
+				<p flex justify-end m-0>
+					<button type="submit" class="outline !w-fit" flex="!~" gap-1.5 items-center>
+						Choisir ce montant
+
+						<i i-carbon-arrow-right inline-block w-5 h-5></i>
+					</button>
+				</p>
+			</form>
+		</article>
+
 		<Formula
 			title="Format A4"
 			price={10}
@@ -49,7 +83,7 @@
 			price={100}
 			linkText="Choisir le format double A0"
 			formulaId="4"
-			class="xl:col-span-3"
+			class="xl:col-span-2"
 		>
 			La surface équivalente à une carte au format double A0 à l'échelle 1:10000
 		</Formula>
@@ -59,7 +93,7 @@
 			price={500}
 			linkText="Choisir le format méga tuile"
 			formulaId="5"
-			class="md:col-span-2 xl:col-span-3"
+			class="xl:col-span-2"
 		>
 			Soyons fou, une méga tuile de 50km par 50km
 		</Formula>

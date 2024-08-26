@@ -39,6 +39,7 @@ a[role='button'].unpico {
 }
 
 button,
+button[type='submit'],
 [type='button'],
 [role='button'] {
 	padding: 0.25rem 0.5rem;

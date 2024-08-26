@@ -1,8 +1,12 @@
 import { STRIPE_API_KEY, STRIPE_WEBHOOK_SECRET } from '$env/static/private';
 import { db } from '$lib/server/db.js';
 import { sendEmail } from '$lib/server/email.js';
-import { contributionTable, userTable } from '$lib/server/schema.js';
-import { eq } from 'drizzle-orm';
+import {
+	contributionTable,
+	contributionWithoutCompensationTable,
+	userTable
+} from '$lib/server/schema.js';
+import { eq, or } from 'drizzle-orm';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(STRIPE_API_KEY);
@@ -41,11 +45,26 @@ export async function POST({ request }) {
 		.where(eq(contributionTable.id, event.data.object.client_reference_id))
 		.returning();
 
-	if (contribution === undefined) {
+	const [contributionWithoutCompensation] = await db
+		.update(contributionWithoutCompensationTable)
+		.set({ paied: true })
+		.where(eq(contributionWithoutCompensationTable.id, event.data.object.client_reference_id))
+		.returning();
+
+	if (contribution === undefined && contributionWithoutCompensation === undefined) {
 		console.error('[STRIPE_WEBHOOK] No contribution matches the given client_reference_id.');
 	}
 
-	const user = await db.select().from(userTable).where(eq(userTable.id, contribution.fkUser)).get();
+	const user = await db
+		.select()
+		.from(userTable)
+		.where(
+			or(
+				eq(userTable.id, contribution.fkUser),
+				eq(userTable.id, contributionWithoutCompensation.fkUser)
+			)
+		)
+		.get();
 
 	if (user !== undefined) {
 		await sendEmail(

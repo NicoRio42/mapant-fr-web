@@ -64,5 +64,31 @@
 				</p>
 			</article>
 		{/each}
+
+		{#each data.contributionsWithoutCompensation as contribution (contribution.id)}
+			{@const formula = getFormula(contribution.formula)}
+
+			<article>
+				<h2 flex items-center gap-2>
+					<i i-twemoji-folded-hands block w-6 h-6></i>
+
+					{formula.priceInEuros}&nbsp;€
+				</h2>
+
+				<p text-left>
+					{#if contribution.paied}
+						Payée
+					{:else}
+						Non payée
+
+						<a href="{formula.paiementLink}?client_reference_id={contribution.id}">
+							Lien de paiement
+
+							<i i-carbon-launch inline-block w-4 h-4></i>
+						</a>
+					{/if}
+				</p>
+			</article>
+		{/each}
 	</div>
 </main>

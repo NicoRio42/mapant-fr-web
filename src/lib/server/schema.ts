@@ -22,6 +22,18 @@ export const contributionTable = sqliteTable('contribution', {
 
 export type Contribution = typeof contributionTable.$inferSelect;
 
+export const contributionWithoutCompensationTable = sqliteTable(
+	'contribution_without_compensation',
+	{
+		id,
+		fkUser: text('fk_user')
+			.notNull()
+			.references(() => userTable.id, { onDelete: 'cascade' }),
+		formula: text('formula', { enum: ['1', '2', '3', '4', '5'] }).notNull(),
+		paied: integer('paied', { mode: 'boolean' }).default(false)
+	}
+);
+
 export const userTable = sqliteTable('user', {
 	id,
 	email: text('email').notNull(),

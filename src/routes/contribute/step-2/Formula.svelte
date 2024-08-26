@@ -14,7 +14,7 @@
 				{title}
 			</h2>
 
-			<p mb-0 text-8 font-700>{price} €</p>
+			<p mb-0 text-8 font-700>{price}&nbsp;€</p>
 		</header>
 
 		<p>
@@ -22,7 +22,19 @@
 		</p>
 	</div>
 
-	<p text-right>
-		<a role="button" href="/contribute/step-3?formula={formulaId}">{linkText}</a>
+	<p flex justify-end>
+		<a
+			role="button"
+			class="outline"
+			flex="!~"
+			w-fit
+			gap-1.5
+			items-center
+			href="/contribute/step-3?formula={formulaId}"
+		>
+			{linkText}
+
+			<i i-carbon-arrow-right inline-block w-5 h-5></i>
+		</a>
 	</p>
 </article>

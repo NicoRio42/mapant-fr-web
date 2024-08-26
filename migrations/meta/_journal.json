@@ -8,6 +8,13 @@
       "when": 1715088853254,
       "tag": "0000_special_lethal_legion",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1724675760523,
+      "tag": "0001_bright_lila_cheney",
+      "breakpoints": true
     }
   ]
 }
