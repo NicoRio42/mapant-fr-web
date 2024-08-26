@@ -55,16 +55,14 @@ export async function POST({ request }) {
 		console.error('[STRIPE_WEBHOOK] No contribution matches the given client_reference_id.');
 	}
 
-	const user = await db
-		.select()
-		.from(userTable)
-		.where(
-			or(
-				eq(userTable.id, contribution.fkUser),
-				eq(userTable.id, contributionWithoutCompensation.fkUser)
-			)
-		)
-		.get();
+	const user =
+		contribution === undefined
+			? await db
+					.select()
+					.from(userTable)
+					.where(eq(userTable.id, contributionWithoutCompensation.fkUser))
+					.get()
+			: await db.select().from(userTable).where(eq(userTable.id, contribution.fkUser)).get();
 
 	if (user !== undefined) {
 		await sendEmail(
