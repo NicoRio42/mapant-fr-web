@@ -3,7 +3,7 @@
 	import { WEBSITE_NAME } from '$lib/constants';
 	import { page } from '$app/stores';
 
-	export let data;
+	let { data } = $props();
 </script>
 
 <MetaTags

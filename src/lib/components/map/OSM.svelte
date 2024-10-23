@@ -1,19 +1,29 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { browser } from '$app/environment';
 	import type { Map } from 'ol';
 	import TileLayer from 'ol/layer/Tile';
 	import OSM from 'ol/source/OSM';
 	import { getContext, onDestroy, onMount } from 'svelte';
 
-	export let visible = true;
-	export let opacity = 1;
+	interface Props {
+		visible?: boolean;
+		opacity?: number;
+	}
+
+	let { visible = true, opacity = 1 }: Props = $props();
 
 	const getMap = getContext<() => Map>('map');
 	let map: Map;
-	let tileLayer: TileLayer<OSM>;
+	let tileLayer: TileLayer<OSM> = $state();
 
-	$: if (browser && tileLayer) tileLayer.setVisible(visible);
-	$: if (browser && tileLayer) tileLayer.setOpacity(opacity);
+	run(() => {
+		if (browser && tileLayer) tileLayer.setVisible(visible);
+	});
+	run(() => {
+		if (browser && tileLayer) tileLayer.setOpacity(opacity);
+	});
 
 	onMount(() => {
 		map = getMap();

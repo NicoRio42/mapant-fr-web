@@ -1,12 +1,16 @@
 <script lang="ts">
-	export let isFirstValueSelected: boolean;
-	export let firstLabel: string;
-	export let secondLabel: string;
+	interface Props {
+		isFirstValueSelected: boolean;
+		firstLabel: string;
+		secondLabel: string;
+	}
+
+	let { isFirstValueSelected = $bindable(), firstLabel, secondLabel }: Props = $props();
 </script>
 
 <div flex>
 	<button
-		on:click={() => (isFirstValueSelected = true)}
+		onclick={() => (isFirstValueSelected = true)}
 		w-full
 		p="y-1 x-2"
 		rounded-r-0
@@ -16,7 +20,7 @@
 	</button>
 
 	<button
-		on:click={() => (isFirstValueSelected = false)}
+		onclick={() => (isFirstValueSelected = false)}
 		w-full
 		p="y-1 x-2"
 		rounded-l-0

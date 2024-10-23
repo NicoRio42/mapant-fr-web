@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { afterNavigate, onNavigate } from '$app/navigation';
 	import { navigating } from '$app/stores';
 	import { clickOutside } from '$lib/actions/click-outside';
@@ -14,17 +16,17 @@
 	// Do not remove this comment, it prevent prettier to reorder imports
 	import 'uno.css';
 
-	export let data;
+	let { data, children } = $props();
 
-	let showMenu = false;
-	let tooFast = false;
+	let showMenu = $state(false);
+	let tooFast = $state(false);
 
-	$: {
+	run(() => {
 		if ($navigating !== null) {
 			tooFast = true;
 			setTimeout(() => (tooFast = false), 250);
 		}
-	}
+	});
 
 	function isBackNavigation({ from, to }: OnNavigate): boolean {
 		if (from === null || to === null) return false;
@@ -71,7 +73,7 @@
 </script>
 
 {#if $navigating !== null && !tooFast}
-	<progress fixed h-1 border rounded-none z-2 />
+	<progress fixed h-1 border rounded-none z-2></progress>
 {/if}
 
 <div flex="~ col" h-full>
@@ -121,7 +123,7 @@
 					type="button"
 					border-none
 					class="outline focus:shadow-none"
-					on:click={() => {
+					onclick={() => {
 						// To make clickOutside work
 						if (showMenu === false) setTimeout(() => (showMenu = true));
 					}}
@@ -154,5 +156,5 @@
 		</ul>
 	{/if}
 
-	<slot></slot>
+	{@render children?.()}
 </div>

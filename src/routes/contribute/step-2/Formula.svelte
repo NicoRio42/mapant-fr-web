@@ -1,11 +1,24 @@
 <script lang="ts">
-	export let title: string;
-	export let price: number;
-	export let linkText: string;
-	export let formulaId: string;
+	interface Props {
+		title: string;
+		price: number;
+		linkText: string;
+		formulaId: string;
+		children?: import('svelte').Snippet;
+		[key: string]: any
+	}
+
+	let {
+		title,
+		price,
+		linkText,
+		formulaId,
+		children,
+		...rest
+	}: Props = $props();
 </script>
 
-<article flex="~ col" justify-between m-0 px-8 class={$$restProps.class}>
+<article flex="~ col" justify-between m-0 px-8 class={rest.class}>
 	<div contents>
 		<header flex items-center pb-6>
 			<h2 grow mb-0 flex items-center gap-2>
@@ -18,7 +31,7 @@
 		</header>
 
 		<p>
-			<slot></slot>
+			{@render children?.()}
 		</p>
 	</div>
 

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { page } from '$app/stores';
 	import Toggle from '$lib/components/Toggle.svelte';
 	import BaseMap from '$lib/components/map/BaseMap.svelte';
@@ -10,40 +12,42 @@
 	import { clickOutside } from '$lib/actions/click-outside';
 	import { fade } from 'svelte/transition';
 
-	export let center = FRANCE_CENTER;
+	let { center = $bindable(FRANCE_CENTER) } = $props();
 
-	let isLandscape = false;
-	let selected: Feature | null = null;
-	let showDropdown = false;
-	let isLidarHdTilesLayerDisplayed = true;
-	let showHelp = true;
-	let selectedFormula: ContributionFormula;
+	let isLandscape = $state(false);
+	let selected: Feature | null = $state(null);
+	let showDropdown = $state(false);
+	let isLidarHdTilesLayerDisplayed = $state(true);
+	let showHelp = $state(true);
+	let selectedFormula: ContributionFormula = $state();
 
-	$: {
+	run(() => {
 		selectedFormula =
 			CONTRIBUTION_FORMULAS.find((f) => f.id === $page.url.searchParams.get('formula')) ??
 			CONTRIBUTION_FORMULAS[0];
 
 		showHelp = true;
-	}
+	});
 
-	$: isMegaTileFormula = selectedFormula.id === '5';
-	$: if (isMegaTileFormula) isLidarHdTilesLayerDisplayed = true;
+	let isMegaTileFormula = $derived(selectedFormula.id === '5');
+	run(() => {
+		if (isMegaTileFormula) isLidarHdTilesLayerDisplayed = true;
+	});
 
-	$: halfWidth = (isLandscape ? selectedFormula.height : selectedFormula.width) / 2;
-	$: halfHeight = (isLandscape ? selectedFormula.width : selectedFormula.height) / 2;
+	let halfWidth = $derived((isLandscape ? selectedFormula.height : selectedFormula.width) / 2);
+	let halfHeight = $derived((isLandscape ? selectedFormula.width : selectedFormula.height) / 2);
 
-	$: minX = center[0] - halfWidth;
-	$: maxX = center[0] + halfWidth;
-	$: minY = center[1] - halfHeight;
-	$: maxY = center[1] + halfHeight;
+	let minX = $derived(center[0] - halfWidth);
+	let maxX = $derived(center[0] + halfWidth);
+	let minY = $derived(center[1] - halfHeight);
+	let maxY = $derived(center[1] + halfHeight);
 
-	$: coordinates = [
+	let coordinates = $derived([
 		[minX, maxY],
 		[maxX, maxY],
 		[maxX, minY],
 		[minX, minY]
-	];
+	]);
 </script>
 
 <Stepper selectedStepNumber={3} />
@@ -74,7 +78,7 @@
 								decoration-none
 								flex
 								justify-between
-								on:click={() => (showDropdown = false)}
+								onclick={() => (showDropdown = false)}
 								href="?formula={formula.id}"
 							>
 								<span>{formula.label}</span>
@@ -94,7 +98,7 @@
 				items-center
 				justify-between
 				class="outline"
-				on:click={() => (showDropdown = !showDropdown)}
+				onclick={() => (showDropdown = !showDropdown)}
 			>
 				<span grow text-left>{selectedFormula.label}</span>
 
@@ -155,7 +159,7 @@
 		flex
 		items-center
 		justify-center
-		on:click={() => (showHelp = !showHelp)}
+		onclick={() => (showHelp = !showHelp)}
 	>
 		<i i-carbon-help block w-5 h-5></i>
 	</button>
@@ -181,7 +185,7 @@
 				shadow="focus:none"
 				text-h1-color
 				class="outline"
-				on:click={() => (showHelp = false)}
+				onclick={() => (showHelp = false)}
 			>
 				<i i-carbon-close-large block w-5 h-5></i>
 			</button>

@@ -12,24 +12,37 @@
 	import Osm from './OSM.svelte';
 	import Scan25IgnWebMercator from './Scan25IgnWebMercator.svelte';
 
-	export let center = FRANCE_CENTER;
-	export let zoom = 6;
-	export let allowLidarTileSelection = false;
-	export let selected: Feature | null = null;
-	export let fit: SimpleGeometry | Extent | undefined = undefined;
 
-	let map: Map | undefined = undefined;
-	let showLayerDropDown = false;
+	let map: Map | undefined = $state(undefined);
+	let showLayerDropDown = $state(false);
 
-	let isOsmLayerDisplayed = false;
-	let isIgnScan25LayerDisplayed = true;
-	let isMapantV1LayerDisplayed = true;
-	export let isLidarHdTilesLayerDisplayed = true;
+	let isOsmLayerDisplayed = $state(false);
+	let isIgnScan25LayerDisplayed = $state(true);
+	let isMapantV1LayerDisplayed = $state(true);
+	interface Props {
+		center?: any;
+		zoom?: number;
+		allowLidarTileSelection?: boolean;
+		selected?: Feature | null;
+		fit?: SimpleGeometry | Extent | undefined;
+		isLidarHdTilesLayerDisplayed?: boolean;
+		children?: import('svelte').Snippet;
+	}
 
-	let osmLayerOpacity = 0.5;
-	let ignScan25LayerOpacity = 0.5;
-	let mapantV1LayerOpacity = 1;
-	let lidarHdTilesLayerOpacity = 1;
+	let {
+		center = $bindable(FRANCE_CENTER),
+		zoom = 6,
+		allowLidarTileSelection = false,
+		selected = $bindable(null),
+		fit = undefined,
+		isLidarHdTilesLayerDisplayed = $bindable(true),
+		children
+	}: Props = $props();
+
+	let osmLayerOpacity = $state(0.5);
+	let ignScan25LayerOpacity = $state(0.5);
+	let mapantV1LayerOpacity = $state(1);
+	let lidarHdTilesLayerOpacity = $state(1);
 </script>
 
 <main grow relative bg-white>
@@ -47,7 +60,7 @@
 			bind:selected
 		/>
 
-		<slot></slot>
+		{@render children?.()}
 	</OLMap>
 
 	<div
@@ -68,7 +81,7 @@
 			p-0
 			bg-white
 			class="outline"
-			on:click={() => (showLayerDropDown = !showLayerDropDown)}
+			onclick={() => (showLayerDropDown = !showLayerDropDown)}
 		>
 			<i i-carbon-layers w-5 h-5 block></i>
 		</button>
@@ -91,7 +104,7 @@
 						class="outline"
 						p-1
 						m-0
-						on:click={() => {
+						onclick={() => {
 							if (map === undefined) return;
 							isMapantV1LayerDisplayed = true;
 							mapantV1LayerOpacity = 1;

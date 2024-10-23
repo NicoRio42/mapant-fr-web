@@ -134,4 +134,36 @@ La génération de la carte va prendre un peu de temps, en fonction de la puissa
 
 ### Accélérer la génération de la carte
 
+Si votre ordinateur est une machine de guerre, vous pouvez augmenter le nombre de threads. Cela aura pour effet de traiter plus de fichiers LiDAR en parrallèle.
+
+```sh
+cassini --batch --threads 6
+```
+
 ### Modifier la paramètres
+
+Si vous n'êtes pas satisfait de la carte générée (trop de vert, trop de falaises...), vous pouvez modifier les paramètres de Cassini et relancer la génération. Dans un premier temps, commencez par générer un fichier de configuration par défaut :
+
+```sh
+cassini --default-config
+```
+
+Cela aura pour effet de créer un fichier `config.json` avec les valeurs par défaut.
+
+```json
+{
+  "yellow_threshold": 0.5,
+  "green_threshold_1": 1.0,
+  "green_threshold_2": 2.0,
+  "green_threshold_3": 3.0,
+  "cliff_threshold_1": 45.0,
+  "cliff_threshold_2": 55.0,
+  "dpi_resolution": 600.0
+}
+```
+
+Vous pouvez modifier les valeurs des différents paramètres puis relancer la génération pour voir le résultat. Pour gagner du temps, vous pouvez sauter l'étape de traitement des données LiDAR brutes avec le flag `--skip-lidar` :
+
+```sh
+cassini --batch --skip-lidar
+```

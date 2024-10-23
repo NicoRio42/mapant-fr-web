@@ -3,7 +3,7 @@
 	import Polygon from '$lib/components/map/Polygon.svelte';
 	import VectorLayer from '$lib/components/map/VectorLayer.svelte';
 
-	export let data;
+	let { data } = $props();
 </script>
 
 <BaseMap>

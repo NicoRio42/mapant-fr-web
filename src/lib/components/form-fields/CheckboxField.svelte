@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	type T = Record<string, unknown>;
 </script>
 
@@ -11,11 +11,16 @@
 	} from 'sveltekit-superforms';
 	import { onDestroy } from 'svelte';
 
-	export let form: SuperForm<T>;
-	export let field: FormPathLeaves<T, boolean>;
-	export let label: string | undefined = undefined;
+	interface Props {
+		form: SuperForm<T>;
+		field: FormPathLeaves<T, boolean>;
+		label?: string | undefined;
+		[key: string]: any
+	}
 
-	let errorsHaveBeenshownOnce = false;
+	let { form, field, label = undefined, ...rest }: Props = $props();
+
+	let errorsHaveBeenshownOnce = $state(false);
 
 	const { value, errors } = formFieldProxy(form, field) satisfies FormFieldProxy<boolean>;
 
@@ -37,7 +42,7 @@
 		bind:checked={$value}
 		data-invalid={$errors}
 		aria-invalid={errorsHaveBeenshownOnce ? $errors !== undefined && $errors.length !== 0 : null}
-		{...$$restProps}
+		{...rest}
 	/>
 
 	{#each $errors ?? [] as error}

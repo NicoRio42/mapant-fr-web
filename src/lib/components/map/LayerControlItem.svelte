@@ -1,7 +1,17 @@
 <script lang="ts">
-	export let label: string;
-	export let displayed: boolean;
-	export let opacity: number;
+	interface Props {
+		label: string;
+		displayed: boolean;
+		opacity: number;
+		children?: import('svelte').Snippet;
+	}
+
+	let {
+		label,
+		displayed = $bindable(),
+		opacity = $bindable(),
+		children
+	}: Props = $props();
 </script>
 
 <li text-left bg="!hover:transparent" list-none>
@@ -12,7 +22,7 @@
 			{label}
 		</label>
 
-		<slot></slot>
+		{@render children?.()}
 	</div>
 
 	<input type="range" min="0" max="1" step="0.01" bind:value={opacity} mb="!0" />

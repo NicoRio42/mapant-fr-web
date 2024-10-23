@@ -1,7 +1,11 @@
 <script lang="ts">
 	import Step from './Step.svelte';
 
-	export let selectedStepNumber: number;
+	interface Props {
+		selectedStepNumber: number;
+	}
+
+	let { selectedStepNumber }: Props = $props();
 
 	const labels = ['Créer un compte', 'Choisir une formule', 'Choisir la zone', null];
 </script>

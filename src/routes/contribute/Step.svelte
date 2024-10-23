@@ -1,6 +1,10 @@
 <script lang="ts">
-	export let stepNumber: number;
-	export let selectedStepNumber: number;
+	interface Props {
+		stepNumber: number;
+		selectedStepNumber: number;
+	}
+
+	let { stepNumber, selectedStepNumber }: Props = $props();
 </script>
 
 <li list-none flex items-center gap-2>

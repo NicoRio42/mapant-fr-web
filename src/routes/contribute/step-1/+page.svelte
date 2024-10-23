@@ -7,7 +7,7 @@
 	import PasswordField from '$lib/components/form-fields/PasswordField.svelte';
 	import CheckboxField from '$lib/components/form-fields/CheckboxField.svelte';
 
-	export let data;
+	let { data } = $props();
 
 	const form = superForm(data.form, { validators: zodClient(signUpSchema) });
 	const { enhance, delayed } = form;

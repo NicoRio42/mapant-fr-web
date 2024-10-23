@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 
-	export let isUserConnected: boolean;
+	interface Props {
+		isUserConnected: boolean;
+	}
+
+	let { isUserConnected }: Props = $props();
 </script>
 
 <li py-0 flex list-none>

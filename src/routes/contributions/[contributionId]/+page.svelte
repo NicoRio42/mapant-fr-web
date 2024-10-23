@@ -4,7 +4,7 @@
 	import VectorLayer from '$lib/components/map/VectorLayer.svelte';
 	import type { Extent } from 'ol/extent.js';
 
-	export let data;
+	let { data } = $props();
 
 	const fit: Extent = [
 		data.contribution.minX,

@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	import { writable } from 'svelte/store';
 
 	const welcomeDialogHasBeenShown = writable(false);
@@ -13,7 +13,7 @@
 	import { WEBSITE_NAME } from '$lib/constants';
 	import { page } from '$app/stores';
 
-	let isWelcomeDialogOpen = false;
+	let isWelcomeDialogOpen = $state(false);
 
 	onMount(() => {
 		if (!$welcomeDialogHasBeenShown) {
@@ -52,7 +52,7 @@
 					border-none
 					h-fit
 					class="outline"
-					on:click={() => (isWelcomeDialogOpen = false)}
+					onclick={() => (isWelcomeDialogOpen = false)}
 				>
 					<i i-carbon-close-large w-5 h-5 block></i>
 				</button>
@@ -63,7 +63,7 @@
 			<p text="right 5 gray-6"><em>Nicolas Rio</em></p>
 
 			<p flex justify-end gap-4>
-				<button type="button" m-0 class="outline" on:click={() => (isWelcomeDialogOpen = false)}>
+				<button type="button" m-0 class="outline" onclick={() => (isWelcomeDialogOpen = false)}>
 					Fermer
 				</button>
 
@@ -79,7 +79,7 @@
 
 <BaseMap>
 	<button
-		on:click={() => (isWelcomeDialogOpen = true)}
+		onclick={() => (isWelcomeDialogOpen = true)}
 		type="button"
 		absolute
 		bottom-6

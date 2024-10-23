@@ -4,9 +4,14 @@
 	import VectorLayer from 'ol/layer/Vector.js';
 	import VectorSource from 'ol/source/Vector.js';
 	import { getContext, onDestroy, onMount, setContext } from 'svelte';
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
+
+	let { children }: Props = $props();
 
 	const getMap = getContext<() => Map>('map');
-	let vectorLayer: VectorLayer<VectorSource<Feature<Geometry>>>, map: Map;
+	let vectorLayer: VectorLayer<VectorSource<Feature<Geometry>>> = $state(), map: Map;
 
 	setContext('vectorLayer', () => vectorLayer);
 
@@ -25,5 +30,5 @@
 </script>
 
 {#if vectorLayer}
-	<slot />
+	{@render children?.()}
 {/if}

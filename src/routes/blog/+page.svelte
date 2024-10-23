@@ -3,7 +3,7 @@
 	import { WEBSITE_NAME } from '$lib/constants';
 	import { MetaTags } from 'svelte-meta-tags';
 
-	export let data;
+	let { data } = $props();
 </script>
 
 <MetaTags

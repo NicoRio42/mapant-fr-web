@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { browser } from '$app/environment';
 	import { MAPANT_V1_EXTENT, TILES_BASE_URL } from '$lib/constants';
 	import { type Map } from 'ol';
@@ -7,15 +9,23 @@
 	import { TileGrid } from 'ol/tilegrid';
 	import { getContext, onDestroy, onMount } from 'svelte';
 
-	export let visible = true;
-	export let opacity = 1;
+	interface Props {
+		visible?: boolean;
+		opacity?: number;
+	}
+
+	let { visible = true, opacity = 1 }: Props = $props();
 
 	const getMap = getContext<() => Map>('map');
 	let map: Map;
-	let tileLayer: TileLayer<XYZ>;
+	let tileLayer: TileLayer<XYZ> = $state();
 
-	$: if (browser && tileLayer) tileLayer.setVisible(visible);
-	$: if (browser && tileLayer) tileLayer.setOpacity(opacity);
+	run(() => {
+		if (browser && tileLayer) tileLayer.setVisible(visible);
+	});
+	run(() => {
+		if (browser && tileLayer) tileLayer.setOpacity(opacity);
+	});
 
 	// Quick fix to solve a for now unexplained offset problem
 	const OFFSET_X = 934407.1834580749 - 934553.3735946362;

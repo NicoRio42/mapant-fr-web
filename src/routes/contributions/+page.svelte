@@ -2,7 +2,7 @@
 	import { CONTRIBUTION_FORMULAS, type ContributionFormula } from '$lib/constants';
 	import type { Contribution } from '$lib/server/schema';
 
-	export let data;
+	let { data } = $props();
 
 	function getFormula(id: Contribution['id']): ContributionFormula {
 		return CONTRIBUTION_FORMULAS.find((f) => f.id === id)!;

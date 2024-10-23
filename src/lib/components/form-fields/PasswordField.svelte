@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	type T = Record<string, unknown>;
 </script>
 
@@ -6,11 +6,16 @@
 	import { onDestroy } from 'svelte';
 	import { formFieldProxy, type SuperForm, type FormPathLeaves } from 'sveltekit-superforms';
 
-	export let form: SuperForm<T>;
-	export let field: FormPathLeaves<T>;
-	export let label: string | undefined = undefined;
+	interface Props {
+		form: SuperForm<T>;
+		field: FormPathLeaves<T>;
+		label?: string | undefined;
+		[key: string]: any
+	}
 
-	let showPassword = false;
+	let { form, field, label = undefined, ...rest }: Props = $props();
+
+	let showPassword = $state(false);
 	let errorsHaveBeenshownOnce = false;
 
 	const { value, errors } = formFieldProxy(form, field);
@@ -40,7 +45,7 @@
 				bind:value={$value}
 				data-invalid={$errors}
 				aria-invalid={shouldDisplayInvalidState()}
-				{...$$restProps}
+				{...rest}
 			/>
 		{:else}
 			<input
@@ -50,7 +55,7 @@
 				bind:value={$value}
 				data-invalid={$errors}
 				aria-invalid={shouldDisplayInvalidState()}
-				{...$$restProps}
+				{...rest}
 			/>
 		{/if}
 
@@ -58,12 +63,12 @@
 			type="button"
 			class="unpico absolute right-6 top-50% -translate-y-50% flex justify-center items-center"
 			class:right-10={shouldDisplayInvalidState()}
-			on:click={() => (showPassword = !showPassword)}
+			onclick={() => (showPassword = !showPassword)}
 		>
 			{#if showPassword}
-				<i class="i-carbon-view-off w-6 h-6" />
+				<i class="i-carbon-view-off w-6 h-6"></i>
 			{:else}
-				<i class="i-carbon-view w-6 h-6" />
+				<i class="i-carbon-view w-6 h-6"></i>
 			{/if}
 		</button>
 	</div>

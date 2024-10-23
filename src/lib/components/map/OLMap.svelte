@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { browser } from '$app/environment';
 	import { FRANCE_CENTER } from '$lib/constants';
 	import { Map, View } from 'ol';
@@ -11,15 +13,28 @@
 	import proj4 from 'proj4';
 	import { onDestroy, onMount, setContext } from 'svelte';
 
-	export let center = FRANCE_CENTER;
-	export let zoom = 6;
-	export let fit: SimpleGeometry | Extent | undefined = undefined;
-	export let map: Map | undefined = undefined;
+	interface Props {
+		center?: any;
+		zoom?: number;
+		fit?: SimpleGeometry | Extent | undefined;
+		map?: Map | undefined;
+		children?: import('svelte').Snippet;
+	}
 
-	let view: View;
+	let {
+		center = $bindable(FRANCE_CENTER),
+		zoom = 6,
+		fit = undefined,
+		map = $bindable(undefined),
+		children
+	}: Props = $props();
 
-	$: if (browser && view !== undefined && fit !== undefined)
-		view.fit(fit, { padding: [20, 20, 20, 20] });
+	let view: View = $state();
+
+	run(() => {
+		if (browser && view !== undefined && fit !== undefined)
+			view.fit(fit, { padding: [20, 20, 20, 20] });
+	});
 
 	setContext('map', () => map);
 
@@ -69,7 +84,7 @@
 <div id="mapviewer" class="map"></div>
 
 {#if map}
-	<slot></slot>
+	{@render children?.()}
 {/if}
 
 <style>

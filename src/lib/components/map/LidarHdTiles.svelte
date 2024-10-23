@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { browser } from '$app/environment';
 	import type { Feature, Map, MapBrowserEvent } from 'ol';
 	import GeoJSON from 'ol/format/GeoJSON.js';
@@ -9,17 +11,30 @@
 	import Style from 'ol/style/Style';
 	import { getContext, onDestroy, onMount } from 'svelte';
 
-	export let visible = true;
-	export let opacity = 1;
-	export let allowSelection = false;
-	export let selected: Feature | null = null;
+	interface Props {
+		visible?: boolean;
+		opacity?: number;
+		allowSelection?: boolean;
+		selected?: Feature | null;
+	}
+
+	let {
+		visible = true,
+		opacity = 1,
+		allowSelection = false,
+		selected = $bindable(null)
+	}: Props = $props();
 
 	const getMap = getContext<() => Map>('map');
-	let map: Map;
-	let vectorLayer: VectorLayer<VectorSource>;
+	let map: Map = $state();
+	let vectorLayer: VectorLayer<VectorSource> = $state();
 
-	$: if (browser && vectorLayer) vectorLayer.setVisible(visible);
-	$: if (browser && vectorLayer) vectorLayer.setOpacity(opacity);
+	run(() => {
+		if (browser && vectorLayer) vectorLayer.setVisible(visible);
+	});
+	run(() => {
+		if (browser && vectorLayer) vectorLayer.setOpacity(opacity);
+	});
 
 	const notSelectedStyle = new Style({
 		stroke: new Stroke({
@@ -39,7 +54,7 @@
 		fill: new Fill({ color: '#f56b3d78' })
 	});
 
-	let hovered: Feature | null = null;
+	let hovered: Feature | null = $state(null);
 
 	function mapPointermoveListener(e: MapBrowserEvent<any>) {
 		if (hovered !== null) {
@@ -86,7 +101,7 @@
 		);
 	}
 
-	$: {
+	run(() => {
 		if (browser && allowSelection) {
 			map?.on('click', mapClickListener);
 			map?.on('pointermove', mapPointermoveListener);
@@ -98,7 +113,7 @@
 			hovered = null;
 			selected = null;
 		}
-	}
+	});
 
 	onMount(async () => {
 		map = getMap();

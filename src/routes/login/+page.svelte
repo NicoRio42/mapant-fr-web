@@ -5,7 +5,7 @@
 	import EmailField from '$lib/components/form-fields/EmailField.svelte';
 	import PasswordField from '$lib/components/form-fields/PasswordField.svelte';
 
-	export let data;
+	let { data } = $props();
 
 	const form = superForm(data.form, { validators: zodClient(loginSchema) });
 	const { enhance, delayed, errors } = form;
