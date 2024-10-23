@@ -6,6 +6,7 @@ date: 2024-06-28
 author: Nicolas Rio
 draft: true
 ---
+
 Si vous êtes orienteur ou que vous vous intéressez à la cartographie, vous avez sûrement entendu parler du LiDAR. Derrière cet acronyme mystérieux se cache une technologie permettant (notamment) de faciliter la création de cartes de course d'orientation. Des logiciels tels que [Karttapullautin](https://github.com/rphlo/karttapullautin/tree/master) ou les dernières versions de [OCAD](https://www.ocad.com/en/), permettent de générer automatiquement des cartes seulement à partir de données LiDAR, sans passage d'un cartographe sur le terrain. Ce sont ces solutions qui sont utilisées pour le projet [Mapant.fr](https://mapant.fr).
 
 Dans cet article, je vais essayer de démystifier le processus de génération d'une carte à partir de données LiDAR. Pour comprendre ce qui est dit, il est nécessaire de connaître la légende des cartes de course d'orientation.
@@ -13,7 +14,8 @@ Dans cet article, je vais essayer de démystifier le processus de génération d
 Disclaimer :
 
 - Cet article reflète ma compréhension du LiDAR et de ses applications cartographiques. N'étant pas un professionnel du secteur, et ayant appris tout cela par moi même en me documentant sur internet et en expérimentant, les informations et analogies peuvent être erronées. N'hésitez pas à me contacter si vous pensez que certaines parties sont inexactes et doivent être modifiées.
-- Les logiciels de génération automatique de carte à partir de donnée LiDAR donnent des résultats impressionnants. Cependant, rien n'égale le travail de relevé et d'interprétation d'un vrai cartographe. Si vous
+- Les logiciels de génération automatique de carte à partir de donnée LiDAR donnent des résultats impressionnants. Cependant, rien n'égale le travail de relevé et d'interprétation d'un vrai cartographe.
+- La possession d'une carte, même autogénérée, n'implique en aucun cas un droit d'accès au terrain. Assurez vous d'avoir l'autorisation du propriétaire de la zone avant d'y mettre les pieds.
 
 ## LiDAR, mais encore ?
 
