@@ -4,6 +4,7 @@ import UnoCSS from 'unocss/vite';
 import { enhancedImages } from '@sveltejs/enhanced-img';
 import { parse } from 'ultramatter';
 import { marked } from 'marked';
+import admonition from 'marked-admonition-extension';
 
 function cleanUrl(href: string) {
 	try {
@@ -33,6 +34,8 @@ function markdown(): Plugin {
 			}
 		}
 	});
+
+	marked.use(admonition);
 
 	return {
 		name: 'vite-markdown',

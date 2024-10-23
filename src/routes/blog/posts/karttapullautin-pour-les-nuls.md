@@ -14,9 +14,13 @@ Karttapullautin a été créé par le finlandais **Jarkko Ryyppö** au début de
 
 Karttapullautin est un **programme en ligne de commande**, il s’utilise via un **terminal**. Autrement dit, il n’a pas d’interface graphique avec des fenêtres et des boutons. Cela peut être intimidant pour les utilisateurs non familiers avec l’informatique. Cet article a pour but d’expliquer **pas à pas** l’utilisation de Karttapullautin pour un utilisateur non initié.
 
-> **_Bon à savoir_** : Si les cartes générées à partir de données LiDAR sont d’une **qualité impressionnante**, elles ne remplacent pas le travail d’un **vrai cartographe**. Pensez à embaucher un vrai cartographe de course d’orientation si vous avez besoin d’une **carte de qualité supérieure**.
+!!! caution Attention
+La possession d’une carte **n’implique pas un droit d’accès à la zone cartographiée**. Avant d’aller sur le terrain, assurez vous d’avoir l’autorisation de son ou ses propriétaires.
+!!!
 
-> **_Attention_** : La possession d’une carte **n’implique pas un droit d’accès à la zone cartographiée**. Avant d’aller sur le terrain, assurez vous d’avoir l’autorisation de son ou ses propriétaires.
+!!! note Bon à savoir
+Si les cartes générées à partir de données LiDAR sont d’une **qualité impressionnante**, elles ne remplacent pas le travail d’un **vrai cartographe**. Pensez à embaucher un vrai cartographe de course d’orientation si vous avez besoin d’une **carte de qualité supérieure**.
+!!!
 
 ## Le téléchargement des données LiDAR
 
@@ -27,10 +31,12 @@ Rendez-vous sur le [portail de téléchargement du projet LiDAR HD](https://diff
 
 Une fois les tuiles sélectionnées, **téléchargez les fichiers LiDAR** correspondant. Dépliez l’accordéon `Liste des nuages de points classés`, et cliquez sur les liens affichés. Le temps de téléchargement est d’**environ 2 minutes** par fichier.
 
-> **_Astuce_** : Vous pouvez aussi télécharger **toutes les tuiles en même temps**. Pour cela, vous devez cliquer sur le bouton `Télécharger la liste des liens`, puis utiliser un outil tel que :
-> - wget
-> - DownThemAll!
-> - Xtreme Download Manager
+!!! tip Astuce
+Vous pouvez aussi télécharger **toutes les tuiles en même temps**. Pour cela, vous devez cliquer sur le bouton `Télécharger la liste des liens`, puis utiliser un outil tel que :
+- wget
+- DownThemAll!
+- Xtreme Download Manager
+!!!
 
 ## Le téléchargement et la préparation des données vectorielles
 

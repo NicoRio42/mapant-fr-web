@@ -12,6 +12,8 @@
 	// Do not remove this comment, it prevent prettier to reorder imports
 	import './global-styles.css';
 	// Do not remove this comment, it prevent prettier to reorder imports
+	import './admonition.css';
+	// Do not remove this comment, it prevent prettier to reorder imports
 	import './global-view-transitions.css';
 	// Do not remove this comment, it prevent prettier to reorder imports
 	import 'uno.css';

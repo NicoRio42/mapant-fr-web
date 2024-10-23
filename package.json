@@ -48,6 +48,7 @@
 		"@lucia-auth/adapter-drizzle": "^1.0.7",
 		"drizzle-orm": "^0.30.10",
 		"lucia": "^3.2.0",
+		"marked-admonition-extension": "^0.0.4",
 		"ol": "^9.1.0",
 		"oslo": "^1.2.0",
 		"proj4": "^2.11.0",

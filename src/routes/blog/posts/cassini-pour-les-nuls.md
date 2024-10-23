@@ -11,13 +11,23 @@ draft: true
 
 Cassini est fortement inspiré par Karttapullautin, le génial générateur de carte de course d’orientation derrière les projets mapant (mapant.fi, mapant.no…), et récemment réécrit en Rust par Raphaël Stefanini. J’explique plus en détail [dans cet article](https://cassini-map.com/what-and-why/) pourquoi j’ai développé cette alternative à Karttapullautin.
 
-Cassini est un **programme en ligne de commande**, il s’utilise via un **terminal**. Autrement dit, il n’a pas d’interface graphique avec des fenêtres et des boutons. Cela peut être intimidant pour les utilisateurs non familiers avec l’informatique. Ce tutoriel a pour but d’expliquer **pas à pas** l’utilisation de Karttapullautin pour un utilisateur non initié. Seul prérequis : un PC Windows avec Powershell installé.
+Cassini est un **programme en ligne de commande**, il s’utilise via un **terminal**. Autrement dit, il n’a pas d’interface graphique avec des fenêtres et des boutons. Cela peut être intimidant pour les utilisateurs non familiers avec l’informatique. Ce tutoriel a pour but d’expliquer **pas à pas** l'installation et l’utilisation de Cassini pour un utilisateur non initié, sur un PC Windows.
 
-> **_Bon à savoir_** : Si les cartes générées à partir de données LiDAR sont d’une **qualité impressionnante**, elles ne remplacent pas le travail d’un **vrai cartographe**. Pensez à embaucher un vrai cartographe de course d’orientation si vous avez besoin d’une **carte de qualité supérieure**.
+!!! caution Attention
+Cassini est un projet très jeune et toujours en cours de développement. Si vous rencontrez des bugs, n'hésitez pas à me le faire savoir par email : <a href="mailto:contact@mapant.fr" target="_blank">contact@mapant.fr</a>.
+!!!
 
-> **_Attention_** : La possession d’une carte **n’implique pas un droit d’accès à la zone cartographiée**. Avant d’aller sur le terrain, assurez vous d’avoir l’autorisation de son ou ses propriétaires.
+!!! caution Attention
+La possession d’une carte **n’implique pas un droit d’accès à la zone cartographiée**. Avant d’aller sur le terrain, assurez vous d’avoir l’autorisation de son ou ses propriétaires.
+!!!
 
-> **_Note_** : Cassini est (humblement) baptisé en référence à la Carte de Cassini, première carte topographique du royaume de France réalisée au XVIII ème siècle.
+!!! note Bon à savoir
+Si les cartes générées à partir de données LiDAR sont d’une **qualité impressionnante**, elles ne remplacent pas le travail d’un **vrai cartographe**. Pensez à embaucher un vrai cartographe de course d’orientation si vous avez besoin d’une **carte de qualité supérieure**.
+!!!
+
+!!! note Bon à savoir
+Cassini est (humblement) baptisé en référence à la Carte de Cassini, première carte topographique du royaume de France réalisée au XVIII ème siècle.
+!!!
 
 ## Installer Cassini
 
@@ -166,4 +176,12 @@ Vous pouvez modifier les valeurs des différents paramètres puis relancer la g�
 
 ```sh
 cassini --batch --skip-lidar
+```
+
+### Mettre à jour Cassini
+
+Pour mettre à jour Cassini vers une version plus récente, copiez/collez et executez la commande :
+
+```sh
+docker pull nicorio42/cassini:latest
 ```
