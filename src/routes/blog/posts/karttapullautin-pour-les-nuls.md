@@ -1,6 +1,6 @@
 ---
 title: Karttapullautin pour les nuls
-desciption: Tutoriel pour générer une carte de course d'orientation avec Karttapullautin
+description: Tutoriel pour générer une carte de course d'orientation avec Karttapullautin
 banner: /images/karttapullautin-exemple.jpg
 date: 2024-06-28
 author: Nicolas Rio
@@ -25,6 +25,7 @@ Si les cartes générées à partir de données LiDAR sont d’une **qualité im
 ## Le téléchargement des données LiDAR
 
 Rendez-vous sur le [portail de téléchargement du projet LiDAR HD](https://diffusion-lidarhd.ign.fr/). **Zoomez** sur la zone qui vous intéresse, et **sélectionnez les tuiles LiDAR**. Pour cela, trois modes de sélection sont proposés en haut à droite de l’écran :
+
 - Clic
 - Polygone
 - Rectangle
@@ -33,10 +34,11 @@ Une fois les tuiles sélectionnées, **téléchargez les fichiers LiDAR** corres
 
 !!! tip Astuce
 Vous pouvez aussi télécharger **toutes les tuiles en même temps**. Pour cela, vous devez cliquer sur le bouton `Télécharger la liste des liens`, puis utiliser un outil tel que :
+
 - wget
 - DownThemAll!
 - Xtreme Download Manager
-!!!
+  !!!
 
 ## Le téléchargement et la préparation des données vectorielles
 
@@ -45,12 +47,12 @@ Pour générer une carte de course d’orientation complète avec Karttapullauti
 Karttapullautin permet l’utilisation de fichiers [ERSI Shapefiles](https://fr.wikipedia.org/wiki/Shapefile) pour l’incorporation de ces données. Ces fichiers peuvent être obtenus à partir de la base de données géographique ouverte [OpenStreetMap](https://www.openstreetmap.org/). Pour les obtenir, rendez vous sur son [portail de téléchargement](https://www.openstreetmap.org/export). **Zoomez** sur la zone pour laquelle vous avez téléchargé les fichiers LiDAR. Dans la barre latérale de gauche, **cliquez** sur `Sélectionner manuellement une autre zone`. Sélectionnez la zone en prenant de la **marge sur les côtés** et appuyez sur le bouton `Exporter`. Le téléchargement d’un fichier `map.osm` devrait se lancer.
 
 Il faut ensuite transformer ce fichier au format `ESRI Shapefiles`. Pour cela, téléchargez le [logiciel QGIS](https://qgis.org/fr/site/forusers/download.html). Lancez le, et **importez le fichier** `map.osm` en le faisant glisser sur la zone principale de la fenêtre. Une boîte de dialogue s’ouvre, cliquez sur `Ajouter une couche` en bas à droite. **5 lignes** devraient apparaître dans la barre latérale de gauche :
+
 - map – points
 - map – other_relations
 - map – multipolygons
 - map – multilinestrings
 - map – lines
-
 
 ![Vue couche de QGIS](/images/qgis-layers.png)
 
@@ -67,6 +69,7 @@ Lorsque vous avez effectué les **4 exports** (points, multipolygons, multilines
 ## La configuration et l'exécution de Karttapullautin
 
 Téléchargez l'**exécutable Karttapullautin** correspondant à votre système d’exploitation sur le [site du projet](https://github.com/rphlo/karttapullautin/releases). Décompressez l’archive `.gz` n’importe où sur votre disque dur. Vous devriez obtenir un dossier contenant :
+
 - Un fichier exécutable `pullauta` (ou `pullauta.exe` sous Windows)
 - Un fichier `README.md`
 - Un fichier `LICENSE`
@@ -79,6 +82,7 @@ Rendez vous à la **ligne 161** et activez le mode de **traitement en masse** en
 Dans le même dossier, **créez un dossier** nommé `in`. Mettez-y **les fichiers LiDAR** préalablement téléchargés, ainsi que **l'archive** `.zip` contenant vos **fichiers Shapefiles**.
 
 Vous êtes maintenant **prêt à lancer la génération** de la carte ! Pour cela, vous devez **ouvrir un terminal** dans le dossier contenant l'exécutable `pullauta`. Sous Windows, vous pouvez faire ça depuis **l’explorateur de fichiers** :
+
 - Cliquez sur la **barre d'adresse** en haut de la fenêtre. Cela devrait mettre l’adresse du dossier en surbrillance.
 - Tapez `cmd` puis appuyez sur la touche `Entrée`
 

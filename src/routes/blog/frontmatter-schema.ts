@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const frontmatterSchema = z.object({
 	title: z.string(),
-	desciption: z.string(),
+	description: z.string(),
 	banner: z.string(),
 	date: z.string().date(),
 	author: z.string(),

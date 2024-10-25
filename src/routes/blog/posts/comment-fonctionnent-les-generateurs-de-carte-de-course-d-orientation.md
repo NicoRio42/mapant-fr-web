@@ -1,6 +1,6 @@
 ---
 title: Comment fonctionne la génération automatiquement de cartes de course d'orientation avec des données LiDAR
-desciption: Tutoriel pour générer une carte de course d'orientation avec Karttapullautin
+description: Tutoriel pour générer une carte de course d'orientation avec Karttapullautin
 banner: https://www.ign.fr/files/default/styles/1240_330/public/2023-03/foret_mont_d_ardeche_lidar_bandeau2.jpg?itok=rho5sTwj
 date: 2024-06-28
 author: Nicolas Rio

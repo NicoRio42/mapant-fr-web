@@ -1,6 +1,6 @@
 ---
 title: Cassini pour les nuls
-desciption: Tutoriel pour générer une carte de course d'orientation avec Cassini
+description: Tutoriel pour générer une carte de course d'orientation avec Cassini
 banner: /images/cassini-example.png
 date: 2024-10-22
 author: Nicolas Rio
