@@ -34,14 +34,14 @@
 					/>
 
 					<h2
-						text="6 white center"
+						text="6 white"
 						absolute
 						right-0
 						bottom-0
 						left-0
 						bg-gray-800
 						bg-op-50
-						p-2
+						p-4
 						mb-0
 						style:--view-transition-name="banner-{post.slug}"
 						class="[view-transition-name:var(--view-transition-name)]"

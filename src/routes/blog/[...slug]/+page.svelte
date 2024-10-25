@@ -26,7 +26,7 @@
 		alt=""
 		decoding="async"
 		w-full
-		h-75
+		h-100
 		object-cover
 		style:--view-transition-name="title-{data.post.slug}"
 		class="[view-transition-name:var(--view-transition-name)]"
@@ -34,7 +34,7 @@
 
 	<div absolute right-0 bottom-0 left-0 p="y-4 x-6" bg-gray-800 bg-op-60>
 		<h1
-			text="10 white"
+			text="10 white left"
 			mb-2
 			style:--view-transition-name="banner-{data.post.slug}"
 			class="[view-transition-name:var(--view-transition-name)]"
@@ -42,7 +42,7 @@
 			{data.post.frontmatter.title}
 		</h1>
 
-		<p text="white 4.5" mb-2>
+		<p text="white 4.5 left" mb-2>
 			{data.post.frontmatter.description}
 		</p>
 
