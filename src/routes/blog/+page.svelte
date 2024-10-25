@@ -40,7 +40,7 @@
 						bottom-0
 						left-0
 						bg-gray-800
-						bg-op-50
+						bg-op-60
 						p-4
 						mb-0
 						style:--view-transition-name="banner-{post.slug}"
