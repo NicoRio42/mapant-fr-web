@@ -26,7 +26,7 @@ Le but : créer une carte de course d'orientation de la **France entière** acce
 
 ## Ce que je vous propose
 
-Si vous voulez **accélérer le projet**, vous pouvez contribuer financièrement.  En contrepartie&nbsp;:
+Si vous voulez **accélérer le projet**, vous pouvez contribuer financièrement. En contrepartie&nbsp;:
 
 - Vous avez la possibilité de **sélectionner une zone** sur la carte de France
 - Elle sera (dans la mesure du possible) **traitée en priorité** lors de la génération de la carte.

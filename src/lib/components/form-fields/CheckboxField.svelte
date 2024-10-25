@@ -15,7 +15,7 @@
 		form: SuperForm<T>;
 		field: FormPathLeaves<T, boolean>;
 		label?: string | undefined;
-		[key: string]: any
+		[key: string]: any;
 	}
 
 	let { form, field, label = undefined, ...rest }: Props = $props();
@@ -31,11 +31,7 @@
 	onDestroy(unsub);
 </script>
 
-<label>
-	{#if label !== undefined}
-		{label}
-	{/if}
-
+<label mt-4>
 	<input
 		name={String(field)}
 		type="checkbox"
@@ -44,6 +40,10 @@
 		aria-invalid={errorsHaveBeenshownOnce ? $errors !== undefined && $errors.length !== 0 : null}
 		{...rest}
 	/>
+
+	{#if label !== undefined}
+		{label}
+	{/if}
 
 	{#each $errors ?? [] as error}
 		<small class="text-del-color mb-0">{error}</small>

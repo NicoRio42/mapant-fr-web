@@ -31,6 +31,25 @@ function markdown(): Plugin {
 				}
 				out += '>';
 				return out;
+			},
+			link({ href, title, tokens }) {
+				const text = this.parser.parseInline(tokens);
+				const cleanHref = cleanUrl(href);
+				if (cleanHref === null) {
+					return text;
+				}
+				href = cleanHref;
+				let out = '<a href="' + href + '"';
+
+				if (href.startsWith('http') || href.startsWith('mailto')) {
+					out += ' target="_blank"';
+				}
+
+				if (title) {
+					out += ' title="' + title + '"';
+				}
+				out += '>' + text + '</a>';
+				return out;
 			}
 		}
 	});
