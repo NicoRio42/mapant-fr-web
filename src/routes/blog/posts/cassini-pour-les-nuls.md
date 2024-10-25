@@ -4,7 +4,6 @@ description: Tutoriel pour générer une carte de course d'orientation avec Cass
 banner: /images/cassini-example.png
 date: 2024-10-22
 author: Nicolas Rio
-draft: true
 ---
 
 [Cassini](https://cassini-map.com) est un logiciel permettant de générer une carte de [course d’orientation](https://www.ffcorientation.fr/decouvrir/comment/) (presque) prête à l’emploi à partir de [données LiDAR](https://fr.wikipedia.org/wiki/Lidar). Je l'ai développé dans le cadre du projet Mapant.fr, pour générer une carte topographique de la France entière à partir de données LiDAR et vectorielles en open data de l’[IGN](https://www.ign.fr/) (Institut national de l'information géographique et forestière).
