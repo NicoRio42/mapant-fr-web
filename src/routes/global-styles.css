@@ -38,10 +38,10 @@ a[role='button'].unpico {
 	color: var(--pico-h1-color);
 }
 
-button,
-button[type='submit'],
-[type='button'],
-[role='button'] {
+button:not(.big),
+button[type='submit']:not(.big),
+[type='button']:not(.big),
+[role='button']:not(.big) {
 	padding: 0.25rem 0.5rem;
 }
 

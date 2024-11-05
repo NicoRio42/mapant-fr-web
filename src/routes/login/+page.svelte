@@ -19,7 +19,7 @@
 
 		<PasswordField {form} field="password" label="Mot de passe" />
 
-		<button type="submit" aria-busy={$delayed}>Connexion</button>
+		<button type="submit" aria-busy={$delayed} class="big" mt-4>Connexion</button>
 
 		{#each $errors._errors ?? [] as globalError}
 			<p>
