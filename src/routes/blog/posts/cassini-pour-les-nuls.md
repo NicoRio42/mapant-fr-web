@@ -138,7 +138,11 @@ Rendez-vous sur le [portail de téléchargement du projet LiDAR HD](https://diff
 - Polygone
 - Rectangle
 
-Une fois les tuiles sélectionnées, **téléchargez les fichiers LiDAR** correspondant. Dépliez l’accordéon `Liste des nuages de points classés`, et cliquez sur les liens affichés. Le temps de téléchargement d'un fichier peut être de plusieurs minutes.
+Une fois les tuiles sélectionnées, **téléchargez les fichiers LiDAR** correspondant. Dépliez l’accordéon `Liste des nuages de points classés`, et cliquez sur les liens affichés.
+
+![Accordéon Liste des nuages de points classés sur le site de téléchargement des fichiers LiDAR HD de l'IGN](/images/download-lidar-hd-ui.png)
+
+Le temps de téléchargement d'un fichier peut être de plusieurs minutes.
 
 !!! tip Astuce
 Vous pouvez aussi télécharger **toutes les tuiles en même temps**. Pour cela, vous devez cliquer sur le bouton `Télécharger la liste des liens`, puis utiliser un outil tel que :
@@ -153,10 +157,12 @@ Vous pouvez aussi télécharger **toutes les tuiles en même temps**. Pour cela,
 
 Créez un dossier n'importe où sur votre ordinateur (disons un dossier `lidar` dans votre dossier `Documents`). Dans ce dossier, créez un autre dossier `in`, et placez-y les **fichiers LiDAR préalablement téléchargés**.
 
-Ouvrez un terminal Powershell : tapez `Powershell` dans la barre de recherche Windows et cliquez sur le premier résultat. Ensuite, il va falloir naviguer jusqu'au dossier préalablement créé (notre dossier `lidar` dans mes `Documents par exemple`). Pour cela, copiez/collez et validez la commande suivante en replaçant `<CHEMIN_ABSOLU_VERS_DOSSIER_LIDAR>` par le chemin absolu vers votre dossier.
+![Fichiers LiDAR dans l'exploreur de fichier](/images/lidar-files-in-explorer.png)
+
+Ouvrez un terminal Powershell : tapez `Powershell` dans la barre de recherche Windows et cliquez sur le premier résultat. Ensuite, il va falloir naviguer jusqu'au dossier préalablement créé (notre dossier `lidar` dans mes `Documents par exemple`). Pour cela, copiez/collez et validez la commande suivante en replaçant `CHEMIN_ABSOLU_VERS_DOSSIER_LIDAR` par le chemin absolu vers votre dossier.
 
 ```sh
-cd <CHEMIN_ABSOLU_VERS_DOSSIER_LIDAR>
+cd CHEMIN_ABSOLU_VERS_DOSSIER_LIDAR
 ```
 
 Pour obtenir ce chemin, ouvrez le dossier dans l'**explorateur de fichier**, cliquez sur la barre d'adresse en haut de la fenêtre (sur la partie blanche à droite). Cela aura pour effet de mettre le chemin absolu du dossier en surbrillance, que vous pourrez ainsi copier/coller.
@@ -167,7 +173,11 @@ Pour obtenir ce chemin, ouvrez le dossier dans l'**explorateur de fichier**, cli
 
 </div>
 
-Après avoir validé cette commande, le chemin absolu de votre dossier devrait apparaître à gauche de votre curseur dans le terminal Powershell. Vous pouvez maintenant lancer cassini ! Pour cela, copiez/collez et validez la commande suivante :
+Après avoir validé cette commande, le chemin absolu de votre dossier devrait apparaître à gauche de votre curseur dans le terminal Powershell comme sur la capture ci-dessous.
+
+![Screenshot to show the result of a cd command](/images/cd-psh.png)
+
+Vous pouvez maintenant lancer cassini ! Pour cela, copiez/collez et validez la commande suivante :
 
 ```sh
 cassini --batch

@@ -30,7 +30,11 @@ Rendez-vous sur le [portail de téléchargement du projet LiDAR HD](https://diff
 - Polygone
 - Rectangle
 
-Une fois les tuiles sélectionnées, **téléchargez les fichiers LiDAR** correspondant. Dépliez l’accordéon `Liste des nuages de points classés`, et cliquez sur les liens affichés. Le temps de téléchargement est d’**environ 2 minutes** par fichier.
+Une fois les tuiles sélectionnées, **téléchargez les fichiers LiDAR** correspondant. Dépliez l’accordéon `Liste des nuages de points classés`, et cliquez sur les liens affichés.
+
+![Accordéon Liste des nuages de points classés sur le site de téléchargement des fichiers LiDAR HD de l'IGN](/images/download-lidar-hd-ui.png)
+
+Le temps de téléchargement d'un fichier peut être de plusieurs minutes.
 
 !!! tip Astuce
 Vous pouvez aussi télécharger **toutes les tuiles en même temps**. Pour cela, vous devez cliquer sur le bouton `Télécharger la liste des liens`, puis utiliser un outil tel que :
@@ -38,7 +42,8 @@ Vous pouvez aussi télécharger **toutes les tuiles en même temps**. Pour cela,
 - wget
 - DownThemAll!
 - Xtreme Download Manager
-  !!!
+
+!!!
 
 ## Le téléchargement et la préparation des données vectorielles
 
