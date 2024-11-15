@@ -12,10 +12,11 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check .",
 		"format": "prettier --write .",
-		"migrations:generate": "drizzle-kit generate:sqlite",
-		"migrations:apply:local": "node scripts/migrate-local.js",
-		"migrations:apply:prod": "node --env-file=.env.prod scripts/migrate-prod.js",
-		"migrations:apply:staging": "node --env-file=.env.staging scripts/migrate-prod.js"
+		"db:studio": "drizzle-kit studio",
+		"db:migrations:generate": "drizzle-kit generate",
+		"db:migrations:apply:local": "drizzle-kit migrate",
+		"db:migrations:apply:staging": "drizzle-kit migrate --env-file=.env.staging --config=drizzle-prod.config.ts",
+		"db:migrations:apply:prod": "drizzle-kit migrate --env-file=.env.prod --config=drizzle-prod.config.ts"
 	},
 	"devDependencies": {
 		"@iconify-json/carbon": "^1.1.31",
@@ -29,7 +30,7 @@
 		"@types/markdown-it-attrs": "^4.1.3",
 		"@types/proj4": "^2.5.5",
 		"@unocss/extractor-svelte": "^0.59.4",
-		"drizzle-kit": "^0.20.18",
+		"drizzle-kit": "^0.28.1",
 		"marked": "^14.0.0",
 		"prettier": "^3.1.1",
 		"prettier-plugin-svelte": "^3.2.6",
@@ -44,9 +45,9 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@libsql/client": "^0.6.0",
+		"@libsql/client": "^0.14.0",
 		"@lucia-auth/adapter-drizzle": "^1.0.7",
-		"drizzle-orm": "^0.30.10",
+		"drizzle-orm": "^0.36.2",
 		"lucia": "^3.2.0",
 		"marked-admonition-extension": "^0.0.4",
 		"ol": "^9.1.0",

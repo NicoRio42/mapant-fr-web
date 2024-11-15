@@ -34,6 +34,71 @@ export const contributionWithoutCompensationTable = sqliteTable(
 	}
 );
 
+export const tilesTable = sqliteTable('tiles', {
+	id,
+	minX: real().notNull(),
+	minY: real().notNull(),
+	maxX: real().notNull(),
+	maxY: real().notNull(),
+	lidarFileUrl: text().notNull(),
+	lidarStepStatus: text({ enum: ['not-started', 'ongoing', 'finished'] })
+		.default('not-started')
+		.notNull(),
+	lidarStepWorkerId: text().references(() => workersTable.id, {
+		onDelete: 'set null'
+	}),
+	mapRenderingStepStatus: text({ enum: ['not-started', 'ongoing', 'finished'] })
+		.default('not-started')
+		.notNull(),
+	mapRenderingStepWorkerId: text().references(() => workersTable.id, {
+		onDelete: 'set null'
+	})
+});
+
+export type TileInsert = typeof tilesTable.$inferInsert;
+
+export const areasToGenerateTable = sqliteTable('areas_to_generate', {
+	id,
+	minX: real().notNull(),
+	minY: real().notNull(),
+	maxX: real().notNull(),
+	maxY: real().notNull(),
+	pyramidGenerationStepStatus: text({ enum: ['not-started', 'ongoing', 'finished'] })
+		.default('not-started')
+		.notNull(),
+	pyramidGenerationStepWorkerId: text().references(() => workersTable.id, {
+		onDelete: 'set null'
+	})
+});
+
+export type AreaToGenerate = typeof areasToGenerateTable.$inferSelect;
+
+export const lidarStepJobTable = sqliteTable('lidar_step_jobs', {
+	id,
+	tileId: text()
+		.notNull()
+		.references(() => tilesTable.id, { onDelete: 'cascade' }),
+	areaToGenerateId: text()
+		.notNull()
+		.references(() => areasToGenerateTable.id, { onDelete: 'cascade' })
+});
+
+export const mapRenderingStepJobTable = sqliteTable('map_rendering_step_jobs', {
+	id,
+	tileId: text()
+		.notNull()
+		.references(() => tilesTable.id, { onDelete: 'cascade' }),
+	areaToGenerateId: text()
+		.notNull()
+		.references(() => areasToGenerateTable.id, { onDelete: 'cascade' })
+});
+
+export const workersTable = sqliteTable('workers', {
+	id,
+	name: text().unique().notNull(),
+	hashedApiKey: text()
+});
+
 export const userTable = sqliteTable('user', {
 	id,
 	email: text('email').notNull(),
