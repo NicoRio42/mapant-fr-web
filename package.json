@@ -3,8 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"dev": "pnpm run '/^dev:.*/'",
-		"dev:kit": "vite dev",
+		"dev": "vite dev",
 		"dev:stripe": "stripe listen --forward-to localhost:5173/api/stripe/webhook --skip-verify",
 		"build": "vite build",
 		"preview": "vite preview",
@@ -16,7 +15,10 @@
 		"db:migrations:generate": "drizzle-kit generate",
 		"db:migrations:apply:local": "drizzle-kit migrate",
 		"db:migrations:apply:staging": "drizzle-kit migrate --env-file=.env.staging --config=drizzle-prod.config.ts",
-		"db:migrations:apply:prod": "drizzle-kit migrate --env-file=.env.prod --config=drizzle-prod.config.ts"
+		"db:migrations:apply:prod": "drizzle-kit migrate --env-file=.env.prod --config=drizzle-prod.config.ts",
+		"minio:create": "docker run -p 9000:9000 -p 9090:9090 --name minio-dev -e \"MINIO_ROOT_USER=admin\" -e \"MINIO_ROOT_PASSWORD=admin123\" -v $(pwd)/data:/data -v $(pwd)/config:/root/.minio minio/minio server /data --console-address \":9090\"",
+		"minio:start": "docker start minio-dev",
+		"minio:stop": "docker stop minio-dev"
 	},
 	"devDependencies": {
 		"@iconify-json/carbon": "^1.1.31",

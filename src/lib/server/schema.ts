@@ -55,6 +55,7 @@ export const tilesTable = sqliteTable('tiles', {
 	})
 });
 
+export type Tile = typeof tilesTable.$inferSelect;
 export type TileInsert = typeof tilesTable.$inferInsert;
 
 export const areasToGenerateTable = sqliteTable('areas_to_generate', {
@@ -75,6 +76,7 @@ export type AreaToGenerate = typeof areasToGenerateTable.$inferSelect;
 
 export const lidarStepJobTable = sqliteTable('lidar_step_jobs', {
 	id,
+	index: integer().notNull(),
 	tileId: text()
 		.notNull()
 		.references(() => tilesTable.id, { onDelete: 'cascade' }),
@@ -85,12 +87,24 @@ export const lidarStepJobTable = sqliteTable('lidar_step_jobs', {
 
 export const mapRenderingStepJobTable = sqliteTable('map_rendering_step_jobs', {
 	id,
+	index: integer().notNull(),
 	tileId: text()
 		.notNull()
 		.references(() => tilesTable.id, { onDelete: 'cascade' }),
 	areaToGenerateId: text()
 		.notNull()
 		.references(() => areasToGenerateTable.id, { onDelete: 'cascade' })
+});
+
+export const pyramidRenderingStepJobTable = sqliteTable('pyramid_rendering_step_jobs', {
+	id,
+	index: integer().notNull(),
+	areaToGenerateId: text()
+		.notNull()
+		.references(() => areasToGenerateTable.id, { onDelete: 'cascade' }),
+	x: integer().notNull(),
+	y: integer().notNull(),
+	zoom: integer().notNull()
 });
 
 export const workersTable = sqliteTable('workers', {

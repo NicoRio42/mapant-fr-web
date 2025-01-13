@@ -4,4 +4,8 @@
 	<p>
 		<a href="/admin/workers">Workers</a>
 	</p>
+
+	<p>
+		<a href="/admin/areas">Areas</a>
+	</p>
 </main>

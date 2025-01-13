@@ -34,6 +34,7 @@ for (const tile of (tiles as Tiles).features) {
 	}
 
 	tilesToInsert.push({
+		id: `${Math.round(minX)}_${Math.round(minY)}`,
 		minX,
 		minY,
 		maxX,
