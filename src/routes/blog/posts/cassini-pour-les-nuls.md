@@ -112,22 +112,22 @@ cassini --help
 
 Comme c'est la première fois que la commande `cassini` est utilisée, elle va commencer par télécharger l'**image Docker** correspondante. Cela peut prendre un certain temps (et dépend de la vitesse de la connexion internet). Ensuite, le message d'aide de Cassini devrait s'afficher à l'écran :
 
-```sh
-A software that generates highly accurate topographic maps from LiDAR data. See documentation: https://cassini-map.com
+```
+A software that generates highly accurate topographic maps from LiDAR data. See documentation: https://cassini-map.com. GDAL and PDAL must be installed on the system for this program to work.
 
-Usage: cassini [OPTIONS] [FILE_PATH]
+Usage: cassini [COMMAND]
 
-Arguments:
-  [FILE_PATH]  The LiDAR file path When processing a single file.
+Commands:
+  process         Generate a map from a single LiDAR file
+  lidar           Run only the LiDAR processing step for a single tile
+  render          Run only the map generation step for a single tile
+  batch           Process multiple LiDAR files at once
+  config          Output a default config.json file
+  help            Print this message or the help of the given subcommand(s)
 
 Options:
-      --batch              Enable batch mode for processing multiple LiDAR files placed in the in directory
-      --skip-lidar         Skip the LiDAR processing stage of the pipeline (only if you already ran cassini once with the same input files).
-      --skip-vector        Skip the vector processing stage of the pipeline.
-      --threads <THREADS>  Number of threads used by Cassini to parallelize the work in batch mode (default 3).
-      --default-config     Output a default config.json file.
-  -h, --help               Print help (see more with '--help')
-  -V, --version            Print version
+  -h, --help     Print help (see more with '--help')
+  -V, --version  Print version
 ```
 
 ## Le téléchargement des données LiDAR
@@ -180,7 +180,7 @@ Après avoir validé cette commande, le chemin absolu de votre dossier devrait a
 Vous pouvez maintenant lancer cassini ! Pour cela, copiez/collez et validez la commande suivante :
 
 ```sh
-cassini --batch
+cassini batch
 ```
 
 La génération de la carte va prendre un peu de temps, en fonction de la puissance de votre ordinateur et de la quantité de fichier LiDAR à traiter. Une fois la génération terminée, si tout s'est bien passé, vous trouverez un dossier `out` avec un fichier `merged-map.png` à l'intérieur !
@@ -192,7 +192,7 @@ La génération de la carte va prendre un peu de temps, en fonction de la puissa
 Si votre ordinateur est puissant (et que son processeur est doté de beaucoup de cœurs), vous pouvez augmenter le nombre de threads. Cela aura pour effet de traiter plus de fichiers LiDAR en parallèle.
 
 ```sh
-cassini --batch --threads 6
+cassini batch --threads 6
 ```
 
 ### Modifier les paramètres
@@ -200,7 +200,7 @@ cassini --batch --threads 6
 Si vous n'êtes pas satisfait de la carte générée (trop de vert, trop de falaises...), vous pouvez modifier les paramètres de Cassini et relancer la génération. Dans un premier temps, commencez par générer un fichier de configuration par défaut :
 
 ```sh
-cassini --default-config
+cassini config
 ```
 
 Cela aura pour effet de créer un fichier `config.json` avec les valeurs par défaut.
@@ -208,9 +208,9 @@ Cela aura pour effet de créer un fichier `config.json` avec les valeurs par dé
 ```json
 {
 	"yellow_threshold": 0.5,
-	"green_threshold_1": 1.0,
-	"green_threshold_2": 2.0,
-	"green_threshold_3": 3.0,
+	"green_threshold_1": 0.2,
+	"green_threshold_2": 1.0,
+	"green_threshold_3": 2.0,
 	"cliff_threshold_1": 45.0,
 	"cliff_threshold_2": 55.0,
 	"dpi_resolution": 600.0
@@ -220,7 +220,7 @@ Cela aura pour effet de créer un fichier `config.json` avec les valeurs par dé
 Vous pouvez modifier les valeurs des différents paramètres puis relancer la génération pour voir le résultat. Pour gagner du temps, vous pouvez sauter l'étape de traitement des données LiDAR brutes avec le flag `--skip-lidar` :
 
 ```sh
-cassini --batch --skip-lidar
+cassini batch --skip-lidar
 ```
 
 ### Mettre à jour Cassini
