@@ -51,8 +51,10 @@
 					<div flex items-center gap-4>
 						{worker.name}
 
+						{worker.id}
+
 						<button type="button" onclick={() => rotateToken(worker)}>
-							{worker.hasToken ? 'Rotate token' : 'New token'}
+							{worker.hasToken ? 'Rotate token' : 'Create token'}
 						</button>
 
 						<form

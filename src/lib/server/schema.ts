@@ -1,4 +1,4 @@
-import { integer, real, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { index, integer, real, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { generateId } from 'lucia';
 
 const id = text('id')
@@ -66,46 +66,72 @@ export const areasToGenerateTable = sqliteTable('areas_to_generate', {
 	maxY: real().notNull(),
 	pyramidGenerationStepStatus: text({ enum: ['not-started', 'ongoing', 'finished'] })
 		.default('not-started')
-		.notNull(),
-	pyramidGenerationStepWorkerId: text().references(() => workersTable.id, {
-		onDelete: 'set null'
-	})
+		.notNull()
 });
 
 export type AreaToGenerate = typeof areasToGenerateTable.$inferSelect;
 
-export const lidarStepJobTable = sqliteTable('lidar_step_jobs', {
-	id,
-	index: integer().notNull(),
-	tileId: text()
-		.notNull()
-		.references(() => tilesTable.id, { onDelete: 'cascade' }),
-	areaToGenerateId: text()
-		.notNull()
-		.references(() => areasToGenerateTable.id, { onDelete: 'cascade' })
-});
+export const lidarStepJobTable = sqliteTable(
+	'lidar_step_jobs',
+	{
+		id,
+		index: integer().notNull(),
+		tileId: text()
+			.notNull()
+			.references(() => tilesTable.id, { onDelete: 'cascade' }),
+		areaToGenerateId: text()
+			.notNull()
+			.references(() => areasToGenerateTable.id, { onDelete: 'cascade' })
+	},
+	(table) => ({
+		tileIdIndex: index('lidar_step_jobs_tile_id_index').on(table.tileId),
+		areaToGenerateIdIndex: index('lidar_step_jobs_area_to_generate_id_index').on(
+			table.areaToGenerateId
+		)
+	})
+);
 
-export const mapRenderingStepJobTable = sqliteTable('map_rendering_step_jobs', {
-	id,
-	index: integer().notNull(),
-	tileId: text()
-		.notNull()
-		.references(() => tilesTable.id, { onDelete: 'cascade' }),
-	areaToGenerateId: text()
-		.notNull()
-		.references(() => areasToGenerateTable.id, { onDelete: 'cascade' })
-});
+export const mapRenderingStepJobTable = sqliteTable(
+	'map_rendering_step_jobs',
+	{
+		id,
+		index: integer().notNull(),
+		tileId: text()
+			.notNull()
+			.references(() => tilesTable.id, { onDelete: 'cascade' }),
+		areaToGenerateId: text()
+			.notNull()
+			.references(() => areasToGenerateTable.id, { onDelete: 'cascade' })
+	},
+	(table) => ({
+		tileIdIndex: index('map_rendering_step_jobs_tile_id_index').on(table.tileId),
+		areaToGenerateIdIndex: index('map_rendering_step_jobs_area_to_generate_id_index').on(
+			table.areaToGenerateId
+		)
+	})
+);
 
-export const pyramidRenderingStepJobTable = sqliteTable('pyramid_rendering_step_jobs', {
-	id,
-	index: integer().notNull(),
-	areaToGenerateId: text()
-		.notNull()
-		.references(() => areasToGenerateTable.id, { onDelete: 'cascade' }),
-	x: integer().notNull(),
-	y: integer().notNull(),
-	zoom: integer().notNull()
-});
+export const pyramidRenderingStepJobTable = sqliteTable(
+	'pyramid_rendering_step_jobs',
+	{
+		id,
+		index: integer().notNull(),
+		areaToGenerateId: text()
+			.notNull()
+			.references(() => areasToGenerateTable.id, { onDelete: 'cascade' }),
+		x: integer().notNull(),
+		y: integer().notNull(),
+		zoom: integer().notNull(),
+		status: text({ enum: ['not-started', 'ongoing', 'finished'] })
+			.default('not-started')
+			.notNull()
+	},
+	(table) => ({
+		areaToGenerateIdIndex: index('pyramid_rendering_step_jobs_area_to_generate_id_index').on(
+			table.areaToGenerateId
+		)
+	})
+);
 
 export const workersTable = sqliteTable('workers', {
 	id,
