@@ -1,22 +1,24 @@
 import { TILE_SIZE_IN_METERS } from '$lib/constants.js';
+import { getPyramidJobsFromTileList } from '$lib/pyramid';
 import { db } from '$lib/server/db.js';
 import {
 	areasToGenerateTable,
 	contributionTable,
 	lidarStepJobTable,
 	mapRenderingStepJobTable,
+	pyramidRenderingStepJobTable,
 	tilesTable,
 	userTable,
 	type Tile
 } from '$lib/server/schema.js';
 import { error, redirect } from '@sveltejs/kit';
-import { and, eq, gt, inArray, lt, or } from 'drizzle-orm';
+import { and, eq, gt, inArray, lt } from 'drizzle-orm';
 import { generateId } from 'lucia';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
 
-export async function load({}) {
+export async function load() {
 	const [contributions, areas] = await db.batch([
 		db
 			.select()
@@ -127,7 +129,22 @@ export const actions = {
 				)
 				.run();
 
-			// TODO pyramid steps generation
+			const pyramidJobs = getPyramidJobsFromTileList(
+				tilesInside.map(({ minX, minY }) => ({ xLambert93: minX, yLambert93: minY }))
+			);
+
+			await tx
+				.insert(pyramidRenderingStepJobTable)
+				.values(
+					pyramidJobs.map(({ x, y, z, index }) => ({
+						areaToGenerateId: areaId,
+						index,
+						x,
+						y,
+						zoom: z
+					}))
+				)
+				.run();
 		});
 
 		throw redirect(302, '/admin/areas');

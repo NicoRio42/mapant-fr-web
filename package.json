@@ -18,7 +18,8 @@
 		"db:migrations:apply:prod": "drizzle-kit migrate --env-file=.env.prod --config=drizzle-prod.config.ts",
 		"minio:create": "docker run -p 9000:9000 -p 9090:9090 --name minio-dev -e \"MINIO_ROOT_USER=admin\" -e \"MINIO_ROOT_PASSWORD=admin123\" -v $(pwd)/data:/data -v $(pwd)/config:/root/.minio minio/minio server /data --console-address \":9090\"",
 		"minio:start": "docker start minio-dev",
-		"minio:stop": "docker stop minio-dev"
+		"minio:stop": "docker stop minio-dev",
+		"test": "vitest"
 	},
 	"devDependencies": {
 		"@iconify-json/carbon": "^1.1.31",
@@ -43,7 +44,8 @@
 		"typescript": "^5.5.0",
 		"ultramatter": "^0.0.4",
 		"unocss": "^0.59.4",
-		"vite": "^5.4.4"
+		"vite": "^5.4.4",
+		"vitest": "^2.1.8"
 	},
 	"type": "module",
 	"dependencies": {
