@@ -2,7 +2,7 @@ import { auth } from '$lib/server/auth.js';
 import { db } from '$lib/server/db.js';
 import { userTable } from '$lib/server/schema.js';
 import { Scrypt } from '$lib/server/scrypt.js';
-import { error, fail, redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { loginSchema } from './login-schema.js';
 import { setError, superValidate } from 'sveltekit-superforms';
@@ -18,6 +18,7 @@ export async function load({ locals }) {
 export const actions = {
 	default: async ({ request, cookies, url }) => {
 		const form = await superValidate(request, zod(loginSchema));
+		if (!form.valid) throw error(400);
 		const { email, password } = form.data;
 
 		const existingUser = await db.select().from(userTable).where(eq(userTable.email, email)).get();

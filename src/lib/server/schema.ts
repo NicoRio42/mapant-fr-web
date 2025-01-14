@@ -113,6 +113,8 @@ export const workersTable = sqliteTable('workers', {
 	hashedApiKey: text()
 });
 
+export type MapantWorker = typeof workersTable.$inferSelect;
+
 export const userTable = sqliteTable('user', {
 	id,
 	email: text('email').notNull(),
