@@ -36,21 +36,23 @@ export const contributionWithoutCompensationTable = sqliteTable(
 
 export const tilesTable = sqliteTable('tiles', {
 	id,
-	minX: real().notNull(),
-	minY: real().notNull(),
-	maxX: real().notNull(),
-	maxY: real().notNull(),
-	lidarFileUrl: text().notNull(),
-	lidarStepStatus: text({ enum: ['not-started', 'ongoing', 'finished'] })
+	minX: real('min_x').notNull(),
+	minY: real('min_y').notNull(),
+	maxX: real('max_x').notNull(),
+	maxY: real('max_y').notNull(),
+	lidarFileUrl: text('lidar_file_url').notNull(),
+	lidarStepStatus: text('lidar_step_status', { enum: ['not-started', 'ongoing', 'finished'] })
 		.default('not-started')
 		.notNull(),
-	lidarStepWorkerId: text().references(() => workersTable.id, {
+	lidarStepWorkerId: text('lidar_step_worker_id').references(() => workersTable.id, {
 		onDelete: 'set null'
 	}),
-	mapRenderingStepStatus: text({ enum: ['not-started', 'ongoing', 'finished'] })
+	mapRenderingStepStatus: text('map_rendering_step_status', {
+		enum: ['not-started', 'ongoing', 'finished']
+	})
 		.default('not-started')
 		.notNull(),
-	mapRenderingStepWorkerId: text().references(() => workersTable.id, {
+	mapRenderingStepWorkerId: text('map_rendering_step_worker_id').references(() => workersTable.id, {
 		onDelete: 'set null'
 	})
 });
@@ -60,11 +62,13 @@ export type TileInsert = typeof tilesTable.$inferInsert;
 
 export const areasToGenerateTable = sqliteTable('areas_to_generate', {
 	id,
-	minX: real().notNull(),
-	minY: real().notNull(),
-	maxX: real().notNull(),
-	maxY: real().notNull(),
-	pyramidGenerationStepStatus: text({ enum: ['not-started', 'ongoing', 'finished'] })
+	minX: real('min_x').notNull(),
+	minY: real('min_y').notNull(),
+	maxX: real('max_x').notNull(),
+	maxY: real('max_y').notNull(),
+	pyramidGenerationStepStatus: text('pyramid_generation_step_status', {
+		enum: ['not-started', 'ongoing', 'finished']
+	})
 		.default('not-started')
 		.notNull()
 });
@@ -75,11 +79,11 @@ export const lidarStepJobTable = sqliteTable(
 	'lidar_step_jobs',
 	{
 		id,
-		index: integer().notNull(),
-		tileId: text()
+		index: integer('index').notNull(),
+		tileId: text('tile_id')
 			.notNull()
 			.references(() => tilesTable.id, { onDelete: 'cascade' }),
-		areaToGenerateId: text()
+		areaToGenerateId: text('area_to_generate_id')
 			.notNull()
 			.references(() => areasToGenerateTable.id, { onDelete: 'cascade' })
 	},
@@ -95,11 +99,11 @@ export const mapRenderingStepJobTable = sqliteTable(
 	'map_rendering_step_jobs',
 	{
 		id,
-		index: integer().notNull(),
-		tileId: text()
+		index: integer('index').notNull(),
+		tileId: text('tile_id')
 			.notNull()
 			.references(() => tilesTable.id, { onDelete: 'cascade' }),
-		areaToGenerateId: text()
+		areaToGenerateId: text('area_to_generate_id')
 			.notNull()
 			.references(() => areasToGenerateTable.id, { onDelete: 'cascade' })
 	},
@@ -115,14 +119,14 @@ export const pyramidRenderingStepJobTable = sqliteTable(
 	'pyramid_rendering_step_jobs',
 	{
 		id,
-		index: integer().notNull(),
-		areaToGenerateId: text()
+		index: integer('index').notNull(),
+		areaToGenerateId: text('area_to_generate_id')
 			.notNull()
 			.references(() => areasToGenerateTable.id, { onDelete: 'cascade' }),
-		x: integer().notNull(),
-		y: integer().notNull(),
-		zoom: integer().notNull(),
-		status: text({ enum: ['not-started', 'ongoing', 'finished'] })
+		x: integer('x').notNull(),
+		y: integer('y').notNull(),
+		zoom: integer('zoom').notNull(),
+		status: text('status', { enum: ['not-started', 'ongoing', 'finished'] })
 			.default('not-started')
 			.notNull()
 	},
@@ -135,8 +139,8 @@ export const pyramidRenderingStepJobTable = sqliteTable(
 
 export const workersTable = sqliteTable('workers', {
 	id,
-	name: text().unique().notNull(),
-	hashedApiKey: text()
+	name: text('name').unique().notNull(),
+	hashedApiKey: text('hashed_api_key')
 });
 
 export type MapantWorker = typeof workersTable.$inferSelect;

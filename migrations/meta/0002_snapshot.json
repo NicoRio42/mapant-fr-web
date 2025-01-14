@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "094f6ff2-c7c2-4714-bfec-2245af350050",
+  "id": "830a9791-bc9b-444b-b55c-5a7f392aebeb",
   "prevId": "16516c2a-569a-47e1-b945-7348123e98f4",
   "tables": {
     "areas_to_generate": {
@@ -14,66 +14,45 @@
           "notNull": true,
           "autoincrement": false
         },
-        "minX": {
-          "name": "minX",
+        "min_x": {
+          "name": "min_x",
           "type": "real",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "minY": {
-          "name": "minY",
+        "min_y": {
+          "name": "min_y",
           "type": "real",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "maxX": {
-          "name": "maxX",
+        "max_x": {
+          "name": "max_x",
           "type": "real",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "maxY": {
-          "name": "maxY",
+        "max_y": {
+          "name": "max_y",
           "type": "real",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "pyramidGenerationStepStatus": {
-          "name": "pyramidGenerationStepStatus",
+        "pyramid_generation_step_status": {
+          "name": "pyramid_generation_step_status",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "'not-started'"
-        },
-        "pyramidGenerationStepWorkerId": {
-          "name": "pyramidGenerationStepWorkerId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "areas_to_generate_pyramidGenerationStepWorkerId_workers_id_fk": {
-          "name": "areas_to_generate_pyramidGenerationStepWorkerId_workers_id_fk",
-          "tableFrom": "areas_to_generate",
-          "tableTo": "workers",
-          "columnsFrom": [
-            "pyramidGenerationStepWorkerId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
@@ -230,29 +209,51 @@
           "notNull": true,
           "autoincrement": false
         },
-        "tileId": {
-          "name": "tileId",
+        "index": {
+          "name": "index",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "tile_id": {
+          "name": "tile_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "areaToGenerateId": {
-          "name": "areaToGenerateId",
+        "area_to_generate_id": {
+          "name": "area_to_generate_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "lidar_step_jobs_tile_id_index": {
+          "name": "lidar_step_jobs_tile_id_index",
+          "columns": [
+            "tile_id"
+          ],
+          "isUnique": false
+        },
+        "lidar_step_jobs_area_to_generate_id_index": {
+          "name": "lidar_step_jobs_area_to_generate_id_index",
+          "columns": [
+            "area_to_generate_id"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
-        "lidar_step_jobs_tileId_tiles_id_fk": {
-          "name": "lidar_step_jobs_tileId_tiles_id_fk",
+        "lidar_step_jobs_tile_id_tiles_id_fk": {
+          "name": "lidar_step_jobs_tile_id_tiles_id_fk",
           "tableFrom": "lidar_step_jobs",
           "tableTo": "tiles",
           "columnsFrom": [
-            "tileId"
+            "tile_id"
           ],
           "columnsTo": [
             "id"
@@ -260,12 +261,12 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "lidar_step_jobs_areaToGenerateId_areas_to_generate_id_fk": {
-          "name": "lidar_step_jobs_areaToGenerateId_areas_to_generate_id_fk",
+        "lidar_step_jobs_area_to_generate_id_areas_to_generate_id_fk": {
+          "name": "lidar_step_jobs_area_to_generate_id_areas_to_generate_id_fk",
           "tableFrom": "lidar_step_jobs",
           "tableTo": "areas_to_generate",
           "columnsFrom": [
-            "areaToGenerateId"
+            "area_to_generate_id"
           ],
           "columnsTo": [
             "id"
@@ -288,29 +289,51 @@
           "notNull": true,
           "autoincrement": false
         },
-        "tileId": {
-          "name": "tileId",
+        "index": {
+          "name": "index",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "tile_id": {
+          "name": "tile_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "areaToGenerateId": {
-          "name": "areaToGenerateId",
+        "area_to_generate_id": {
+          "name": "area_to_generate_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "map_rendering_step_jobs_tile_id_index": {
+          "name": "map_rendering_step_jobs_tile_id_index",
+          "columns": [
+            "tile_id"
+          ],
+          "isUnique": false
+        },
+        "map_rendering_step_jobs_area_to_generate_id_index": {
+          "name": "map_rendering_step_jobs_area_to_generate_id_index",
+          "columns": [
+            "area_to_generate_id"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
-        "map_rendering_step_jobs_tileId_tiles_id_fk": {
-          "name": "map_rendering_step_jobs_tileId_tiles_id_fk",
+        "map_rendering_step_jobs_tile_id_tiles_id_fk": {
+          "name": "map_rendering_step_jobs_tile_id_tiles_id_fk",
           "tableFrom": "map_rendering_step_jobs",
           "tableTo": "tiles",
           "columnsFrom": [
-            "tileId"
+            "tile_id"
           ],
           "columnsTo": [
             "id"
@@ -318,12 +341,94 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "map_rendering_step_jobs_areaToGenerateId_areas_to_generate_id_fk": {
-          "name": "map_rendering_step_jobs_areaToGenerateId_areas_to_generate_id_fk",
+        "map_rendering_step_jobs_area_to_generate_id_areas_to_generate_id_fk": {
+          "name": "map_rendering_step_jobs_area_to_generate_id_areas_to_generate_id_fk",
           "tableFrom": "map_rendering_step_jobs",
           "tableTo": "areas_to_generate",
           "columnsFrom": [
-            "areaToGenerateId"
+            "area_to_generate_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "pyramid_rendering_step_jobs": {
+      "name": "pyramid_rendering_step_jobs",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "index": {
+          "name": "index",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "area_to_generate_id": {
+          "name": "area_to_generate_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "x": {
+          "name": "x",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "y": {
+          "name": "y",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "zoom": {
+          "name": "zoom",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'not-started'"
+        }
+      },
+      "indexes": {
+        "pyramid_rendering_step_jobs_area_to_generate_id_index": {
+          "name": "pyramid_rendering_step_jobs_area_to_generate_id_index",
+          "columns": [
+            "area_to_generate_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "pyramid_rendering_step_jobs_area_to_generate_id_areas_to_generate_id_fk": {
+          "name": "pyramid_rendering_step_jobs_area_to_generate_id_areas_to_generate_id_fk",
+          "tableFrom": "pyramid_rendering_step_jobs",
+          "tableTo": "areas_to_generate",
+          "columnsFrom": [
+            "area_to_generate_id"
           ],
           "columnsTo": [
             "id"
@@ -391,66 +496,66 @@
           "notNull": true,
           "autoincrement": false
         },
-        "minX": {
-          "name": "minX",
+        "min_x": {
+          "name": "min_x",
           "type": "real",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "minY": {
-          "name": "minY",
+        "min_y": {
+          "name": "min_y",
           "type": "real",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "maxX": {
-          "name": "maxX",
+        "max_x": {
+          "name": "max_x",
           "type": "real",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "maxY": {
-          "name": "maxY",
+        "max_y": {
+          "name": "max_y",
           "type": "real",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "lidarFileUrl": {
-          "name": "lidarFileUrl",
+        "lidar_file_url": {
+          "name": "lidar_file_url",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "lidarStepStatus": {
-          "name": "lidarStepStatus",
+        "lidar_step_status": {
+          "name": "lidar_step_status",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "'not-started'"
         },
-        "lidarStepWorkerId": {
-          "name": "lidarStepWorkerId",
+        "lidar_step_worker_id": {
+          "name": "lidar_step_worker_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "mapRenderingStepStatus": {
-          "name": "mapRenderingStepStatus",
+        "map_rendering_step_status": {
+          "name": "map_rendering_step_status",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
           "default": "'not-started'"
         },
-        "mapRenderingStepWorkerId": {
-          "name": "mapRenderingStepWorkerId",
+        "map_rendering_step_worker_id": {
+          "name": "map_rendering_step_worker_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -459,12 +564,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "tiles_lidarStepWorkerId_workers_id_fk": {
-          "name": "tiles_lidarStepWorkerId_workers_id_fk",
+        "tiles_lidar_step_worker_id_workers_id_fk": {
+          "name": "tiles_lidar_step_worker_id_workers_id_fk",
           "tableFrom": "tiles",
           "tableTo": "workers",
           "columnsFrom": [
-            "lidarStepWorkerId"
+            "lidar_step_worker_id"
           ],
           "columnsTo": [
             "id"
@@ -472,12 +577,12 @@
           "onDelete": "set null",
           "onUpdate": "no action"
         },
-        "tiles_mapRenderingStepWorkerId_workers_id_fk": {
-          "name": "tiles_mapRenderingStepWorkerId_workers_id_fk",
+        "tiles_map_rendering_step_worker_id_workers_id_fk": {
+          "name": "tiles_map_rendering_step_worker_id_workers_id_fk",
           "tableFrom": "tiles",
           "tableTo": "workers",
           "columnsFrom": [
-            "mapRenderingStepWorkerId"
+            "map_rendering_step_worker_id"
           ],
           "columnsTo": [
             "id"
@@ -545,8 +650,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "hashedApiKey": {
-          "name": "hashedApiKey",
+        "hashed_api_key": {
+          "name": "hashed_api_key",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
