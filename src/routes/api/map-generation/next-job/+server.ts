@@ -1,15 +1,15 @@
+import { TILE_SIZE_IN_METERS } from '$lib/constants';
 import { db } from '$lib/server/db.js';
 import {
-	areasToGenerateTable,
 	lidarStepJobTable,
 	mapRenderingStepJobTable,
-	pyramidRenderingStepJobTable,
 	tilesTable,
-	workersTable
+	workersTable,
+	type Tile
 } from '$lib/server/schema';
 import { Scrypt } from '$lib/server/scrypt';
-import { eq } from 'drizzle-orm';
-import type { LidarJob, NextJobApiEndpointResponse, NoJob, PyramidJob, RenderJob } from './schemas';
+import { eq, inArray } from 'drizzle-orm';
+import type { LidarJob, NoJob, RenderJob } from './schemas';
 
 export async function POST({ request }) {
 	const authorizationHeader = request.headers.get('Authorization');
@@ -48,11 +48,11 @@ export async function POST({ request }) {
 
 		return new Response(
 			JSON.stringify({
-				type: 'lidar',
+				type: 'Lidar',
 				data: {
 					x: nextLidarJob.tiles.minX,
 					y: nextLidarJob.tiles.minY,
-					tileUrl: nextLidarJob.tiles.lidarFileUrl
+					tile_url: nextLidarJob.tiles.lidarFileUrl
 				}
 			} satisfies LidarJob),
 			{ status: 202 }
@@ -69,7 +69,23 @@ export async function POST({ request }) {
 		.get();
 
 	if (nextRenderJob !== undefined) {
-		// TODO: check if lidar step has been completed for neigbhoring tiles
+		const neigbhoringLidarJobs = await db
+			.select()
+			.from(lidarStepJobTable)
+			.innerJoin(tilesTable, eq(lidarStepJobTable.tileId, tilesTable.id))
+			.where(inArray(tilesTable.id, getNeigbhoringTilesIds(nextRenderJob.tiles)))
+			.orderBy(lidarStepJobTable.index)
+			.all();
+
+		const someNeigbhoringLidarJobsAreNotFinished = neigbhoringLidarJobs.some(
+			(j) => j.tiles.lidarStepStatus !== 'finished'
+		);
+
+		if (someNeigbhoringLidarJobsAreNotFinished) {
+			return new Response(JSON.stringify({ type: 'NoJobLeft' } satisfies NoJob), {
+				status: 202
+			});
+		}
 
 		await db
 			.update(tilesTable)
@@ -79,7 +95,7 @@ export async function POST({ request }) {
 
 		return new Response(
 			JSON.stringify({
-				type: 'render',
+				type: 'Render',
 				data: {
 					x: nextRenderJob.tiles.minX,
 					y: nextRenderJob.tiles.minY
@@ -89,41 +105,54 @@ export async function POST({ request }) {
 		);
 	}
 
-	const nextPyramidJob = await db
-		.select()
-		.from(pyramidRenderingStepJobTable)
-		.where(eq(pyramidRenderingStepJobTable.status, 'not-started'))
-		.orderBy(pyramidRenderingStepJobTable.index)
-		.limit(1)
-		.get();
+	// const nextPyramidJob = await db
+	// 	.select()
+	// 	.from(pyramidRenderingStepJobTable)
+	// 	.where(eq(pyramidRenderingStepJobTable.status, 'not-started'))
+	// 	.orderBy(pyramidRenderingStepJobTable.index)
+	// 	.limit(1)
+	// 	.get();
 
-	if (nextPyramidJob !== undefined) {
-		await db
-			.update(pyramidRenderingStepJobTable)
-			.set({ status: 'ongoing' })
-			.where(eq(pyramidRenderingStepJobTable.id, nextPyramidJob.id))
-			.run();
+	// if (nextPyramidJob !== undefined) {
+	// 	await db
+	// 		.update(pyramidRenderingStepJobTable)
+	// 		.set({ status: 'ongoing' })
+	// 		.where(eq(pyramidRenderingStepJobTable.id, nextPyramidJob.id))
+	// 		.run();
 
-		await db
-			.update(areasToGenerateTable)
-			.set({ pyramidGenerationStepStatus: 'ongoing' })
-			.where(eq(areasToGenerateTable.id, nextPyramidJob.areaToGenerateId))
-			.run();
+	// 	await db
+	// 		.update(areasToGenerateTable)
+	// 		.set({ pyramidGenerationStepStatus: 'ongoing' })
+	// 		.where(eq(areasToGenerateTable.id, nextPyramidJob.areaToGenerateId))
+	// 		.run();
 
-		return new Response(
-			JSON.stringify({
-				type: 'pyramid',
-				data: {
-					x: nextPyramidJob.x,
-					y: nextPyramidJob.y,
-					z: nextPyramidJob.zoom
-				}
-			} satisfies PyramidJob),
-			{ status: 202 }
-		);
-	}
+	// 	return new Response(
+	// 		JSON.stringify({
+	// 			type: 'Pyramid',
+	// 			data: {
+	// 				x: nextPyramidJob.x,
+	// 				y: nextPyramidJob.y,
+	// 				z: nextPyramidJob.zoom
+	// 			}
+	// 		} satisfies PyramidJob),
+	// 		{ status: 202 }
+	// 	);
+	// }
 
-	return new Response(JSON.stringify({ type: 'no-job-left' } satisfies NoJob), {
+	return new Response(JSON.stringify({ type: 'NoJobLeft' } satisfies NoJob), {
 		status: 202
 	});
+}
+
+function getNeigbhoringTilesIds(tile: Tile): string[] {
+	return [
+		`${Math.round(tile.minX)}_${Math.round(tile.minY + TILE_SIZE_IN_METERS)}`,
+		`${Math.round(tile.minX + TILE_SIZE_IN_METERS)}_${Math.round(tile.minY + TILE_SIZE_IN_METERS)}`,
+		`${Math.round(tile.minX + TILE_SIZE_IN_METERS)}_${Math.round(tile.minY)}`,
+		`${Math.round(tile.minX + TILE_SIZE_IN_METERS)}_${Math.round(tile.minY - TILE_SIZE_IN_METERS)}`,
+		`${Math.round(tile.minX)}_${Math.round(tile.minY - TILE_SIZE_IN_METERS)}`,
+		`${Math.round(tile.minX - TILE_SIZE_IN_METERS)}_${Math.round(tile.minY - TILE_SIZE_IN_METERS)}`,
+		`${Math.round(tile.minX - TILE_SIZE_IN_METERS)}_${Math.round(tile.minY)}`,
+		`${Math.round(tile.minX - TILE_SIZE_IN_METERS)}_${Math.round(tile.minY + TILE_SIZE_IN_METERS)}`
+	];
 }

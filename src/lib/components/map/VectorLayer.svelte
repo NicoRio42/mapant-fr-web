@@ -11,7 +11,8 @@
 	let { children }: Props = $props();
 
 	const getMap = getContext<() => Map>('map');
-	let vectorLayer: VectorLayer<VectorSource<Feature<Geometry>>> = $state(), map: Map;
+	let vectorLayer: VectorLayer<Feature<Geometry>> | undefined = $state(),
+		map: Map;
 
 	setContext('vectorLayer', () => vectorLayer);
 

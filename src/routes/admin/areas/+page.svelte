@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { confirmSubmit } from '$lib/actions/confirm-submit.js';
 	import BaseMap from '$lib/components/map/BaseMap.svelte';
 	import DrawBox from '$lib/components/map/DrawBox.svelte';
 	import Polygon from '$lib/components/map/Polygon.svelte';
@@ -14,15 +15,34 @@
 	let minY: number | null = $state(null);
 	let maxY: number | null = $state(null);
 	let submitButton: HTMLButtonElement | undefined = $state();
+	let selectedAreaId: null | string = $state(null);
 </script>
 
-<form hidden method="post" use:enhance>
+<form hidden action="?/add" method="post" use:enhance>
 	<input type="hidden" name="minX" bind:value={minX} />
 	<input type="hidden" name="maxX" bind:value={maxX} />
 	<input type="hidden" name="minY" bind:value={minY} />
 	<input type="hidden" name="maxY" bind:value={maxY} />
 	<button type="submit" bind:this={submitButton}></button>
 </form>
+
+{#if selectedAreaId !== null}
+	<dialog open>
+		<article>
+			<ul>
+				<li>
+					<form action="?/delete" method="post" use:confirmSubmit={'Sure?'} use:enhance contents>
+						<input type="hidden" name="area-id" bind:value={selectedAreaId} />
+
+						<button type="submit">Delete</button>
+					</form>
+				</li>
+			</ul>
+
+			<button type="button" class="outlined" onclick={() => (selectedAreaId = null)}>Close</button>
+		</article>
+	</dialog>
+{/if}
 
 <BaseMap>
 	<button
@@ -82,7 +102,13 @@
 				[area.minX, area.minY]
 			]}
 
-			<Polygon color="green" width={2} coords={coordinates} fill="#60a5fa4a" />
+			<Polygon
+				color="green"
+				width={2}
+				coords={coordinates}
+				fill="#60a5fa4a"
+				onclick={() => (selectedAreaId = area.id)}
+			/>
 		{/each}
 	</VectorLayer>
 </BaseMap>

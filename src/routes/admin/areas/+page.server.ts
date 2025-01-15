@@ -32,7 +32,7 @@ export async function load() {
 }
 
 export const actions = {
-	default: async ({ request }) => {
+	add: async ({ request }) => {
 		const form = await superValidate(
 			request,
 			zod(
@@ -147,6 +147,14 @@ export const actions = {
 				.run();
 		});
 
+		throw redirect(302, '/admin/areas');
+	},
+	delete: async ({ request }) => {
+		const formdata = await request.formData();
+		const areaId = formdata.get('area-id');
+		if (typeof areaId !== 'string') throw error(400);
+
+		await db.delete(areasToGenerateTable).where(eq(areasToGenerateTable.id, areaId)).run();
 		throw redirect(302, '/admin/areas');
 	}
 };
