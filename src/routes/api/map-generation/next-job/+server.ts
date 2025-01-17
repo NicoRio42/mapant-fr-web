@@ -4,29 +4,15 @@ import {
 	lidarStepJobTable,
 	mapRenderingStepJobTable,
 	tilesTable,
-	workersTable,
 	type Tile
 } from '$lib/server/schema';
-import { Scrypt } from '$lib/server/scrypt';
 import { eq, inArray } from 'drizzle-orm';
+import { getWorkerIdOrErrorStatus } from '../utils';
 import type { LidarJob, NoJob, RenderJob } from './schemas';
 
 export async function POST({ request }) {
-	const authorizationHeader = request.headers.get('Authorization');
-	if (authorizationHeader === null || !authorizationHeader.startsWith('Bearer')) {
-		return new Response(null, { status: 401 });
-	}
-
-	const token = authorizationHeader.split(' ')[1];
-	if (!token) return new Response(null, { status: 401 });
-	const [workerId, apiKey] = token.split('.');
-	if (!workerId || !apiKey) return new Response(null, { status: 401 });
-
-	const worker = await db.select().from(workersTable).where(eq(workersTable.id, workerId)).get();
-	if (worker === undefined || !worker.hashedApiKey) return new Response(null, { status: 403 });
-
-	const isApiKeyRight = await new Scrypt().verify(worker.hashedApiKey, apiKey);
-	if (!isApiKeyRight) return new Response(null, { status: 403 });
+	const [workerId, errorStatus] = await getWorkerIdOrErrorStatus(request.headers);
+	if (errorStatus !== null) return new Response(null, { status: errorStatus });
 
 	// TODO: wrap all of this in a transaction
 
@@ -50,8 +36,7 @@ export async function POST({ request }) {
 			JSON.stringify({
 				type: 'Lidar',
 				data: {
-					x: nextLidarJob.tiles.minX,
-					y: nextLidarJob.tiles.minY,
+					tile_id: nextLidarJob.tiles.id,
 					tile_url: nextLidarJob.tiles.lidarFileUrl
 				}
 			} satisfies LidarJob),
@@ -63,7 +48,7 @@ export async function POST({ request }) {
 		.select()
 		.from(mapRenderingStepJobTable)
 		.innerJoin(tilesTable, eq(mapRenderingStepJobTable.tileId, tilesTable.id))
-		.where(eq(tilesTable.lidarStepStatus, 'not-started'))
+		.where(eq(tilesTable.mapRenderingStepStatus, 'not-started'))
 		.orderBy(mapRenderingStepJobTable.index)
 		.limit(1)
 		.get();
@@ -97,8 +82,8 @@ export async function POST({ request }) {
 			JSON.stringify({
 				type: 'Render',
 				data: {
-					x: nextRenderJob.tiles.minX,
-					y: nextRenderJob.tiles.minY
+					tile_id: nextRenderJob.tiles.id,
+					neigbhoring_tiles_ids: neigbhoringLidarJobs.map(({ tiles: { id } }) => id)
 				}
 			} satisfies RenderJob),
 			{ status: 202 }

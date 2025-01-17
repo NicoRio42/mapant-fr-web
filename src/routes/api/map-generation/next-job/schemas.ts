@@ -3,8 +3,7 @@ import z from 'zod';
 export const lidarJobSchema = z.object({
 	type: z.literal('Lidar'),
 	data: z.object({
-		x: z.number(),
-		y: z.number(),
+		tile_id: z.string(),
 		tile_url: z.string().url()
 	})
 });
@@ -14,8 +13,8 @@ export type LidarJob = z.infer<typeof lidarJobSchema>;
 export const renderJobSchema = z.object({
 	type: z.literal('Render'),
 	data: z.object({
-		x: z.number(),
-		y: z.number()
+		tile_id: z.string(),
+		neigbhoring_tiles_ids: z.array(z.string())
 	})
 });
 

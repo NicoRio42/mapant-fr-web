@@ -5,6 +5,7 @@ export const handle = async ({ event, resolve }) => {
 	const sessionId = event.cookies.get(auth.sessionCookieName);
 
 	const url = new URL(event.request.url);
+	console.log(`${event.request.method} request to ${url.pathname}`);
 
 	if (url.pathname.startsWith('/admin')) {
 		if (!ADMIN_LOGIN) return new Response(null, { status: 500 });
