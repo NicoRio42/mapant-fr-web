@@ -12,30 +12,31 @@
 	import Osm from './OSM.svelte';
 	import Scan25IgnWebMercator from './Scan25IgnWebMercator.svelte';
 
-
 	let map: Map | undefined = $state(undefined);
 	let showLayerDropDown = $state(false);
-
 	let isOsmLayerDisplayed = $state(false);
 	let isIgnScan25LayerDisplayed = $state(true);
 	let isMapantV1LayerDisplayed = $state(true);
+
 	interface Props {
 		center?: any;
 		zoom?: number;
 		allowLidarTileSelection?: boolean;
 		selected?: Feature | null;
-		fit?: SimpleGeometry | Extent | undefined;
+		fit?: Extent;
 		isLidarHdTilesLayerDisplayed?: boolean;
+		onViewChange?: (params: { zoom: number; extent: Extent }) => void;
 		children?: import('svelte').Snippet;
 	}
 
 	let {
 		center = $bindable(FRANCE_CENTER),
-		zoom = 6,
 		allowLidarTileSelection = false,
 		selected = $bindable(null),
-		fit = undefined,
+		zoom = 6,
+		fit,
 		isLidarHdTilesLayerDisplayed = $bindable(true),
+		onViewChange,
 		children
 	}: Props = $props();
 
@@ -46,7 +47,7 @@
 </script>
 
 <main grow relative bg-white>
-	<OLMap bind:map bind:center {fit} {zoom}>
+	<OLMap bind:map bind:center {fit} {zoom} {onViewChange}>
 		<Osm visible={isOsmLayerDisplayed} opacity={osmLayerOpacity} />
 
 		<Scan25IgnWebMercator visible={isIgnScan25LayerDisplayed} opacity={ignScan25LayerOpacity} />

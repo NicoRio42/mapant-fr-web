@@ -6,7 +6,9 @@
 	import Polygon from '$lib/components/map/Polygon.svelte';
 	import StaticImage from '$lib/components/map/StaticImage.svelte';
 	import VectorLayer from '$lib/components/map/VectorLayer.svelte';
+	import type { Extent } from 'ol/extent.js';
 	import { tick } from 'svelte';
+	import type { Tile } from '$lib/server/schema.js';
 
 	let { data } = $props();
 
@@ -17,6 +19,27 @@
 	let maxY: number | null = $state(null);
 	let submitButton: HTMLButtonElement | undefined = $state();
 	let selectedAreaId: null | string = $state(null);
+	let displayedTiles: Tile[] = $state([]);
+
+	async function onViewChange({ zoom, extent }: { zoom: number; extent: Extent }) {
+		if (!isDrawing || zoom < 13) {
+			displayedTiles = [];
+			return;
+		}
+
+		const [minX, minY, maxX, maxY] = extent;
+
+		const response = await fetch(
+			`/admin/areas/tiles?min-x=${minX}&min-y=${minY}&max-x=${maxX}&max-y=${maxY}`
+		);
+
+		if (!response.ok) {
+			console.error(response.status, await response.text());
+			return;
+		}
+
+		displayedTiles = await response.json();
+	}
 </script>
 
 <form hidden action="?/add" method="post" use:enhance>
@@ -45,7 +68,7 @@
 	</dialog>
 {/if}
 
-<BaseMap>
+<BaseMap {onViewChange}>
 	<button
 		absolute
 		top-12
@@ -84,6 +107,19 @@
 	{/if}
 
 	<VectorLayer>
+		{#if isDrawing}
+			{#each displayedTiles as tile (tile.id)}
+				{@const coordinates = [
+					[tile.minX, tile.maxY],
+					[tile.maxX, tile.maxY],
+					[tile.maxX, tile.minY],
+					[tile.minX, tile.minY]
+				]}
+
+				<Polygon color="blue" width={2} coords={coordinates} />
+			{/each}
+		{/if}
+
 		{#each data.contributions as { contribution, user } (contribution.id)}
 			{@const coordinates = [
 				[contribution.minX, contribution.maxY],

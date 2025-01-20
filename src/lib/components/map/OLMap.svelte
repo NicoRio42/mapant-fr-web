@@ -1,12 +1,9 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { browser } from '$app/environment';
 	import { FRANCE_CENTER } from '$lib/constants';
 	import { Map, View } from 'ol';
 	import { defaults as defaultControls } from 'ol/control/defaults.js';
 	import type { Extent } from 'ol/extent';
-	import type { SimpleGeometry } from 'ol/geom';
 	import { DblClickDragZoom, defaults as defaultInteractions } from 'ol/interaction.js';
 	import { transform } from 'ol/proj.js';
 	import { register } from 'ol/proj/proj4.js';
@@ -16,22 +13,24 @@
 	interface Props {
 		center?: any;
 		zoom?: number;
-		fit?: SimpleGeometry | Extent | undefined;
-		map?: Map | undefined;
+		fit?: Extent;
+		map?: Map;
+		onViewChange?: (params: { zoom: number; extent: Extent }) => void;
 		children?: import('svelte').Snippet;
 	}
 
 	let {
 		center = $bindable(FRANCE_CENTER),
 		zoom = 6,
-		fit = undefined,
+		fit,
 		map = $bindable(undefined),
+		onViewChange,
 		children
 	}: Props = $props();
 
-	let view: View = $state();
+	let view: View | undefined = $state();
 
-	run(() => {
+	$effect(() => {
 		if (browser && view !== undefined && fit !== undefined)
 			view.fit(fit, { padding: [20, 20, 20, 20] });
 	});
@@ -57,8 +56,14 @@
 		});
 
 		map.on('moveend', (event) => {
+			const view = event.map.getView();
 			const newCenter = event.map.getView().getCenter();
 			if (newCenter !== undefined) center = newCenter;
+			const newZoom = event.map.getView().getZoom();
+			const newExtent = view.calculateExtent(event.map.getSize());
+			if (onViewChange !== undefined && newZoom !== undefined && newExtent !== undefined) {
+				onViewChange({ zoom: newZoom, extent: newExtent });
+			}
 		});
 	});
 
