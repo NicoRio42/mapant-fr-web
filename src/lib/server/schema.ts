@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm';
 import { index, integer, real, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { generateId } from 'lucia';
 
@@ -57,6 +58,13 @@ export const tilesTable = sqliteTable('tiles', {
 	})
 });
 
+export const tilesTableRelations = relations(tilesTable, ({ one }) => ({
+	lidarJob: one(lidarStepJobTable, {
+		fields: [tilesTable.id],
+		references: [lidarStepJobTable.tileId]
+	})
+}));
+
 export type Tile = typeof tilesTable.$inferSelect;
 export type TileInsert = typeof tilesTable.$inferInsert;
 
@@ -72,6 +80,10 @@ export const areasToGenerateTable = sqliteTable('areas_to_generate', {
 		.default('not-started')
 		.notNull()
 });
+
+export const areasToGenerateTableRelations = relations(areasToGenerateTable, ({ many }) => ({
+	lidarJobs: many(lidarStepJobTable)
+}));
 
 export type AreaToGenerate = typeof areasToGenerateTable.$inferSelect;
 
@@ -94,6 +106,17 @@ export const lidarStepJobTable = sqliteTable(
 		)
 	})
 );
+
+export const lidarStepJobTableRelations = relations(lidarStepJobTable, ({ one, many }) => ({
+	area: one(areasToGenerateTable, {
+		fields: [lidarStepJobTable.areaToGenerateId],
+		references: [areasToGenerateTable.id]
+	}),
+	tile: one(tilesTable, {
+		fields: [lidarStepJobTable.tileId],
+		references: [tilesTable.id]
+	})
+}));
 
 export const mapRenderingStepJobTable = sqliteTable(
 	'map_rendering_step_jobs',

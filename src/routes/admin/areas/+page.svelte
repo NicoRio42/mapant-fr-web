@@ -4,6 +4,7 @@
 	import BaseMap from '$lib/components/map/BaseMap.svelte';
 	import DrawBox from '$lib/components/map/DrawBox.svelte';
 	import Polygon from '$lib/components/map/Polygon.svelte';
+	import StaticImage from '$lib/components/map/StaticImage.svelte';
 	import VectorLayer from '$lib/components/map/VectorLayer.svelte';
 	import { tick } from 'svelte';
 
@@ -109,6 +110,27 @@
 				fill="#60a5fa4a"
 				onclick={() => (selectedAreaId = area.id)}
 			/>
+
+			{#each area.lidarJobs as { id, tile } (id)}
+				{@const tileCoordinates = [
+					[tile.minX, tile.maxY],
+					[tile.maxX, tile.maxY],
+					[tile.maxX, tile.minY],
+					[tile.minX, tile.minY]
+				]}
+
+				<Polygon color="gray" width={2} coords={tileCoordinates} fill="#60a5fa4a" />
+			{/each}
 		{/each}
 	</VectorLayer>
+
+	{#each data.areas as area (area.id)}
+		{#each area.lidarJobs as { id, tile } (id)}
+			{#if tile.mapRenderingStepStatus === 'finished'}
+				{@const extent = [tile.minX, tile.minY, tile.maxX, tile.maxY]}
+
+				<StaticImage {extent} url="/api/map-generation/render-steps/{tile.id}" zIndex={2} />
+			{/if}
+		{/each}
+	{/each}
 </BaseMap>
