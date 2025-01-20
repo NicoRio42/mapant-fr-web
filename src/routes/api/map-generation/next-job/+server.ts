@@ -44,29 +44,40 @@ export async function POST({ request }) {
 		);
 	}
 
-	const nextRenderJob = await db
+	const nextRenderJobs = await db
 		.select()
 		.from(mapRenderingStepJobTable)
 		.innerJoin(tilesTable, eq(mapRenderingStepJobTable.tileId, tilesTable.id))
 		.where(eq(tilesTable.mapRenderingStepStatus, 'not-started'))
 		.orderBy(mapRenderingStepJobTable.index)
-		.limit(1)
-		.get();
+		.limit(5)
+		.all();
 
-	if (nextRenderJob !== undefined) {
-		const neigbhoringLidarJobs = await db
-			.select()
-			.from(lidarStepJobTable)
-			.innerJoin(tilesTable, eq(lidarStepJobTable.tileId, tilesTable.id))
-			.where(inArray(tilesTable.id, getNeigbhoringTilesIds(nextRenderJob.tiles)))
-			.orderBy(lidarStepJobTable.index)
-			.all();
+	if (nextRenderJobs.length !== 0) {
+		let nextRenderJob: (typeof nextRenderJobs)[number] | undefined = undefined;
+		let neigbhoringTilesIds: string[] | undefined = undefined;
 
-		const someNeigbhoringLidarJobsAreNotFinished = neigbhoringLidarJobs.some(
-			(j) => j.tiles.lidarStepStatus !== 'finished'
-		);
+		for (const job of nextRenderJobs) {
+			const neigbhoringLidarJobs = await db
+				.select()
+				.from(lidarStepJobTable)
+				.innerJoin(tilesTable, eq(lidarStepJobTable.tileId, tilesTable.id))
+				.where(inArray(tilesTable.id, getNeigbhoringTilesIds(job.tiles)))
+				.orderBy(lidarStepJobTable.index)
+				.all();
 
-		if (someNeigbhoringLidarJobsAreNotFinished) {
+			const everyNeigbhoringLidarJobsAreFinished = neigbhoringLidarJobs.every(
+				(j) => j.tiles.lidarStepStatus === 'finished'
+			);
+
+			if (everyNeigbhoringLidarJobsAreFinished) {
+				nextRenderJob = job;
+				neigbhoringTilesIds = neigbhoringLidarJobs.map(({ tiles }) => tiles.id);
+				break;
+			}
+		}
+
+		if (nextRenderJob === undefined || neigbhoringTilesIds === undefined) {
 			return new Response(JSON.stringify({ type: 'NoJobLeft' } satisfies NoJob), {
 				status: 202
 			});
@@ -83,7 +94,7 @@ export async function POST({ request }) {
 				type: 'Render',
 				data: {
 					tile_id: nextRenderJob.tiles.id,
-					neigbhoring_tiles_ids: neigbhoringLidarJobs.map(({ tiles: { id } }) => id)
+					neigbhoring_tiles_ids: neigbhoringTilesIds
 				}
 			} satisfies RenderJob),
 			{ status: 202 }

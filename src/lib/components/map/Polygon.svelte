@@ -60,6 +60,7 @@
 				textAlign: 'start',
 				offsetX: 10
 			});
+
 			styleOptions.text = textStyle;
 		}
 

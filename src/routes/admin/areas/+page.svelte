@@ -12,6 +12,8 @@
 
 	let { data } = $props();
 
+	// console.log(data.areas.map((a) => a.lidarJobs.map((j) => j.tile.mapRenderingStepStatus)));
+
 	let isDrawing = $state(false);
 	let minX: number | null = $state(null);
 	let maxX: number | null = $state(null);
@@ -155,7 +157,20 @@
 					[tile.minX, tile.minY]
 				]}
 
-				<Polygon color="gray" width={2} coords={tileCoordinates} fill="#60a5fa4a" />
+				<Polygon
+					color={tile.mapRenderingStepStatus === 'finished'
+						? 'red'
+						: tile.mapRenderingStepStatus === 'ongoing'
+							? 'orange'
+							: tile.lidarStepStatus === 'finished'
+								? 'yellow'
+								: tile.lidarStepStatus === 'ongoing'
+									? 'pink'
+									: 'gray'}
+					width={2}
+					coords={tileCoordinates}
+					text="Lidar: {tile.lidarStepStatus}, Render: {tile.mapRenderingStepStatus}"
+				/>
 			{/each}
 		{/each}
 	</VectorLayer>
