@@ -6,13 +6,11 @@
 	import Polygon from '$lib/components/map/Polygon.svelte';
 	import StaticImage from '$lib/components/map/StaticImage.svelte';
 	import VectorLayer from '$lib/components/map/VectorLayer.svelte';
+	import type { Tile } from '$lib/server/schema.js';
 	import type { Extent } from 'ol/extent.js';
 	import { tick } from 'svelte';
-	import type { Tile } from '$lib/server/schema.js';
 
 	let { data } = $props();
-
-	// console.log(data.areas.map((a) => a.lidarJobs.map((j) => j.tile.mapRenderingStepStatus)));
 
 	let isDrawing = $state(false);
 	let minX: number | null = $state(null);
@@ -24,7 +22,7 @@
 	let displayedTiles: Tile[] = $state([]);
 
 	async function onViewChange({ zoom, extent }: { zoom: number; extent: Extent }) {
-		if (!isDrawing || zoom < 13) {
+		if (zoom < 13) {
 			displayedTiles = [];
 			return;
 		}
@@ -42,6 +40,8 @@
 
 		displayedTiles = await response.json();
 	}
+
+	let tilesInArea = $derived(data.areas.flatMap((a) => a.lidarJobs.map((j) => j.tileId)));
 </script>
 
 <form hidden action="?/add" method="post" use:enhance>
@@ -109,8 +109,8 @@
 	{/if}
 
 	<VectorLayer>
-		{#if isDrawing}
-			{#each displayedTiles as tile (tile.id)}
+		{#each displayedTiles as tile (tile.id)}
+			{#if !tilesInArea.includes(tile.id)}
 				{@const coordinates = [
 					[tile.minX, tile.maxY],
 					[tile.maxX, tile.maxY],
@@ -118,10 +118,12 @@
 					[tile.minX, tile.minY]
 				]}
 
-				<Polygon color="blue" width={2} coords={coordinates} />
-			{/each}
-		{/if}
+				<Polygon color="blue" width={2} coords={coordinates} text={`Id: ${tile.id}`} />
+			{/if}
+		{/each}
+	</VectorLayer>
 
+	<VectorLayer zIndex={3}>
 		{#each data.contributions as { contribution, user } (contribution.id)}
 			{@const coordinates = [
 				[contribution.minX, contribution.maxY],
@@ -145,7 +147,6 @@
 				color="green"
 				width={2}
 				coords={coordinates}
-				fill="#60a5fa4a"
 				onclick={() => (selectedAreaId = area.id)}
 			/>
 
@@ -169,19 +170,17 @@
 									: 'gray'}
 					width={2}
 					coords={tileCoordinates}
-					text="Lidar: {tile.lidarStepStatus}, Render: {tile.mapRenderingStepStatus}"
+					text={`Id: ${tile.id} \n Lidar: ${tile.lidarStepStatus} \n Render: ${tile.mapRenderingStepStatus}`}
 				/>
 			{/each}
 		{/each}
 	</VectorLayer>
 
-	{#each data.areas as area (area.id)}
-		{#each area.lidarJobs as { id, tile } (id)}
-			{#if tile.mapRenderingStepStatus === 'finished'}
-				{@const extent = [tile.minX, tile.minY, tile.maxX, tile.maxY]}
+	{#each displayedTiles as tile (tile.id)}
+		{#if tile.mapRenderingStepStatus === 'finished'}
+			{@const extent = [tile.minX, tile.minY, tile.maxX, tile.maxY]}
 
-				<StaticImage {extent} url="/api/map-generation/render-steps/{tile.id}" zIndex={2} />
-			{/if}
-		{/each}
+			<StaticImage {extent} url="/api/map-generation/render-steps/{tile.id}" zIndex={2} />
+		{/if}
 	{/each}
 </BaseMap>

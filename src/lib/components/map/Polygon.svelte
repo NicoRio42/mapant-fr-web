@@ -57,8 +57,7 @@
 				text,
 				fill: new Fill({ color }),
 				stroke: new Stroke({ color: '#ffffff', width: 3 }),
-				textAlign: 'start',
-				offsetX: 10
+				textAlign: 'center'
 			});
 
 			styleOptions.text = textStyle;
