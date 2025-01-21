@@ -1,4 +1,4 @@
-import { TILE_SIZE_IN_METERS } from '$lib/constants';
+import { MAX_JOB_TIME_IN_SECONDS, TILE_SIZE_IN_METERS } from '$lib/constants';
 import { db } from '$lib/server/db.js';
 import {
 	lidarStepJobTable,
@@ -6,7 +6,7 @@ import {
 	tilesTable,
 	type Tile
 } from '$lib/server/schema';
-import { eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray, lt, or, sql } from 'drizzle-orm';
 import { getWorkerIdOrErrorStatus } from '../utils';
 import type { LidarJob, NoJob, RenderJob } from './schemas';
 
@@ -20,7 +20,19 @@ export async function POST({ request }) {
 		.select()
 		.from(lidarStepJobTable)
 		.innerJoin(tilesTable, eq(lidarStepJobTable.tileId, tilesTable.id))
-		.where(eq(tilesTable.lidarStepStatus, 'not-started'))
+		.where(
+			or(
+				eq(tilesTable.lidarStepStatus, 'not-started'),
+				// If a job is ongoing for more than X minutes, it is canceled and reassigned
+				and(
+					eq(tilesTable.lidarStepStatus, 'ongoing'),
+					lt(
+						sql`${tilesTable.lidarStepStartTime}`,
+						new Date().getTime() - MAX_JOB_TIME_IN_SECONDS * 1000
+					)
+				)
+			)
+		)
 		.orderBy(lidarStepJobTable.index)
 		.limit(1)
 		.get();
@@ -28,7 +40,11 @@ export async function POST({ request }) {
 	if (nextLidarJob !== undefined) {
 		await db
 			.update(tilesTable)
-			.set({ lidarStepStatus: 'ongoing', lidarStepWorkerId: workerId })
+			.set({
+				lidarStepStatus: 'ongoing',
+				lidarStepWorkerId: workerId,
+				lidarStepStartTime: new Date()
+			})
 			.where(eq(tilesTable.id, nextLidarJob.tiles.id))
 			.run();
 
@@ -48,7 +64,19 @@ export async function POST({ request }) {
 		.select()
 		.from(mapRenderingStepJobTable)
 		.innerJoin(tilesTable, eq(mapRenderingStepJobTable.tileId, tilesTable.id))
-		.where(eq(tilesTable.mapRenderingStepStatus, 'not-started'))
+		.where(
+			or(
+				eq(tilesTable.mapRenderingStepStatus, 'not-started'),
+				// If a job is ongoing for more than X minutes, it is canceled and reassigned
+				and(
+					eq(tilesTable.mapRenderingStepStatus, 'ongoing'),
+					lt(
+						sql`${tilesTable.mapRenderingStepStartTime}`,
+						new Date().getTime() - MAX_JOB_TIME_IN_SECONDS * 1000
+					)
+				)
+			)
+		)
 		.orderBy(mapRenderingStepJobTable.index)
 		.limit(5)
 		.all();
@@ -85,7 +113,11 @@ export async function POST({ request }) {
 
 		await db
 			.update(tilesTable)
-			.set({ mapRenderingStepStatus: 'ongoing', mapRenderingStepWorkerId: workerId })
+			.set({
+				mapRenderingStepStatus: 'ongoing',
+				mapRenderingStepWorkerId: workerId,
+				mapRenderingStepStartTime: new Date()
+			})
 			.where(eq(tilesTable.id, nextRenderJob.tiles.id))
 			.run();
 

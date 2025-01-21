@@ -48,6 +48,8 @@ export const tilesTable = sqliteTable('tiles', {
 	lidarStepWorkerId: text('lidar_step_worker_id').references(() => workersTable.id, {
 		onDelete: 'set null'
 	}),
+	lidarStepStartTime: integer('lidar_step_start_time', { mode: 'timestamp_ms' }),
+	lidarStepFinishTime: integer('lidar_step_finish_time', { mode: 'timestamp_ms' }),
 	mapRenderingStepStatus: text('map_rendering_step_status', {
 		enum: ['not-started', 'ongoing', 'finished']
 	})
@@ -55,7 +57,9 @@ export const tilesTable = sqliteTable('tiles', {
 		.notNull(),
 	mapRenderingStepWorkerId: text('map_rendering_step_worker_id').references(() => workersTable.id, {
 		onDelete: 'set null'
-	})
+	}),
+	mapRenderingStepStartTime: integer('map_rendering_step_start_time', { mode: 'timestamp_ms' }),
+	mapRenderingStepFinishTime: integer('map_rendering_step_finish_time', { mode: 'timestamp_ms' })
 });
 
 export const tilesTableRelations = relations(tilesTable, ({ one }) => ({

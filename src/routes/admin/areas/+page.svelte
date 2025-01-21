@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { invalidateAll } from '$app/navigation';
 	import { confirmSubmit } from '$lib/actions/confirm-submit.js';
 	import BaseMap from '$lib/components/map/BaseMap.svelte';
 	import DrawBox from '$lib/components/map/DrawBox.svelte';
@@ -83,9 +84,30 @@
 		p-0
 		bg-white
 		class="outline"
+		type="button"
+		aria-label="Draw"
 		onclick={() => (isDrawing = !isDrawing)}
 	>
 		<i i-carbon-edit w-5 h-5 block></i>
+	</button>
+
+	<button
+		absolute
+		top-22
+		right-2
+		flex
+		items-center
+		justify-center
+		w-8
+		h-8
+		p-0
+		bg-white
+		class="outline"
+		type="button"
+		aria-label="Refresh"
+		onclick={async () => await invalidateAll()}
+	>
+		<i i-carbon-update-now w-5 h-5 block></i>
 	</button>
 
 	{#if isDrawing}
@@ -136,20 +158,6 @@
 		{/each}
 
 		{#each data.areas as area (area.id)}
-			{@const coordinates = [
-				[area.minX, area.maxY],
-				[area.maxX, area.maxY],
-				[area.maxX, area.minY],
-				[area.minX, area.minY]
-			]}
-
-			<Polygon
-				color="green"
-				width={2}
-				coords={coordinates}
-				onclick={() => (selectedAreaId = area.id)}
-			/>
-
 			{#each area.lidarJobs as { id, tile } (id)}
 				{@const tileCoordinates = [
 					[tile.minX, tile.maxY],
@@ -173,6 +181,24 @@
 					text={`Id: ${tile.id} \n Lidar: ${tile.lidarStepStatus} \n Render: ${tile.mapRenderingStepStatus}`}
 				/>
 			{/each}
+		{/each}
+	</VectorLayer>
+
+	<VectorLayer zIndex={4}>
+		{#each data.areas as area (area.id)}
+			{@const coordinates = [
+				[area.minX, area.maxY],
+				[area.maxX, area.maxY],
+				[area.maxX, area.minY],
+				[area.minX, area.minY]
+			]}
+
+			<Polygon
+				color="green"
+				width={2}
+				coords={coordinates}
+				onclick={() => (selectedAreaId = area.id)}
+			/>
 		{/each}
 	</VectorLayer>
 

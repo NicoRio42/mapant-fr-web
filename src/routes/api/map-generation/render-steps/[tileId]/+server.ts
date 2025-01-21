@@ -12,7 +12,7 @@ export async function GET({ platform, params }) {
 	const bucket = platform?.env?.R2_BUCKET;
 	if (bucket === undefined) return new Response(null, { status: 500 });
 
-	const objectKey = `v1/render-step/${tile.id}`;
+	const objectKey = `v1/render-step/${tile.id}.png`;
 
 	try {
 		const object = await bucket.get(objectKey);
@@ -66,7 +66,7 @@ export async function POST({ request, platform, params }) {
 		return new Response('No file uploaded', { status: 400 });
 	}
 
-	const objectKey = `v1/render-step/${tile.id}`;
+	const objectKey = `v1/render-step/${tile.id}.png`;
 
 	try {
 		await bucket.put(objectKey, file as unknown as CloudflareFile, {
@@ -81,7 +81,7 @@ export async function POST({ request, platform, params }) {
 
 	await db
 		.update(tilesTable)
-		.set({ mapRenderingStepStatus: 'finished' })
+		.set({ mapRenderingStepStatus: 'finished', mapRenderingStepFinishTime: new Date() })
 		.where(eq(tilesTable.id, tile.id))
 		.run();
 
