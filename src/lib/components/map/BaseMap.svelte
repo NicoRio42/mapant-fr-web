@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { clickOutside } from '$lib/actions/click-outside';
 	import LidarHdTiles from '$lib/components/map/LidarHdTiles.svelte';
+	import MapantLegacy from '$lib/components/map/MapantLegacy.svelte';
 	import Mapant from '$lib/components/map/Mapant.svelte';
 	import OLMap from '$lib/components/map/OLMap.svelte';
 	import { FRANCE_CENTER, MAPANT_V1_CENTER, MAPANT_V1_EXTENT } from '$lib/constants';
 	import type { Feature, Map } from 'ol';
 	import type { Extent } from 'ol/extent';
-	import type { SimpleGeometry } from 'ol/geom';
 	import { fade } from 'svelte/transition';
 	import LayerControlItem from './LayerControlItem.svelte';
 	import Osm from './OSM.svelte';
@@ -17,6 +17,7 @@
 	let isOsmLayerDisplayed = $state(false);
 	let isIgnScan25LayerDisplayed = $state(true);
 	let isMapantV1LayerDisplayed = $state(true);
+	let isMapantLayerDisplayed = $state(true);
 
 	interface Props {
 		center?: any;
@@ -43,6 +44,7 @@
 	let osmLayerOpacity = $state(0.5);
 	let ignScan25LayerOpacity = $state(0.5);
 	let mapantV1LayerOpacity = $state(1);
+	let mapantLayerOpacity = $state(1);
 	let lidarHdTilesLayerOpacity = $state(1);
 </script>
 
@@ -52,7 +54,9 @@
 
 		<Scan25IgnWebMercator visible={isIgnScan25LayerDisplayed} opacity={ignScan25LayerOpacity} />
 
-		<Mapant visible={isMapantV1LayerDisplayed} opacity={mapantV1LayerOpacity} />
+		<MapantLegacy visible={isMapantV1LayerDisplayed} opacity={mapantV1LayerOpacity} />
+
+		<Mapant visible={isMapantLayerDisplayed} opacity={mapantLayerOpacity} />
 
 		<LidarHdTiles
 			visible={isLidarHdTilesLayerDisplayed}
@@ -118,6 +122,12 @@
 						<i i-carbon-zoom-fit block w-6 h-6></i>
 					</button>
 				</LayerControlItem>
+
+				<LayerControlItem
+					label="Mapant.fr"
+					bind:displayed={isMapantLayerDisplayed}
+					bind:opacity={mapantLayerOpacity}
+				/>
 
 				<LayerControlItem
 					label="IGN Scan25"

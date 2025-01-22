@@ -1,7 +1,7 @@
 /**
  * Constants computed to cover the whole metropolitan France
  */
-const MIN_X = 343646;
+const MIN_X = -343646;
 const MAX_X = 1704354;
 const MIN_Y = 5619537;
 const MAX_Y = 7667537;
