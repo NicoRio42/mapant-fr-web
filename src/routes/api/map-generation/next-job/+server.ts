@@ -1,14 +1,16 @@
 import { MAX_JOB_TIME_IN_SECONDS, TILE_SIZE_IN_METERS } from '$lib/constants';
 import { db } from '$lib/server/db.js';
 import {
+	areasToGenerateTable,
 	lidarStepJobTable,
 	mapRenderingStepJobTable,
+	pyramidRenderingStepJobTable,
 	tilesTable,
 	type Tile
 } from '$lib/server/schema';
 import { and, eq, inArray, lt, or, sql } from 'drizzle-orm';
 import { getWorkerIdOrErrorStatus } from '../utils';
-import type { LidarJob, NoJob, RenderJob } from './schemas';
+import type { LidarJob, NoJob, PyramidJob, RenderJob } from './schemas';
 
 export async function POST({ request }) {
 	const [workerId, errorStatus] = await getWorkerIdOrErrorStatus(request.headers);
@@ -133,39 +135,91 @@ export async function POST({ request }) {
 		);
 	}
 
-	// const nextPyramidJob = await db
-	// 	.select()
-	// 	.from(pyramidRenderingStepJobTable)
-	// 	.where(eq(pyramidRenderingStepJobTable.status, 'not-started'))
-	// 	.orderBy(pyramidRenderingStepJobTable.index)
-	// 	.limit(1)
-	// 	.get();
+	const nextPyramidJob = await db
+		.select()
+		.from(pyramidRenderingStepJobTable)
+		.where(
+			or(
+				eq(pyramidRenderingStepJobTable.status, 'not-started'),
+				// If a job is ongoing for more than X minutes, it is canceled and reassigned
+				and(
+					eq(pyramidRenderingStepJobTable.status, 'ongoing'),
+					lt(
+						sql`${pyramidRenderingStepJobTable.startTime}`,
+						new Date().getTime() - MAX_JOB_TIME_IN_SECONDS * 1000
+					)
+				)
+			)
+		)
+		.orderBy(pyramidRenderingStepJobTable.index)
+		.limit(1)
+		.get();
 
-	// if (nextPyramidJob !== undefined) {
-	// 	await db
-	// 		.update(pyramidRenderingStepJobTable)
-	// 		.set({ status: 'ongoing' })
-	// 		.where(eq(pyramidRenderingStepJobTable.id, nextPyramidJob.id))
-	// 		.run();
+	if (nextPyramidJob !== undefined) {
+		if (!nextPyramidJob.isBaseZoomLevel) {
+			// Check if the four tiles needed to generate the tile are already generated
+			const childPyramidJobs = await db
+				.select()
+				.from(pyramidRenderingStepJobTable)
+				.where(
+					and(
+						eq(pyramidRenderingStepJobTable.areaToGenerateId, nextPyramidJob.areaToGenerateId),
+						eq(pyramidRenderingStepJobTable.zoom, nextPyramidJob.zoom + 1),
+						or(
+							and(
+								eq(pyramidRenderingStepJobTable.x, nextPyramidJob.x * 2),
+								eq(pyramidRenderingStepJobTable.y, nextPyramidJob.y * 2)
+							),
+							and(
+								eq(pyramidRenderingStepJobTable.x, nextPyramidJob.x * 2 + 1),
+								eq(pyramidRenderingStepJobTable.y, nextPyramidJob.y * 2)
+							),
+							and(
+								eq(pyramidRenderingStepJobTable.x, nextPyramidJob.x * 2),
+								eq(pyramidRenderingStepJobTable.y, nextPyramidJob.y * 2 + 1)
+							),
+							and(
+								eq(pyramidRenderingStepJobTable.x, nextPyramidJob.x * 2 + 1),
+								eq(pyramidRenderingStepJobTable.y, nextPyramidJob.y * 2 + 1)
+							)
+						)
+					)
+				)
+				.all();
 
-	// 	await db
-	// 		.update(areasToGenerateTable)
-	// 		.set({ pyramidGenerationStepStatus: 'ongoing' })
-	// 		.where(eq(areasToGenerateTable.id, nextPyramidJob.areaToGenerateId))
-	// 		.run();
+			if (childPyramidJobs.some((job) => job.status !== 'finished')) {
+				return new Response(JSON.stringify({ type: 'NoJobLeft' } satisfies NoJob), {
+					status: 202
+				});
+			}
+		}
 
-	// 	return new Response(
-	// 		JSON.stringify({
-	// 			type: 'Pyramid',
-	// 			data: {
-	// 				x: nextPyramidJob.x,
-	// 				y: nextPyramidJob.y,
-	// 				z: nextPyramidJob.zoom
-	// 			}
-	// 		} satisfies PyramidJob),
-	// 		{ status: 202 }
-	// 	);
-	// }
+		await db
+			.update(pyramidRenderingStepJobTable)
+			.set({ status: 'ongoing', workerId, startTime: new Date() })
+			.where(eq(pyramidRenderingStepJobTable.id, nextPyramidJob.id))
+			.run();
+
+		await db
+			.update(areasToGenerateTable)
+			.set({ pyramidGenerationStepStatus: 'ongoing' })
+			.where(eq(areasToGenerateTable.id, nextPyramidJob.areaToGenerateId))
+			.run();
+
+		return new Response(
+			JSON.stringify({
+				type: 'Pyramid',
+				data: {
+					x: nextPyramidJob.x,
+					y: nextPyramidJob.y,
+					z: nextPyramidJob.zoom,
+					is_base_zoom_level: nextPyramidJob.isBaseZoomLevel,
+					area_id: nextPyramidJob.areaToGenerateId
+				}
+			} satisfies PyramidJob),
+			{ status: 202 }
+		);
+	}
 
 	return new Response(JSON.stringify({ type: 'NoJobLeft' } satisfies NoJob), {
 		status: 202

@@ -128,26 +128,67 @@ export const actions = {
 					}))
 				)
 				.run();
+		});
 
-			const pyramidJobs = getPyramidJobsFromTileList(
-				tilesInside.map(({ minX, minY }) => ({ xLambert93: minX, yLambert93: minY }))
-			);
+		throw redirect(302, '/admin/areas');
+	},
+	merge: async ({ request }) => {
+		const formdata = await request.formData();
+		const areaId = formdata.get('area-id');
+		if (typeof areaId !== 'string') throw error(400);
+
+		const mapRenderingJobsWithTiles = await db
+			.select()
+			.from(mapRenderingStepJobTable)
+			.innerJoin(tilesTable, eq(mapRenderingStepJobTable.tileId, tilesTable.id))
+			.where(eq(mapRenderingStepJobTable.areaToGenerateId, areaId))
+			.all();
+
+		if (
+			mapRenderingJobsWithTiles.some(({ tiles }) => tiles.mapRenderingStepStatus !== 'finished')
+		) {
+			throw error(400, 'All map rendering step jobs are not finished for this area.');
+		}
+
+		const pyramidJobs = getPyramidJobsFromTileList(
+			mapRenderingJobsWithTiles.map(({ tiles: { minX, minY } }) => ({
+				xLambert93: minX,
+				yLambert93: minY
+			}))
+		);
+
+		await db.transaction(async (tx) => {
+			await tx
+				.update(tilesTable)
+				.set({ isMergeable: true })
+				.where(
+					inArray(
+						tilesTable.id,
+						mapRenderingJobsWithTiles.map(({ tiles }) => tiles.id)
+					)
+				)
+				.run();
+
+			await tx
+				.update(areasToGenerateTable)
+				.set({ isMergeable: true })
+				.where(eq(areasToGenerateTable.id, areaId))
+				.run();
 
 			await tx
 				.insert(pyramidRenderingStepJobTable)
 				.values(
-					pyramidJobs.map(({ x, y, z, index }) => ({
+					pyramidJobs.map(({ x, y, z, isBaseZoomLevel, index }) => ({
 						areaToGenerateId: areaId,
 						index,
 						x,
 						y,
-						zoom: z
+						zoom: z,
+						isBaseZoomLevel
 					}))
 				)
 				.run();
 		});
-
-		throw redirect(302, '/admin/areas');
 	},
 	delete: async ({ request }) => {
 		const formdata = await request.formData();

@@ -5,7 +5,6 @@ import { getWorkerIdOrErrorStatus } from '../../utils';
 import { File as CloudflareFile } from '@cloudflare/workers-types';
 
 export async function GET({ platform, params }) {
-	console.log('render-steps get route');
 	const tile = await db.select().from(tilesTable).where(eq(tilesTable.id, params.tileId)).get();
 	if (tile === undefined) return new Response(null, { status: 404 });
 
@@ -46,7 +45,7 @@ export async function POST({ request, platform, params }) {
 	}
 
 	if (tile.mapRenderingStepStatus !== 'ongoing') {
-		console.error('Rnder step status for this tile is not ongoing.');
+		console.error('Render step status for this tile is not ongoing.');
 		return new Response(null, { status: 400 });
 	}
 

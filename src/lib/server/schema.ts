@@ -59,7 +59,8 @@ export const tilesTable = sqliteTable('tiles', {
 		onDelete: 'set null'
 	}),
 	mapRenderingStepStartTime: integer('map_rendering_step_start_time', { mode: 'timestamp_ms' }),
-	mapRenderingStepFinishTime: integer('map_rendering_step_finish_time', { mode: 'timestamp_ms' })
+	mapRenderingStepFinishTime: integer('map_rendering_step_finish_time', { mode: 'timestamp_ms' }),
+	isMergeable: integer('is_mergeable', { mode: 'boolean' }).default(false)
 });
 
 export const tilesTableRelations = relations(tilesTable, ({ one }) => ({
@@ -82,7 +83,8 @@ export const areasToGenerateTable = sqliteTable('areas_to_generate', {
 		enum: ['not-started', 'ongoing', 'finished']
 	})
 		.default('not-started')
-		.notNull()
+		.notNull(),
+	isMergeable: integer('is_mergeable', { mode: 'boolean' }).default(false)
 });
 
 export const areasToGenerateTableRelations = relations(areasToGenerateTable, ({ many }) => ({
@@ -111,7 +113,7 @@ export const lidarStepJobTable = sqliteTable(
 	})
 );
 
-export const lidarStepJobTableRelations = relations(lidarStepJobTable, ({ one, many }) => ({
+export const lidarStepJobTableRelations = relations(lidarStepJobTable, ({ one }) => ({
 	area: one(areasToGenerateTable, {
 		fields: [lidarStepJobTable.areaToGenerateId],
 		references: [areasToGenerateTable.id]
@@ -153,9 +155,15 @@ export const pyramidRenderingStepJobTable = sqliteTable(
 		x: integer('x').notNull(),
 		y: integer('y').notNull(),
 		zoom: integer('zoom').notNull(),
+		isBaseZoomLevel: integer('is_base_zoom_level', { mode: 'boolean' }).notNull(),
 		status: text('status', { enum: ['not-started', 'ongoing', 'finished'] })
 			.default('not-started')
-			.notNull()
+			.notNull(),
+		workerId: text('worker_id').references(() => workersTable.id, {
+			onDelete: 'set null'
+		}),
+		startTime: integer('start_time', { mode: 'timestamp_ms' }),
+		finishTime: integer('finish_time', { mode: 'timestamp_ms' })
 	},
 	(table) => ({
 		areaToGenerateIdIndex: index('pyramid_rendering_step_jobs_area_to_generate_id_index').on(

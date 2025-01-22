@@ -14,7 +14,13 @@ const BASE_TILE_IMAGE_PIXEL_SIZE = 2362;
 const TILE_IMAGE_PIXEL_SIZE = 256;
 const MAX_TILE_SIZE = BASE_TILE_LAMBERT_93_SIZE * Math.pow(2, BASE_ZOOM_LEVEL);
 
-type PyramidJob = { x: number; y: number; z: number; index: number };
+type PyramidJob = {
+	x: number;
+	y: number;
+	z: number;
+	isBaseZoomLevel: boolean;
+	index: number;
+};
 
 export function getPyramidJobsFromTileList(
 	tiles: { xLambert93: number; yLambert93: number }[]
@@ -28,57 +34,11 @@ export function getPyramidJobsFromTileList(
 
 	for (const { xLambert93, yLambert93 } of tiles) {
 		const [x, y] = lambert93ToTileNum(xLambert93, yLambert93, BASE_ZOOM_LEVEL);
-		zooms[BASE_ZOOM_LEVEL].push({ x, y, z: BASE_ZOOM_LEVEL, index });
+		zooms[BASE_ZOOM_LEVEL].push({ x, y, z: BASE_ZOOM_LEVEL, isBaseZoomLevel: true, index });
 		index++;
 	}
 
 	pyramidJobs = [...pyramidJobs, ...zooms[BASE_ZOOM_LEVEL]];
-
-	// Upper levels
-	for (let zoomLevel = BASE_ZOOM_LEVEL + 1; zoomLevel <= MAX_ZOOM_LEVEL; zoomLevel++) {
-		zooms[zoomLevel] = [];
-		const parentZoom = zooms[zoomLevel - 1];
-
-		for (const parentPyramidJob of parentZoom) {
-			zooms[zoomLevel].push({
-				x: parentPyramidJob.x * 2,
-				y: parentPyramidJob.y * 2,
-				z: zoomLevel,
-				index
-			});
-
-			index++;
-
-			zooms[zoomLevel].push({
-				x: parentPyramidJob.x * 2 + 1,
-				y: parentPyramidJob.y * 2,
-				z: zoomLevel,
-				index
-			});
-
-			index++;
-
-			zooms[zoomLevel].push({
-				x: parentPyramidJob.x * 2,
-				y: parentPyramidJob.y * 2 + 1,
-				z: zoomLevel,
-				index
-			});
-
-			index++;
-
-			zooms[zoomLevel].push({
-				x: parentPyramidJob.x * 2 + 1,
-				y: parentPyramidJob.y * 2 + 1,
-				z: zoomLevel,
-				index
-			});
-
-			index++;
-		}
-
-		pyramidJobs = [...pyramidJobs, ...zooms[zoomLevel]];
-	}
 
 	// Lower levels
 	for (let zoomLevel = BASE_ZOOM_LEVEL - 1; zoomLevel >= MIN_ZOOM_LEVEL; zoomLevel--) {
@@ -94,7 +54,7 @@ export function getPyramidJobsFromTileList(
 		}
 
 		zoomMap.forEach(({ x, y }) => {
-			zooms[zoomLevel].push({ x, y, z: zoomLevel, index });
+			zooms[zoomLevel].push({ x, y, z: zoomLevel, isBaseZoomLevel: false, index });
 			index++;
 		});
 

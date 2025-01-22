@@ -1,0 +1,1 @@
+ALTER TABLE `pyramid_rendering_step_jobs` RENAME COLUMN "max_upper_zoom_to_generate" TO "is_base_zoom_level";

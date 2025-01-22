@@ -198,6 +198,7 @@
 				width={2}
 				coords={coordinates}
 				onclick={() => (selectedAreaId = area.id)}
+				fill="transparent"
 			/>
 		{/each}
 	</VectorLayer>
