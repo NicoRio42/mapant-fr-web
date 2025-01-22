@@ -64,6 +64,14 @@
 						<button type="submit">Delete</button>
 					</form>
 				</li>
+
+				<li>
+					<form action="?/merge" method="post" use:confirmSubmit={'Sure?'} use:enhance contents>
+						<input type="hidden" name="area-id" bind:value={selectedAreaId} />
+
+						<button type="submit">Merge</button>
+					</form>
+				</li>
 			</ul>
 
 			<button type="button" class="outlined" onclick={() => (selectedAreaId = null)}>Close</button>

@@ -156,7 +156,7 @@ export async function POST({ request }) {
 		.get();
 
 	if (nextPyramidJob !== undefined) {
-		if (!nextPyramidJob.isBaseZoomLevel) {
+		if (nextPyramidJob.baseZoomLevelTileId === null) {
 			// Check if the four tiles needed to generate the tile are already generated
 			const childPyramidJobs = await db
 				.select()
@@ -213,7 +213,7 @@ export async function POST({ request }) {
 					x: nextPyramidJob.x,
 					y: nextPyramidJob.y,
 					z: nextPyramidJob.zoom,
-					is_base_zoom_level: nextPyramidJob.isBaseZoomLevel,
+					base_zoom_level_tile_id: nextPyramidJob.baseZoomLevelTileId,
 					area_id: nextPyramidJob.areaToGenerateId
 				}
 			} satisfies PyramidJob),

@@ -26,7 +26,7 @@ export const pyramidJobSchema = z.object({
 		x: z.number(),
 		y: z.number(),
 		z: z.number(),
-		is_base_zoom_level: z.boolean(),
+		base_zoom_level_tile_id: z.string().nullable(),
 		area_id: z.string()
 	})
 });

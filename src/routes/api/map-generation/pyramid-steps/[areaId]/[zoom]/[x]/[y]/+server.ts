@@ -5,7 +5,7 @@ import { getWorkerIdOrErrorStatus } from '../../../../../utils';
 import { File as CloudflareFile } from '@cloudflare/workers-types';
 
 export async function GET({ request, params: { areaId, x, y, zoom }, platform }) {
-	const [workerId, errorStatus] = await getWorkerIdOrErrorStatus(request.headers);
+	const [_, errorStatus] = await getWorkerIdOrErrorStatus(request.headers);
 	if (errorStatus !== null) return new Response(null, { status: errorStatus });
 
 	const parsedX = parseInt(x, 10);
@@ -51,14 +51,19 @@ export async function POST({ request, params: { areaId, x, y, zoom }, platform }
 		return new Response(null, { status: 400 });
 	}
 
+	const [xTile, yTile] =
+		parsedZoom > 11
+			? getCorrespondingBaseTileFromXYZ(parsedX, parsedY, parsedZoom)
+			: [parsedX, parsedY];
+
 	const pyramidJob = await db
 		.select()
 		.from(pyramidRenderingStepJobTable)
 		.where(
 			and(
-				eq(pyramidRenderingStepJobTable.x, parsedX),
-				eq(pyramidRenderingStepJobTable.y, parsedY),
-				eq(pyramidRenderingStepJobTable.zoom, parsedZoom),
+				eq(pyramidRenderingStepJobTable.x, xTile),
+				eq(pyramidRenderingStepJobTable.y, yTile),
+				eq(pyramidRenderingStepJobTable.zoom, Math.min(parsedZoom, 11)),
 				eq(pyramidRenderingStepJobTable.areaToGenerateId, areaId)
 			)
 		)
@@ -105,11 +110,21 @@ export async function POST({ request, params: { areaId, x, y, zoom }, platform }
 		return new Response(null, { status: 500 });
 	}
 
-	await db
-		.update(pyramidRenderingStepJobTable)
-		.set({ status: 'finished', finishTime: new Date() })
-		.where(eq(pyramidRenderingStepJobTable.id, pyramidJob.id))
-		.run();
+	if (parsedZoom <= 11) {
+		await db
+			.update(pyramidRenderingStepJobTable)
+			.set({ status: 'finished', finishTime: new Date() })
+			.where(eq(pyramidRenderingStepJobTable.id, pyramidJob.id))
+			.run();
+	}
 
 	return new Response(null, { status: 202 });
+}
+
+function getCorrespondingBaseTileFromXYZ(x: number, y: number, z: number) {
+	if (z === 12) {
+		return [Math.floor(x / 2), Math.floor(y / 2)];
+	}
+
+	return [Math.floor(Math.floor(x / 2) / 2), Math.floor(Math.floor(y / 2) / 2)];
 }

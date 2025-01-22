@@ -178,13 +178,13 @@ export const actions = {
 			await tx
 				.insert(pyramidRenderingStepJobTable)
 				.values(
-					pyramidJobs.map(({ x, y, z, isBaseZoomLevel, index }) => ({
+					pyramidJobs.map(({ x, y, z, baseZoomLevelTileId, index }) => ({
 						areaToGenerateId: areaId,
 						index,
 						x,
 						y,
 						zoom: z,
-						isBaseZoomLevel
+						baseZoomLevelTileId
 					}))
 				)
 				.run();

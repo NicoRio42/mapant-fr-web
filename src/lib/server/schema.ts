@@ -155,7 +155,9 @@ export const pyramidRenderingStepJobTable = sqliteTable(
 		x: integer('x').notNull(),
 		y: integer('y').notNull(),
 		zoom: integer('zoom').notNull(),
-		isBaseZoomLevel: integer('is_base_zoom_level', { mode: 'boolean' }).notNull(),
+		baseZoomLevelTileId: text('base_zoom_level_tile_id').references(() => tilesTable.id, {
+			onDelete: 'cascade'
+		}),
 		status: text('status', { enum: ['not-started', 'ongoing', 'finished'] })
 			.default('not-started')
 			.notNull(),

@@ -57,6 +57,13 @@
       "when": 1737481250890,
       "tag": "0007_military_night_thrasher",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1737539316156,
+      "tag": "0008_minor_deathstrike",
+      "breakpoints": true
     }
   ]
 }

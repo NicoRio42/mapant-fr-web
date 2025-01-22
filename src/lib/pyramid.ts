@@ -18,7 +18,7 @@ type PyramidJob = {
 	x: number;
 	y: number;
 	z: number;
-	isBaseZoomLevel: boolean;
+	baseZoomLevelTileId: string | null;
 	index: number;
 };
 
@@ -34,7 +34,13 @@ export function getPyramidJobsFromTileList(
 
 	for (const { xLambert93, yLambert93 } of tiles) {
 		const [x, y] = lambert93ToTileNum(xLambert93, yLambert93, BASE_ZOOM_LEVEL);
-		zooms[BASE_ZOOM_LEVEL].push({ x, y, z: BASE_ZOOM_LEVEL, isBaseZoomLevel: true, index });
+		zooms[BASE_ZOOM_LEVEL].push({
+			x,
+			y,
+			z: BASE_ZOOM_LEVEL,
+			baseZoomLevelTileId: `${xLambert93}_${yLambert93}`,
+			index
+		});
 		index++;
 	}
 
@@ -54,7 +60,7 @@ export function getPyramidJobsFromTileList(
 		}
 
 		zoomMap.forEach(({ x, y }) => {
-			zooms[zoomLevel].push({ x, y, z: zoomLevel, isBaseZoomLevel: false, index });
+			zooms[zoomLevel].push({ x, y, z: zoomLevel, baseZoomLevelTileId: null, index });
 			index++;
 		});
 
