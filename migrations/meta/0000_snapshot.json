@@ -1,8 +1,6 @@
 {
-  "version": "5",
+  "version": "6",
   "dialect": "sqlite",
-  "id": "f6739c19-21ea-4746-9370-7f541a9de2e0",
-  "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "contribution": {
       "name": "contribution",
@@ -78,19 +76,20 @@
         "contribution_fk_user_user_id_fk": {
           "name": "contribution_fk_user_user_id_fk",
           "tableFrom": "contribution",
-          "tableTo": "user",
           "columnsFrom": [
             "fk_user"
           ],
+          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "user_session": {
       "name": "user_session",
@@ -122,19 +121,20 @@
         "user_session_user_id_user_id_fk": {
           "name": "user_session_user_id_user_id_fk",
           "tableFrom": "user_session",
-          "tableTo": "user",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "user": {
       "name": "user",
@@ -171,13 +171,16 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     }
   },
   "enums": {},
   "_meta": {
-    "schemas": {},
     "tables": {},
     "columns": {}
-  }
+  },
+  "id": "f6739c19-21ea-4746-9370-7f541a9de2e0",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "views": {}
 }

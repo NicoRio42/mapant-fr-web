@@ -1,8 +1,6 @@
 {
-  "version": "5",
+  "version": "6",
   "dialect": "sqlite",
-  "id": "16516c2a-569a-47e1-b945-7348123e98f4",
-  "prevId": "f6739c19-21ea-4746-9370-7f541a9de2e0",
   "tables": {
     "contribution": {
       "name": "contribution",
@@ -78,19 +76,20 @@
         "contribution_fk_user_user_id_fk": {
           "name": "contribution_fk_user_user_id_fk",
           "tableFrom": "contribution",
-          "tableTo": "user",
           "columnsFrom": [
             "fk_user"
           ],
+          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "contribution_without_compensation": {
       "name": "contribution_without_compensation",
@@ -130,19 +129,20 @@
         "contribution_without_compensation_fk_user_user_id_fk": {
           "name": "contribution_without_compensation_fk_user_user_id_fk",
           "tableFrom": "contribution_without_compensation",
-          "tableTo": "user",
           "columnsFrom": [
             "fk_user"
           ],
+          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "user_session": {
       "name": "user_session",
@@ -174,19 +174,20 @@
         "user_session_user_id_user_id_fk": {
           "name": "user_session_user_id_user_id_fk",
           "tableFrom": "user_session",
-          "tableTo": "user",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "user",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "user": {
       "name": "user",
@@ -223,13 +224,16 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     }
   },
   "enums": {},
   "_meta": {
-    "schemas": {},
     "tables": {},
     "columns": {}
-  }
+  },
+  "id": "16516c2a-569a-47e1-b945-7348123e98f4",
+  "prevId": "f6739c19-21ea-4746-9370-7f541a9de2e0",
+  "views": {}
 }

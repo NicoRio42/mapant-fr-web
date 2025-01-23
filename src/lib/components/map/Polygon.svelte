@@ -1,12 +1,9 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
-	import { Feature } from 'ol';
+	import { Feature, Map, MapBrowserEvent } from 'ol';
 	import type { Coordinate } from 'ol/coordinate.js';
 	import type { Geometry } from 'ol/geom.js';
 	import { Polygon } from 'ol/geom.js';
 	import type VectorLayer from 'ol/layer/Vector.js';
-	import type VectorSource from 'ol/source/Vector.js';
 	import Fill from 'ol/style/Fill.js';
 	import Stroke from 'ol/style/Stroke.js';
 	import Style, { type Options as StyleOptions } from 'ol/style/Style.js';
@@ -19,28 +16,30 @@
 		coords: Coordinate[];
 		width: number;
 		text?: string | undefined;
+		onclick?: () => void;
 	}
 
-	let {
-		color,
-		fill = undefined,
-		coords,
-		width,
-		text = undefined
-	}: Props = $props();
+	let { color, fill = undefined, coords, width, text = undefined, onclick }: Props = $props();
 
-	let vectorLayer: VectorLayer<VectorSource<Feature<Geometry>>>;
+	let vectorLayer: VectorLayer<Feature<Geometry>>, map: Map;
 	let feature: Feature;
-	let polygon: Polygon = $state();
+	let polygon: Polygon | undefined = $state();
 
-	run(() => {
+	$effect(() => {
 		if (polygon !== undefined) polygon.setCoordinates([coords]);
 	});
 
-	const getVectorLayer =
-		getContext<() => VectorLayer<VectorSource<Feature<Geometry>>>>('vectorLayer');
+	const getVectorLayer = getContext<() => VectorLayer<Feature<Geometry>>>('vectorLayer');
+	const getMap = getContext<() => Map>('map');
+
+	const clickCallback = (event: MapBrowserEvent<any>) => {
+		map.forEachFeatureAtPixel(event.pixel, (clickedFeature, layer) => {
+			if (clickedFeature === feature && onclick) onclick();
+		});
+	};
 
 	onMount(() => {
+		map = getMap();
 		vectorLayer = getVectorLayer();
 		const vectorSource = vectorLayer.getSource();
 
@@ -58,9 +57,9 @@
 				text,
 				fill: new Fill({ color }),
 				stroke: new Stroke({ color: '#ffffff', width: 3 }),
-				textAlign: 'start',
-				offsetX: 10
+				textAlign: 'center'
 			});
+
 			styleOptions.text = textStyle;
 		}
 
@@ -72,9 +71,12 @@
 		feature.setStyle(style);
 
 		vectorSource?.addFeature(feature);
+
+		if (onclick) map?.on('click', clickCallback);
 	});
 
 	onDestroy(() => {
 		if (feature !== undefined) vectorLayer?.getSource()?.removeFeature(feature);
+		if (onclick) map?.un('click', clickCallback);
 	});
 </script>

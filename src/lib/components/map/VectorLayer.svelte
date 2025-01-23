@@ -5,19 +5,21 @@
 	import VectorSource from 'ol/source/Vector.js';
 	import { getContext, onDestroy, onMount, setContext } from 'svelte';
 	interface Props {
+		zIndex?: number;
 		children?: import('svelte').Snippet;
 	}
 
-	let { children }: Props = $props();
+	let { zIndex = 2, children }: Props = $props();
 
 	const getMap = getContext<() => Map>('map');
-	let vectorLayer: VectorLayer<VectorSource<Feature<Geometry>>> = $state(), map: Map;
+	let vectorLayer: VectorLayer<Feature<Geometry>> | undefined = $state(),
+		map: Map;
 
 	setContext('vectorLayer', () => vectorLayer);
 
 	onMount(() => {
 		map = getMap();
-		vectorLayer = new VectorLayer({ zIndex: 2 });
+		vectorLayer = new VectorLayer({ zIndex });
 		const vectorSource = new VectorSource();
 		vectorLayer.setSource(vectorSource);
 

@@ -1,0 +1,7 @@
+[[r2_buckets]]
+binding = 'R2_BUCKET'
+bucket_name = 'mapant-fr'
+
+[[r2_buckets]]
+binding = 'R2_BUCKET_TILES'
+bucket_name = 'mapant-fr-tiles'

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { MAPANT_V1_EXTENT } from '$lib/constants';
+	import { MAPANT_V1_EXTENT, TILES_BASE_URL } from '$lib/constants';
 	import { type Map } from 'ol';
 	import TileLayer from 'ol/layer/Tile';
 	import XYZ from 'ol/source/XYZ';
@@ -27,8 +27,8 @@
 	});
 
 	// Quick fix to solve a for now unexplained offset problem
-	const OFFSET_X = 1001902.433647273 - 1002549.3574821977;
-	const OFFSET_Y = 6830472.450035284 - 6830938.372790006;
+	const OFFSET_X = 934407.1834580749 - 934553.3735946362;
+	const OFFSET_Y = 6592214.102672428 - 6592176.256494943;
 
 	// Constants computed to cover the whole metropolitan France
 	const MIN_X = -343646 - OFFSET_X;
@@ -47,7 +47,7 @@
 	onMount(() => {
 		map = getMap();
 
-		const url = `/api/tiles/v1/{z}/{x}/{y}.png`;
+		const url = `${TILES_BASE_URL}/{z}/{x}/{y}.png`;
 
 		const tileGrid = new TileGrid({
 			origin: [MIN_X, MAX_Y],
@@ -63,7 +63,8 @@
 			}),
 			zIndex: 1,
 			visible,
-			opacity
+			opacity,
+			extent: MAPANT_V1_EXTENT
 		});
 
 		map?.addLayer(tileLayer);
