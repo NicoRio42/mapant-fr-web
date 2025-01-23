@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "830a9791-bc9b-444b-b55c-5a7f392aebeb",
+  "id": "3b1c4191-c61f-47bd-ae18-28e28cc92f3c",
   "prevId": "16516c2a-569a-47e1-b945-7348123e98f4",
   "tables": {
     "areas_to_generate": {
@@ -49,6 +49,14 @@
           "notNull": true,
           "autoincrement": false,
           "default": "'not-started'"
+        },
+        "is_mergeable": {
+          "name": "is_mergeable",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": false
         }
       },
       "indexes": {},
@@ -404,6 +412,13 @@
           "notNull": true,
           "autoincrement": false
         },
+        "base_zoom_level_tile_id": {
+          "name": "base_zoom_level_tile_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "status": {
           "name": "status",
           "type": "text",
@@ -411,6 +426,27 @@
           "notNull": true,
           "autoincrement": false,
           "default": "'not-started'"
+        },
+        "worker_id": {
+          "name": "worker_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "start_time": {
+          "name": "start_time",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "finish_time": {
+          "name": "finish_time",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -434,6 +470,32 @@
             "id"
           ],
           "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "pyramid_rendering_step_jobs_base_zoom_level_tile_id_tiles_id_fk": {
+          "name": "pyramid_rendering_step_jobs_base_zoom_level_tile_id_tiles_id_fk",
+          "tableFrom": "pyramid_rendering_step_jobs",
+          "tableTo": "tiles",
+          "columnsFrom": [
+            "base_zoom_level_tile_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "pyramid_rendering_step_jobs_worker_id_workers_id_fk": {
+          "name": "pyramid_rendering_step_jobs_worker_id_workers_id_fk",
+          "tableFrom": "pyramid_rendering_step_jobs",
+          "tableTo": "workers",
+          "columnsFrom": [
+            "worker_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
@@ -546,6 +608,20 @@
           "notNull": false,
           "autoincrement": false
         },
+        "lidar_step_start_time": {
+          "name": "lidar_step_start_time",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "lidar_step_finish_time": {
+          "name": "lidar_step_finish_time",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "map_rendering_step_status": {
           "name": "map_rendering_step_status",
           "type": "text",
@@ -560,6 +636,28 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "map_rendering_step_start_time": {
+          "name": "map_rendering_step_start_time",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "map_rendering_step_finish_time": {
+          "name": "map_rendering_step_finish_time",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "is_mergeable": {
+          "name": "is_mergeable",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": false
         }
       },
       "indexes": {},

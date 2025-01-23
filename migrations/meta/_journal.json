@@ -19,50 +19,8 @@
     {
       "idx": 2,
       "version": "6",
-      "when": 1736870538278,
-      "tag": "0002_wakeful_rictor",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1737453763925,
-      "tag": "0003_yellow_fabian_cortez",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1737478434903,
-      "tag": "0004_flippant_lightspeed",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "6",
-      "when": 1737479820832,
-      "tag": "0005_regular_mister_fear",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "6",
-      "when": 1737481136110,
-      "tag": "0006_volatile_silver_fox",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "6",
-      "when": 1737481250890,
-      "tag": "0007_military_night_thrasher",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "6",
-      "when": 1737539316156,
-      "tag": "0008_minor_deathstrike",
+      "when": 1737646486347,
+      "tag": "0002_right_shiver_man",
       "breakpoints": true
     }
   ]
