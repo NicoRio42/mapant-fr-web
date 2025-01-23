@@ -1,7 +1,7 @@
 import { db } from '$lib/server/db';
 import { tilesTable } from '$lib/server/schema';
 import { eq } from 'drizzle-orm';
-import { getWorkerIdOrErrorStatus } from '../../utils';
+import { getWorkerIdOrErrorStatus } from '../../../utils';
 import { File as CloudflareFile } from '@cloudflare/workers-types';
 
 export async function GET({ platform, params }) {
@@ -11,7 +11,12 @@ export async function GET({ platform, params }) {
 	const bucket = platform?.env?.R2_BUCKET;
 	if (bucket === undefined) return new Response(null, { status: 500 });
 
-	const objectKey = `v1/render-step/${tile.id}.png`;
+	const extention = params.option === 'full-map' ? 'png' : 'tar.xz';
+
+	const objectKey =
+		params.option === 'rasters'
+			? `v1/lidar-step/${tile.id}.tar.xz`
+			: `v1/render-step/${tile.id}/${params.option}.${extention}`;
 
 	try {
 		const object = await bucket.get(objectKey);
@@ -22,6 +27,10 @@ export async function GET({ platform, params }) {
 
 		const headers = new Headers();
 		headers.set('etag', object.httpEtag);
+
+		if (object.httpMetadata?.contentType) {
+			headers.set('Content-Type', object.httpMetadata.contentType);
+		}
 
 		return new Response(object.body as unknown as BodyInit, {
 			headers
@@ -52,8 +61,8 @@ export async function POST({ request, platform, params }) {
 	const bucket = platform?.env?.R2_BUCKET;
 	if (bucket === undefined) return new Response(null, { status: 500 });
 
-	// Parse the incoming multipart form data
 	const contentType = request.headers.get('content-type') || '';
+
 	if (!contentType.startsWith('multipart/form-data')) {
 		return new Response('Invalid content type', { status: 400 });
 	}
@@ -65,7 +74,12 @@ export async function POST({ request, platform, params }) {
 		return new Response('No file uploaded', { status: 400 });
 	}
 
-	const objectKey = `v1/render-step/${tile.id}.png`;
+	const extention = params.option === 'full-map' ? 'png' : 'tar.xz';
+
+	const objectKey =
+		params.option === 'rasters'
+			? `v1/lidar-step/${tile.id}.tar.xz`
+			: `v1/render-step/${tile.id}/${params.option}.${extention}`;
 
 	try {
 		await bucket.put(objectKey, file as unknown as CloudflareFile, {
@@ -78,11 +92,13 @@ export async function POST({ request, platform, params }) {
 		return new Response(null, { status: 500 });
 	}
 
-	await db
-		.update(tilesTable)
-		.set({ mapRenderingStepStatus: 'finished', mapRenderingStepFinishTime: new Date() })
-		.where(eq(tilesTable.id, tile.id))
-		.run();
+	if (params.option === 'full-map') {
+		await db
+			.update(tilesTable)
+			.set({ mapRenderingStepStatus: 'finished', mapRenderingStepFinishTime: new Date() })
+			.where(eq(tilesTable.id, tile.id))
+			.run();
+	}
 
 	return new Response(null, { status: 202 });
 }

@@ -4,7 +4,7 @@ import { and, eq } from 'drizzle-orm';
 import { getWorkerIdOrErrorStatus } from '../../../../../utils';
 import { File as CloudflareFile } from '@cloudflare/workers-types';
 
-export async function GET({ request, params: { areaId, x, y, zoom }, platform }) {
+export async function GET({ request, params: { x, y, zoom }, platform }) {
 	const [_, errorStatus] = await getWorkerIdOrErrorStatus(request.headers);
 	if (errorStatus !== null) return new Response(null, { status: errorStatus });
 

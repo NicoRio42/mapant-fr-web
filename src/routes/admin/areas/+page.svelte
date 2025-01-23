@@ -215,7 +215,7 @@
 		{#if tile.mapRenderingStepStatus === 'finished'}
 			{@const extent = [tile.minX, tile.minY, tile.maxX, tile.maxY]}
 
-			<StaticImage {extent} url="/api/map-generation/render-steps/{tile.id}" zIndex={2} />
+			<StaticImage {extent} url="/api/map-generation/render-steps/{tile.id}/full-map" zIndex={2} />
 		{/if}
 	{/each}
 </BaseMap>
