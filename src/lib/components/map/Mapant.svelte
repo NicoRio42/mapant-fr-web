@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import { MAPANT_V1_EXTENT } from '$lib/constants';
+	import { browser, dev } from '$app/environment';
 	import { type Map } from 'ol';
 	import TileLayer from 'ol/layer/Tile';
 	import XYZ from 'ol/source/XYZ';
@@ -47,7 +46,9 @@
 	onMount(() => {
 		map = getMap();
 
-		const url = `/api/tiles/v1/{z}/{x}/{y}.png`;
+		const url = dev
+			? `/api/tiles/v1/{z}/{x}/{y}.png`
+			: `https://tiles.mapant.fr/api/tiles/v1/{z}/{x}/{y}.png`;
 
 		const tileGrid = new TileGrid({
 			origin: [MIN_X, MAX_Y],
