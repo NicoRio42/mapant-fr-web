@@ -52,7 +52,7 @@ export async function POST({ request, platform, params }) {
 	}
 
 	if (tile.lidarStepStatus !== 'ongoing') {
-		console.error('LiDAR step status for this tile is not ongoing.');
+		console.error(`LiDAR step status for this tile is not ongoing but ${tile.lidarStepStatus}`);
 		return new Response(null, { status: 400 });
 	}
 
