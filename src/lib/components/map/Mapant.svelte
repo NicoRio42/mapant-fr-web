@@ -48,7 +48,7 @@
 
 		const url = dev
 			? `/api/tiles/v1/{z}/{x}/{y}.png`
-			: `https://tiles.mapant.fr/api/tiles/v1/{z}/{x}/{y}.png`;
+			: `https://tiles.mapant.fr/v1/{z}/{x}/{y}.png`;
 
 		const tileGrid = new TileGrid({
 			origin: [MIN_X, MAX_Y],
