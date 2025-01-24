@@ -1,7 +1,6 @@
+import { generateApiKey, hashApiKey } from '$lib/server/crypto';
 import { db } from '$lib/server/db';
-import { Scrypt } from '$lib/server/scrypt';
 import { workersTable } from '$lib/server/schema.js';
-import { generateRandomString, alphabet } from 'oslo/crypto';
 import { eq } from 'drizzle-orm';
 
 export async function POST({ params }) {
@@ -13,8 +12,8 @@ export async function POST({ params }) {
 
 	if (worker === undefined) return new Response(null, { status: 404 });
 
-	const apiKey = generateRandomString(40, alphabet('a-z', '0-9'));
-	const hashedApiKey = await new Scrypt().hash(apiKey);
+	const apiKey = await generateApiKey();
+	const hashedApiKey = await hashApiKey(apiKey);
 
 	await db
 		.update(workersTable)

@@ -1,6 +1,6 @@
+import { verifyApiKey } from '$lib/server/crypto';
 import { db } from '$lib/server/db';
 import { workersTable } from '$lib/server/schema';
-import { Scrypt } from '$lib/server/scrypt';
 import { eq } from 'drizzle-orm';
 
 export async function getWorkerIdOrErrorStatus(
@@ -19,7 +19,7 @@ export async function getWorkerIdOrErrorStatus(
 	const worker = await db.select().from(workersTable).where(eq(workersTable.id, workerId)).get();
 	if (worker === undefined || !worker.hashedApiKey) return [null, 403];
 
-	const isApiKeyRight = await new Scrypt().verify(worker.hashedApiKey, apiKey);
+	const isApiKeyRight = await verifyApiKey(apiKey, worker.hashedApiKey);
 	if (!isApiKeyRight) return [null, 403];
 
 	return [workerId, null];

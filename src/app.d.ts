@@ -26,6 +26,7 @@ declare module '$env/static/private' {
 	export const DKIM_PRIVATE_KEY: string;
 	export const STRIPE_API_KEY: string;
 	export const STRIPE_WEBHOOK_SECRET: string;
+	export const CRYPTO_SECRET_KEY: string;
 }
 
 export {};

@@ -3,6 +3,8 @@ import tiles from '../../data/tiles.json' with { type: 'json' };
 import { tilesTable, type TileInsert } from '../lib/server/schema';
 
 const db = drizzle({ connection: { url: 'file:main.db' } });
+// import { env } from 'node:process';
+// const db = drizzle({ connection: { url: env.TURSO_DB_URL ?? '', authToken: env.TURSO_DB_TOKEN } });
 
 type Tiles = {
 	features: {
