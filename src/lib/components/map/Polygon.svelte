@@ -33,8 +33,10 @@
 	const getMap = getContext<() => Map>('map');
 
 	const clickCallback = (event: MapBrowserEvent<any>) => {
-		map.forEachFeatureAtPixel(event.pixel, (clickedFeature, layer) => {
-			if (clickedFeature === feature && onclick) onclick();
+		map.forEachFeatureAtPixel(event.pixel, (clickedFeature) => {
+			if (clickedFeature === feature && onclick) {
+				onclick();
+			}
 		});
 	};
 

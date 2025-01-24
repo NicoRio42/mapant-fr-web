@@ -20,6 +20,7 @@
 	let maxY: number | null = $state(null);
 	let submitButton: HTMLButtonElement | undefined = $state();
 	let selectedAreaId: null | string = $state(null);
+	let selectedTileId: null | string = $state(null);
 	let displayedTiles: Tile[] = $state([]);
 
 	async function onViewChange({ zoom, extent }: { zoom: number; extent: Extent }) {
@@ -77,6 +78,55 @@
 			<button type="button" class="outlined" onclick={() => (selectedAreaId = null)}>Close</button>
 		</article>
 	</dialog>
+{/if}
+
+{#if selectedTileId !== null}
+	{@const selectedTile = data.areas
+		.flatMap((a) => a.lidarJobs.map((j) => j.tile))
+		.find((t) => t.id === selectedTileId)}
+
+	{#if selectedTile !== undefined}
+		<dialog open>
+			<article>
+				<header>
+					<h2>Tile: {selectedTile.id}</h2>
+				</header>
+
+				<ul>
+					<li>
+						<a
+							href="/admin/areas/tiles/{selectedTile.id}/rasters"
+							download="{selectedTile.id}.rasters.tar.xz">Rasters</a
+						>
+					</li>
+
+					<li>
+						<a
+							href="/admin/areas/tiles/{selectedTile.id}/shapefiles"
+							download="{selectedTile.id}.shapefiles.tar.xz">Shapefiles</a
+						>
+					</li>
+
+					<li>
+						<a
+							href="/admin/areas/tiles/{selectedTile.id}/pngs"
+							download="{selectedTile.id}.pngs.tar.xz">Pngs</a
+						>
+					</li>
+
+					<li>
+						<a
+							href="/admin/areas/tiles/{selectedTile.id}/full-map"
+							download="{selectedTile.id}.full-map.png">Full map</a
+						>
+					</li>
+				</ul>
+
+				<button type="button" class="outlined" onclick={() => (selectedTileId = null)}>Close</button
+				>
+			</article>
+		</dialog>
+	{/if}
 {/if}
 
 <BaseMap {onViewChange}>
@@ -153,7 +203,7 @@
 		{/each}
 	</VectorLayer>
 
-	<VectorLayer zIndex={3}>
+	<VectorLayer zIndex={5}>
 		{#each data.contributions as { contribution, user } (contribution.id)}
 			{@const coordinates = [
 				[contribution.minX, contribution.maxY],
@@ -186,6 +236,8 @@
 									: 'gray'}
 					width={2}
 					coords={tileCoordinates}
+					onclick={() => (selectedTileId = tile.id)}
+					fill="transparent"
 					text={`Id: ${tile.id} \n Lidar: ${tile.lidarStepStatus} \n Render: ${tile.mapRenderingStepStatus}`}
 				/>
 			{/each}
