@@ -120,6 +120,20 @@
 							download="{selectedTile.id}.full-map.png">Full map</a
 						>
 					</li>
+
+					<li>
+						<form
+							action="?/rerunTileRendering"
+							method="post"
+							use:confirmSubmit={'Sure?'}
+							use:enhance
+							contents
+						>
+							<input type="hidden" name="tile-id" bind:value={selectedTileId} />
+
+							<button type="submit">Rerun render step</button>
+						</form>
+					</li>
 				</ul>
 
 				<button type="button" class="outlined" onclick={() => (selectedTileId = null)}>Close</button

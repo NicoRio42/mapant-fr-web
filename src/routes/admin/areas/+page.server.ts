@@ -59,7 +59,7 @@ export const actions = {
 					maxX: form.data.maxX,
 					maxY: form.data.maxY
 				})
-				.returning();
+				.run();
 
 			const tilesInside = await tx
 				.select()
@@ -196,6 +196,24 @@ export const actions = {
 		if (typeof areaId !== 'string') throw error(400);
 
 		await db.delete(areasToGenerateTable).where(eq(areasToGenerateTable.id, areaId)).run();
+		throw redirect(302, '/admin/areas');
+	},
+	rerunTileRendering: async ({ request }) => {
+		const formdata = await request.formData();
+		const tileId = formdata.get('tile-id');
+		if (typeof tileId !== 'string') throw error(400);
+
+		await db
+			.update(tilesTable)
+			.set({
+				mapRenderingStepStatus: 'not-started',
+				mapRenderingStepWorkerId: null,
+				mapRenderingStepStartTime: null,
+				mapRenderingStepFinishTime: null
+			})
+			.where(eq(tilesTable.id, tileId))
+			.run();
+
 		throw redirect(302, '/admin/areas');
 	}
 };
