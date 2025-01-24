@@ -69,6 +69,7 @@ export async function POST({ request, platform, params }) {
 		})
 	]).catch((error) => {
 		console.error(error);
+
 		return new Response(null, { status: 500 });
 	});
 
