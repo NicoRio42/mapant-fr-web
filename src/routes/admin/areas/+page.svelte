@@ -51,7 +51,7 @@
 	<input type="hidden" name="maxX" bind:value={maxX} />
 	<input type="hidden" name="minY" bind:value={minY} />
 	<input type="hidden" name="maxY" bind:value={maxY} />
-	<button type="submit" bind:this={submitButton}></button>
+	<button type="submit" bind:this={submitButton}>Submit</button>
 </form>
 
 {#if selectedAreaId !== null}
