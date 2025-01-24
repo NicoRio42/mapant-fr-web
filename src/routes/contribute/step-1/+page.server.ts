@@ -1,8 +1,8 @@
 import { auth } from '$lib/server/auth.js';
-import { db } from '$lib/server/db.js';
+import { getDb } from '$lib/server/db.js';
 import { userTable } from '$lib/server/schema.js';
 import { Scrypt } from '$lib/server/scrypt.js';
-import { error, fail, redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { setError, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -22,6 +22,7 @@ export const actions = {
 		const form = await superValidate(request, zod(signUpSchema));
 		const { email, password, keepInTouch } = form.data;
 
+		const db = getDb();
 		const existingUser = await db.select().from(userTable).where(eq(userTable.email, email)).get();
 
 		if (existingUser !== undefined) {

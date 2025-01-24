@@ -1,5 +1,5 @@
 import { TILE_SIZE_IN_METERS } from '$lib/constants';
-import { db } from '$lib/server/db.js';
+import { getDb } from '$lib/server/db.js';
 import { tilesTable } from '$lib/server/schema';
 import { json } from '@sveltejs/kit';
 import { and, gt, lt } from 'drizzle-orm';
@@ -30,6 +30,8 @@ export async function GET({ url }) {
 	) {
 		return new Response(null, { status: 400 });
 	}
+
+	const db = getDb();
 
 	const tiles = await db
 		.select()

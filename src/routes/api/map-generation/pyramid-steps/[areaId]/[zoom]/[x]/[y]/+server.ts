@@ -1,4 +1,4 @@
-import { db } from '$lib/server/db';
+import { getDb } from '$lib/server/db';
 import { pyramidRenderingStepJobTable } from '$lib/server/schema';
 import { and, eq } from 'drizzle-orm';
 import { getWorkerIdOrErrorStatus } from '../../../../../utils';
@@ -56,6 +56,7 @@ export async function POST({ request, params: { areaId, x, y, zoom }, platform }
 		return new Response(null, { status: 400 });
 	}
 
+	const db = getDb();
 	const pyramidJob = await db
 		.select()
 		.from(pyramidRenderingStepJobTable)

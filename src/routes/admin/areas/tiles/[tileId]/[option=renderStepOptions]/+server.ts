@@ -1,8 +1,10 @@
-import { db } from '$lib/server/db';
+import { getDb } from '$lib/server/db';
 import { tilesTable } from '$lib/server/schema';
 import { eq } from 'drizzle-orm';
 
 export async function GET({ platform, params }) {
+	const db = getDb();
+
 	const tile = await db.select().from(tilesTable).where(eq(tilesTable.id, params.tileId)).get();
 	if (tile === undefined) return new Response(null, { status: 404 });
 

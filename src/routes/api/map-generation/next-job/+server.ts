@@ -1,5 +1,5 @@
 import { MAX_JOB_TIME_IN_SECONDS, TILE_SIZE_IN_METERS } from '$lib/constants';
-import { db } from '$lib/server/db.js';
+import { getDb } from '$lib/server/db.js';
 import {
 	areasToGenerateTable,
 	lidarStepJobTable,
@@ -18,6 +18,7 @@ export async function POST({ request }) {
 
 	// TODO: wrap all of this in a transaction
 
+	const db = getDb();
 	const nextLidarJob = await db
 		.select()
 		.from(lidarStepJobTable)

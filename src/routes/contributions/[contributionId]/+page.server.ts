@@ -1,4 +1,4 @@
-import { db } from '$lib/server/db.js';
+import { getDb } from '$lib/server/db.js';
 import { contributionTable } from '$lib/server/schema.js';
 import { error, redirect } from '@sveltejs/kit';
 import { and, eq } from 'drizzle-orm';
@@ -7,6 +7,8 @@ export async function load({ locals, params, url }) {
 	if (locals.user === null) {
 		throw redirect(302, `/login?redirect-url=${encodeURIComponent(url.pathname)}`);
 	}
+
+	const db = getDb();
 
 	const contribution = await db
 		.select()

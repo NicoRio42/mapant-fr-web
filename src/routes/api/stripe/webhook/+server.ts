@@ -1,5 +1,5 @@
 import { STRIPE_API_KEY, STRIPE_WEBHOOK_SECRET } from '$env/static/private';
-import { db } from '$lib/server/db.js';
+import { getDb } from '$lib/server/db.js';
 import { sendEmail } from '$lib/server/email.js';
 import {
 	contributionTable,
@@ -38,6 +38,8 @@ export async function POST({ request }) {
 		console.error('[STRIPE_WEBHOOK] client_reference_id not defined.');
 		return new Response(null, { status: 400 });
 	}
+
+	const db = getDb();
 
 	const [contribution] = await db
 		.update(contributionTable)

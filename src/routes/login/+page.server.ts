@@ -1,5 +1,5 @@
 import { auth } from '$lib/server/auth.js';
-import { db } from '$lib/server/db.js';
+import { getDb } from '$lib/server/db.js';
 import { userTable } from '$lib/server/schema.js';
 import { Scrypt } from '$lib/server/scrypt.js';
 import { error, redirect } from '@sveltejs/kit';
@@ -21,6 +21,7 @@ export const actions = {
 		if (!form.valid) throw error(400);
 		const { email, password } = form.data;
 
+		const db = getDb();
 		const existingUser = await db.select().from(userTable).where(eq(userTable.email, email)).get();
 
 		if (existingUser === undefined) {

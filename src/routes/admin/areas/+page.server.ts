@@ -1,6 +1,6 @@
 import { TILE_SIZE_IN_METERS } from '$lib/constants.js';
 import { getPyramidJobsFromTileList } from '$lib/pyramid';
-import { db } from '$lib/server/db.js';
+import { getDb } from '$lib/server/db.js';
 import {
 	areasToGenerateTable,
 	contributionTable,
@@ -19,6 +19,8 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
 
 export async function load() {
+	const db = getDb();
+
 	const [contributions, areas] = await db.batch([
 		db
 			.select()
@@ -33,6 +35,8 @@ export async function load() {
 
 export const actions = {
 	add: async ({ request }) => {
+		const db = getDb();
+
 		const form = await superValidate(
 			request,
 			zod(
@@ -133,6 +137,8 @@ export const actions = {
 		throw redirect(302, '/admin/areas');
 	},
 	merge: async ({ request }) => {
+		const db = getDb();
+
 		const formdata = await request.formData();
 		const areaId = formdata.get('area-id');
 		if (typeof areaId !== 'string') throw error(400);
@@ -195,6 +201,7 @@ export const actions = {
 		const areaId = formdata.get('area-id');
 		if (typeof areaId !== 'string') throw error(400);
 
+		const db = getDb();
 		await db.delete(areasToGenerateTable).where(eq(areasToGenerateTable.id, areaId)).run();
 		throw redirect(302, '/admin/areas');
 	},
@@ -203,6 +210,7 @@ export const actions = {
 		const tileId = formdata.get('tile-id');
 		if (typeof tileId !== 'string') throw error(400);
 
+		const db = getDb();
 		await db
 			.update(tilesTable)
 			.set({

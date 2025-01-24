@@ -1,4 +1,4 @@
-import { db } from '$lib/server/db';
+import { getDb } from '$lib/server/db';
 import { tilesTable } from '$lib/server/schema';
 import { eq } from 'drizzle-orm';
 import { getWorkerIdOrErrorStatus } from '../../utils';
@@ -8,6 +8,7 @@ export async function POST({ request, platform, params }) {
 	const [workerId, errorStatus] = await getWorkerIdOrErrorStatus(request.headers);
 	if (errorStatus !== null) return new Response(null, { status: errorStatus });
 
+	const db = getDb();
 	const tile = await db.select().from(tilesTable).where(eq(tilesTable.id, params.tileId)).get();
 	if (tile === undefined) return new Response(null, { status: 404 });
 

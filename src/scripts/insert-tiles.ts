@@ -64,7 +64,6 @@ console.log(chunkedTilesToInsert.length);
 let index = 1;
 
 for (const chunk of chunkedTilesToInsert) {
-	console.log(index);
 	await db.insert(tilesTable).values(chunk).run();
 	index++;
 }

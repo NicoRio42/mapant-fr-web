@@ -1,5 +1,5 @@
 import { CONTRIBUTION_FORMULAS } from '$lib/constants.js';
-import { db } from '$lib/server/db.js';
+import { getDb } from '$lib/server/db.js';
 import { contributionWithoutCompensationTable } from '$lib/server/schema.js';
 import { error, redirect } from '@sveltejs/kit';
 
@@ -15,6 +15,8 @@ export const actions = {
 		if (typeof formulaId !== 'string') throw error(400);
 		const formula = CONTRIBUTION_FORMULAS.find((cont) => cont.id === formulaId);
 		if (formula === undefined) throw error(400);
+
+		const db = getDb();
 
 		const [newContribution] = await db
 			.insert(contributionWithoutCompensationTable)

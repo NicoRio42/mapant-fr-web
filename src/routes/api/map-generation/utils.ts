@@ -1,5 +1,5 @@
 import { verifyApiKey } from '$lib/server/crypto';
-import { db } from '$lib/server/db';
+import { getDb } from '$lib/server/db';
 import { workersTable } from '$lib/server/schema';
 import { eq } from 'drizzle-orm';
 
@@ -16,6 +16,7 @@ export async function getWorkerIdOrErrorStatus(
 	const [workerId, apiKey] = token.split('.');
 	if (!workerId || !apiKey) return [null, 401];
 
+	const db = getDb();
 	const worker = await db.select().from(workersTable).where(eq(workersTable.id, workerId)).get();
 	if (worker === undefined || !worker.hashedApiKey) return [null, 403];
 

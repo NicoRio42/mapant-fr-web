@@ -1,9 +1,10 @@
 import { generateApiKey, hashApiKey } from '$lib/server/crypto';
-import { db } from '$lib/server/db';
+import { getDb } from '$lib/server/db';
 import { workersTable } from '$lib/server/schema.js';
 import { eq } from 'drizzle-orm';
 
 export async function POST({ params }) {
+	const db = getDb();
 	const worker = await db
 		.select()
 		.from(workersTable)
