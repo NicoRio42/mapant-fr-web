@@ -1,4 +1,4 @@
-import { auth } from '$lib/server/auth.js';
+import { getAuth } from '$lib/server/auth.js';
 import { getDb } from '$lib/server/db.js';
 import { userTable } from '$lib/server/schema.js';
 import { Scrypt } from '$lib/server/scrypt.js';
@@ -40,6 +40,7 @@ export const actions = {
 			.values({ hashedPassword, email, allowedSendingEmail: keepInTouch })
 			.returning();
 
+		const auth = getAuth();
 		const session = await auth.createSession(newUser.id, {});
 		const sessionCookie = auth.createSessionCookie(session.id);
 

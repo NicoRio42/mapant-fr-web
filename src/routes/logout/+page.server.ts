@@ -1,4 +1,4 @@
-import { auth } from '$lib/server/auth.js';
+import { getAuth } from '$lib/server/auth.js';
 import { fail, redirect } from '@sveltejs/kit';
 
 export const actions = {
@@ -7,6 +7,7 @@ export const actions = {
 			return fail(401);
 		}
 
+		const auth = getAuth();
 		await auth.invalidateSession(locals.session.id);
 		const sessionCookie = auth.createBlankSessionCookie();
 

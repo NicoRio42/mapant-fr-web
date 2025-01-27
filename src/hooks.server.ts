@@ -1,8 +1,9 @@
-import { auth } from '$lib/server/auth.js';
+import { getAuth } from '$lib/server/auth.js';
 import { ADMIN_LOGIN } from '$env/static/private';
 import { dev } from '$app/environment';
 
 export const handle = async ({ event, resolve }) => {
+	const auth = getAuth();
 	const sessionId = event.cookies.get(auth.sessionCookieName);
 	const url = new URL(event.request.url);
 
