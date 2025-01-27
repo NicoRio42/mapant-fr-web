@@ -14,7 +14,7 @@ export async function GET({ platform, params }) {
 	const extention = params.option === 'full-map' ? 'png' : 'tar.xz';
 
 	const objectKey =
-		params.option === 'rasters'
+		params.option === 'lidar'
 			? `v1/lidar-step/${tile.id}.tar.xz`
 			: `v1/render-step/${tile.id}/${params.option}.${extention}`;
 

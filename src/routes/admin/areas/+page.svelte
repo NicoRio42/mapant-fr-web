@@ -93,33 +93,44 @@
 				</header>
 
 				<ul>
-					<li>
-						<a
-							href="/admin/areas/tiles/{selectedTile.id}/rasters"
-							download="{selectedTile.id}.rasters.tar.xz">Rasters</a
-						>
-					</li>
+					{#if selectedTile.lidarStepStatus === 'finished'}
+						<li>
+							<a
+								href="/admin/areas/tiles/{selectedTile.id}/lidar"
+								download="{selectedTile.id}.rasters.tar.xz">Rasters from LiDAR step</a
+							>
+						</li>
+					{/if}
 
-					<li>
-						<a
-							href="/admin/areas/tiles/{selectedTile.id}/shapefiles"
-							download="{selectedTile.id}.shapefiles.tar.xz">Shapefiles</a
-						>
-					</li>
+					{#if selectedTile.mapRenderingStepStatus === 'finished'}
+						<li>
+							<a
+								href="/admin/areas/tiles/{selectedTile.id}/rasters"
+								download="{selectedTile.id}.rasters.tar.xz">Rasters</a
+							>
+						</li>
 
-					<li>
-						<a
-							href="/admin/areas/tiles/{selectedTile.id}/pngs"
-							download="{selectedTile.id}.pngs.tar.xz">Pngs</a
-						>
-					</li>
+						<li>
+							<a
+								href="/admin/areas/tiles/{selectedTile.id}/shapefiles"
+								download="{selectedTile.id}.shapefiles.tar.xz">Shapefiles</a
+							>
+						</li>
 
-					<li>
-						<a
-							href="/admin/areas/tiles/{selectedTile.id}/full-map"
-							download="{selectedTile.id}.full-map.png">Full map</a
-						>
-					</li>
+						<li>
+							<a
+								href="/admin/areas/tiles/{selectedTile.id}/pngs"
+								download="{selectedTile.id}.pngs.tar.xz">Pngs</a
+							>
+						</li>
+
+						<li>
+							<a
+								href="/admin/areas/tiles/{selectedTile.id}/full-map"
+								download="{selectedTile.id}.full-map.png">Full map</a
+							>
+						</li>
+					{/if}
 
 					<li>
 						<form

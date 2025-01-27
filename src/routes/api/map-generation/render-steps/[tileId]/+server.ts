@@ -54,9 +54,13 @@ export async function POST({ request, platform, params }) {
 	}
 
 	await Promise.all([
-		bucket.put(`v1/lidar-step/${tile.id}.tar.xz`, rastersFile as unknown as CloudflareFile, {
-			httpMetadata: { contentType: rastersFile.type }
-		}),
+		bucket.put(
+			`v1/render-step/${tile.id}/rasters.tar.xz`,
+			rastersFile as unknown as CloudflareFile,
+			{
+				httpMetadata: { contentType: rastersFile.type }
+			}
+		),
 		bucket.put(
 			`v1/render-step/${tile.id}/shapefiles.tar.xz`,
 			shapefilesFile as unknown as CloudflareFile,

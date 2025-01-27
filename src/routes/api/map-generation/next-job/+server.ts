@@ -68,6 +68,8 @@ export async function POST({ request }) {
 		} else return noJobLeftResponse;
 	}
 
+	return noJobLeftResponse;
+
 	const nextRenderJobWhereClause = or(
 		eq(tilesTable.mapRenderingStepStatus, 'not-started'),
 		// If a job is ongoing for more than X minutes, it is canceled and reassigned
