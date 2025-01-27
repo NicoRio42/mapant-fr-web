@@ -22,23 +22,23 @@ export async function POST({ request }) {
 
 	const db = getDb();
 
+	const nextLidarJobWhereClose = or(
+		eq(tilesTable.lidarStepStatus, 'not-started'),
+		// If a job is ongoing for more than X minutes, it is canceled and reassigned
+		and(
+			eq(tilesTable.lidarStepStatus, 'ongoing'),
+			lt(
+				sql`${tilesTable.lidarStepStartTime}`,
+				new Date().getTime() - MAX_JOB_TIME_IN_SECONDS * 1000
+			)
+		)
+	);
+
 	const nextLidarJob = await db
 		.select()
 		.from(lidarStepJobTable)
 		.innerJoin(tilesTable, eq(lidarStepJobTable.tileId, tilesTable.id))
-		.where(
-			or(
-				eq(tilesTable.lidarStepStatus, 'not-started'),
-				// If a job is ongoing for more than X minutes, it is canceled and reassigned
-				and(
-					eq(tilesTable.lidarStepStatus, 'ongoing'),
-					lt(
-						sql`${tilesTable.lidarStepStartTime}`,
-						new Date().getTime() - MAX_JOB_TIME_IN_SECONDS * 1000
-					)
-				)
-			)
-		)
+		.where(nextLidarJobWhereClose)
 		.orderBy(lidarStepJobTable.index)
 		.limit(1)
 		.get();
@@ -51,9 +51,7 @@ export async function POST({ request }) {
 				lidarStepWorkerId: workerId,
 				lidarStepStartTime: new Date()
 			})
-			.where(
-				and(eq(tilesTable.id, nextLidarJob.tiles.id), eq(tilesTable.lidarStepStatus, 'not-started'))
-			)
+			.where(and(eq(tilesTable.id, nextLidarJob.tiles.id), nextLidarJobWhereClose))
 			.returning();
 
 		if (updatedTiles.length !== 0) {
@@ -70,23 +68,23 @@ export async function POST({ request }) {
 		} else return noJobLeftResponse;
 	}
 
+	const nextRenderJobWhereClause = or(
+		eq(tilesTable.mapRenderingStepStatus, 'not-started'),
+		// If a job is ongoing for more than X minutes, it is canceled and reassigned
+		and(
+			eq(tilesTable.mapRenderingStepStatus, 'ongoing'),
+			lt(
+				sql`${tilesTable.mapRenderingStepStartTime}`,
+				new Date().getTime() - MAX_JOB_TIME_IN_SECONDS * 1000
+			)
+		)
+	);
+
 	const nextRenderJobs = await db
 		.select()
 		.from(mapRenderingStepJobTable)
 		.innerJoin(tilesTable, eq(mapRenderingStepJobTable.tileId, tilesTable.id))
-		.where(
-			or(
-				eq(tilesTable.mapRenderingStepStatus, 'not-started'),
-				// If a job is ongoing for more than X minutes, it is canceled and reassigned
-				and(
-					eq(tilesTable.mapRenderingStepStatus, 'ongoing'),
-					lt(
-						sql`${tilesTable.mapRenderingStepStartTime}`,
-						new Date().getTime() - MAX_JOB_TIME_IN_SECONDS * 1000
-					)
-				)
-			)
-		)
+		.where(nextRenderJobWhereClause)
 		.orderBy(mapRenderingStepJobTable.index)
 		.limit(5)
 		.all();
@@ -126,12 +124,7 @@ export async function POST({ request }) {
 				mapRenderingStepWorkerId: workerId,
 				mapRenderingStepStartTime: new Date()
 			})
-			.where(
-				and(
-					eq(tilesTable.id, nextRenderJob.tiles.id),
-					eq(tilesTable.mapRenderingStepStatus, 'not-started')
-				)
-			)
+			.where(and(eq(tilesTable.id, nextRenderJob.tiles.id), nextRenderJobWhereClause))
 			.returning();
 
 		if (updatedTiles.length !== 0) {
@@ -148,22 +141,22 @@ export async function POST({ request }) {
 		} else return noJobLeftResponse;
 	}
 
+	const pyramidJobWhereClause = or(
+		eq(pyramidRenderingStepJobTable.status, 'not-started'),
+		// If a job is ongoing for more than X minutes, it is canceled and reassigned
+		and(
+			eq(pyramidRenderingStepJobTable.status, 'ongoing'),
+			lt(
+				sql`${pyramidRenderingStepJobTable.startTime}`,
+				new Date().getTime() - MAX_JOB_TIME_IN_SECONDS * 1000
+			)
+		)
+	);
+
 	const nextPyramidJob = await db
 		.select()
 		.from(pyramidRenderingStepJobTable)
-		.where(
-			or(
-				eq(pyramidRenderingStepJobTable.status, 'not-started'),
-				// If a job is ongoing for more than X minutes, it is canceled and reassigned
-				and(
-					eq(pyramidRenderingStepJobTable.status, 'ongoing'),
-					lt(
-						sql`${pyramidRenderingStepJobTable.startTime}`,
-						new Date().getTime() - MAX_JOB_TIME_IN_SECONDS * 1000
-					)
-				)
-			)
-		)
+		.where(pyramidJobWhereClause)
 		.orderBy(pyramidRenderingStepJobTable.index)
 		.limit(1)
 		.get();
@@ -208,12 +201,7 @@ export async function POST({ request }) {
 		const updatedPyramidJobs = await db
 			.update(pyramidRenderingStepJobTable)
 			.set({ status: 'ongoing', workerId, startTime: new Date() })
-			.where(
-				and(
-					eq(pyramidRenderingStepJobTable.id, nextPyramidJob.id),
-					eq(pyramidRenderingStepJobTable.status, 'not-started')
-				)
-			)
+			.where(and(eq(pyramidRenderingStepJobTable.id, nextPyramidJob.id), pyramidJobWhereClause))
 			.returning();
 
 		if (updatedPyramidJobs.length !== 0) {
