@@ -1,10 +1,9 @@
 import { drizzle } from 'drizzle-orm/libsql';
 import tiles from '../../data/tiles.json' with { type: 'json' };
 import { tilesTable, type TileInsert } from '../lib/server/schema';
+import { env } from 'node:process';
 
-const db = drizzle({ connection: { url: 'file:main.db' } });
-// import { env } from 'node:process';
-// const db = drizzle({ connection: { url: env.TURSO_DB_URL ?? '', authToken: env.TURSO_DB_TOKEN } });
+const db = drizzle({ connection: { url: env.TURSO_DB_URL ?? '', authToken: env.TURSO_DB_TOKEN } });
 
 type Tiles = {
 	features: {
