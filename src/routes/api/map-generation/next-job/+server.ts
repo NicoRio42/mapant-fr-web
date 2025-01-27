@@ -16,9 +16,12 @@ export async function POST({ request }) {
 	const [workerId, errorStatus] = await getWorkerIdOrErrorStatus(request.headers);
 	if (errorStatus !== null) return new Response(null, { status: errorStatus });
 
-	// TODO: wrap all of this in a transaction
+	const noJobLeftResponse = new Response(JSON.stringify({ type: 'NoJobLeft' } satisfies NoJob), {
+		status: 202
+	});
 
 	const db = getDb();
+
 	const nextLidarJob = await db
 		.select()
 		.from(lidarStepJobTable)
@@ -41,26 +44,30 @@ export async function POST({ request }) {
 		.get();
 
 	if (nextLidarJob !== undefined) {
-		await db
+		const updatedTiles = await db
 			.update(tilesTable)
 			.set({
 				lidarStepStatus: 'ongoing',
 				lidarStepWorkerId: workerId,
 				lidarStepStartTime: new Date()
 			})
-			.where(eq(tilesTable.id, nextLidarJob.tiles.id))
-			.run();
+			.where(
+				and(eq(tilesTable.id, nextLidarJob.tiles.id), eq(tilesTable.lidarStepStatus, 'not-started'))
+			)
+			.returning();
 
-		return new Response(
-			JSON.stringify({
-				type: 'Lidar',
-				data: {
-					tile_id: nextLidarJob.tiles.id,
-					tile_url: nextLidarJob.tiles.lidarFileUrl
-				}
-			} satisfies LidarJob),
-			{ status: 202 }
-		);
+		if (updatedTiles.length !== 0) {
+			return new Response(
+				JSON.stringify({
+					type: 'Lidar',
+					data: {
+						tile_id: nextLidarJob.tiles.id,
+						tile_url: nextLidarJob.tiles.lidarFileUrl
+					}
+				} satisfies LidarJob),
+				{ status: 202 }
+			);
+		} else return noJobLeftResponse;
 	}
 
 	const nextRenderJobs = await db
@@ -109,31 +116,36 @@ export async function POST({ request }) {
 		}
 
 		if (nextRenderJob === undefined || neigbhoringTilesIds === undefined) {
-			return new Response(JSON.stringify({ type: 'NoJobLeft' } satisfies NoJob), {
-				status: 202
-			});
+			return noJobLeftResponse;
 		}
 
-		await db
+		const updatedTiles = await db
 			.update(tilesTable)
 			.set({
 				mapRenderingStepStatus: 'ongoing',
 				mapRenderingStepWorkerId: workerId,
 				mapRenderingStepStartTime: new Date()
 			})
-			.where(eq(tilesTable.id, nextRenderJob.tiles.id))
-			.run();
+			.where(
+				and(
+					eq(tilesTable.id, nextRenderJob.tiles.id),
+					eq(tilesTable.mapRenderingStepStatus, 'not-started')
+				)
+			)
+			.returning();
 
-		return new Response(
-			JSON.stringify({
-				type: 'Render',
-				data: {
-					tile_id: nextRenderJob.tiles.id,
-					neigbhoring_tiles_ids: neigbhoringTilesIds
-				}
-			} satisfies RenderJob),
-			{ status: 202 }
-		);
+		if (updatedTiles.length !== 0) {
+			return new Response(
+				JSON.stringify({
+					type: 'Render',
+					data: {
+						tile_id: nextRenderJob.tiles.id,
+						neigbhoring_tiles_ids: neigbhoringTilesIds
+					}
+				} satisfies RenderJob),
+				{ status: 202 }
+			);
+		} else return noJobLeftResponse;
 	}
 
 	const nextPyramidJob = await db
@@ -189,42 +201,45 @@ export async function POST({ request }) {
 				.all();
 
 			if (childPyramidJobs.some((job) => job.status !== 'finished')) {
-				return new Response(JSON.stringify({ type: 'NoJobLeft' } satisfies NoJob), {
-					status: 202
-				});
+				return noJobLeftResponse;
 			}
 		}
 
-		await db
+		const updatedPyramidJobs = await db
 			.update(pyramidRenderingStepJobTable)
 			.set({ status: 'ongoing', workerId, startTime: new Date() })
-			.where(eq(pyramidRenderingStepJobTable.id, nextPyramidJob.id))
-			.run();
+			.where(
+				and(
+					eq(pyramidRenderingStepJobTable.id, nextPyramidJob.id),
+					eq(pyramidRenderingStepJobTable.status, 'not-started')
+				)
+			)
+			.returning();
 
-		await db
-			.update(areasToGenerateTable)
-			.set({ pyramidGenerationStepStatus: 'ongoing' })
-			.where(eq(areasToGenerateTable.id, nextPyramidJob.areaToGenerateId))
-			.run();
+		if (updatedPyramidJobs.length !== 0) {
+			await db
+				.update(areasToGenerateTable)
+				.set({ pyramidGenerationStepStatus: 'ongoing' })
+				.where(eq(areasToGenerateTable.id, nextPyramidJob.areaToGenerateId))
+				.run();
 
-		return new Response(
-			JSON.stringify({
-				type: 'Pyramid',
-				data: {
-					x: nextPyramidJob.x,
-					y: nextPyramidJob.y,
-					z: nextPyramidJob.zoom,
-					base_zoom_level_tile_id: nextPyramidJob.baseZoomLevelTileId,
-					area_id: nextPyramidJob.areaToGenerateId
-				}
-			} satisfies PyramidJob),
-			{ status: 202 }
-		);
+			return new Response(
+				JSON.stringify({
+					type: 'Pyramid',
+					data: {
+						x: nextPyramidJob.x,
+						y: nextPyramidJob.y,
+						z: nextPyramidJob.zoom,
+						base_zoom_level_tile_id: nextPyramidJob.baseZoomLevelTileId,
+						area_id: nextPyramidJob.areaToGenerateId
+					}
+				} satisfies PyramidJob),
+				{ status: 202 }
+			);
+		} else return noJobLeftResponse;
 	}
 
-	return new Response(JSON.stringify({ type: 'NoJobLeft' } satisfies NoJob), {
-		status: 202
-	});
+	return noJobLeftResponse;
 }
 
 function getNeigbhoringTilesIds(tile: Tile): string[] {
