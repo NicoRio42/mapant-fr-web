@@ -67,6 +67,20 @@
 				</li>
 
 				<li>
+					<form
+						action="?/rerunTileRenderingForWholeArea"
+						method="post"
+						use:confirmSubmit={'Sure?'}
+						use:enhance
+						contents
+					>
+						<input type="hidden" name="area-id" bind:value={selectedAreaId} />
+
+						<button type="submit">Rerun render step</button>
+					</form>
+				</li>
+
+				<li>
 					<form action="?/merge" method="post" use:confirmSubmit={'Sure?'} use:enhance contents>
 						<input type="hidden" name="area-id" bind:value={selectedAreaId} />
 

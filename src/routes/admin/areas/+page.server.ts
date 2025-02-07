@@ -223,6 +223,52 @@ export const actions = {
 			.run();
 
 		throw redirect(302, '/admin/areas');
+	},
+	rerunTileRenderingForWholeArea: async ({ request }) => {
+		const formdata = await request.formData();
+		const areaId = formdata.get('area-id');
+		if (typeof areaId !== 'string') throw error(400);
+
+		const db = getDb();
+
+		const area = await db
+			.select()
+			.from(areasToGenerateTable)
+			.where(eq(areasToGenerateTable.id, areaId))
+			.get();
+
+		if (area === undefined) throw error(404);
+
+		const tilesInside = await db
+			.select({ id: tilesTable.id })
+			.from(tilesTable)
+			.where(
+				and(
+					gt(tilesTable.minX, area.minX - TILE_SIZE_IN_METERS),
+					gt(tilesTable.minY, area.minY - TILE_SIZE_IN_METERS),
+					lt(tilesTable.maxX, area.maxX + TILE_SIZE_IN_METERS),
+					lt(tilesTable.maxY, area.maxY + TILE_SIZE_IN_METERS)
+				)
+			)
+			.all();
+
+		await db
+			.update(tilesTable)
+			.set({
+				mapRenderingStepStatus: 'not-started',
+				mapRenderingStepWorkerId: null,
+				mapRenderingStepStartTime: null,
+				mapRenderingStepFinishTime: null
+			})
+			.where(
+				inArray(
+					tilesTable.id,
+					tilesInside.map(({ id }) => id)
+				)
+			)
+			.run();
+
+		throw redirect(302, '/admin/areas');
 	}
 };
 
