@@ -37,6 +37,7 @@
 
 		if (!response.ok) {
 			console.error(response.status, await response.text());
+
 			return;
 		}
 
