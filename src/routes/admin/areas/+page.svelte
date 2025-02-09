@@ -68,6 +68,20 @@
 
 				<li>
 					<form
+						action="?/rerunLidarStepForWholeArea"
+						method="post"
+						use:confirmSubmit={'Sure?'}
+						use:enhance
+						contents
+					>
+						<input type="hidden" name="area-id" bind:value={selectedAreaId} />
+
+						<button type="submit">Rerun lidar step</button>
+					</form>
+				</li>
+
+				<li>
+					<form
 						action="?/rerunTileRenderingForWholeArea"
 						method="post"
 						use:confirmSubmit={'Sure?'}
@@ -145,6 +159,20 @@
 							>
 						</li>
 					{/if}
+
+					<li>
+						<form
+							action="?/rerunTileLidarStep"
+							method="post"
+							use:confirmSubmit={'Sure?'}
+							use:enhance
+							contents
+						>
+							<input type="hidden" name="tile-id" bind:value={selectedTileId} />
+
+							<button type="submit">Rerun lidar step</button>
+						</form>
+					</li>
 
 					<li>
 						<form

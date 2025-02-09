@@ -18,7 +18,7 @@ export async function GET({ request, params: { x, y, zoom }, platform }) {
 
 	const tilesBucket = platform?.env?.R2_BUCKET_TILES;
 	if (tilesBucket === undefined) return new Response(null, { status: 500 });
-	const objectKey = `v1/${parsedZoom}/${parsedX}/${parsedY}.png`;
+	const objectKey = `${parsedZoom}/${parsedX}/${parsedY}.png`;
 
 	try {
 		const object = await tilesBucket.get(objectKey);
@@ -97,7 +97,7 @@ export async function POST({ request, params: { areaId, x, y, zoom }, platform }
 		return new Response('No file uploaded', { status: 400 });
 	}
 
-	const objectKey = `v1/${parsedZoom}/${parsedX}/${parsedY}.png`;
+	const objectKey = `${parsedZoom}/${parsedX}/${parsedY}.png`;
 
 	try {
 		await tilesBucket.put(objectKey, file as unknown as CloudflareFile, {

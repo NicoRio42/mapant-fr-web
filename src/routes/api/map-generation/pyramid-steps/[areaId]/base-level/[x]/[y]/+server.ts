@@ -82,7 +82,7 @@ export async function POST({ request, params: { areaId, x, y }, platform }) {
 
 	await Promise.all(
 		tilesWithFiles.map(({ file, tile }) => {
-			const objectKey = `v1/${tile.z}/${tile.x}/${tile.y}.png`;
+			const objectKey = `${tile.z}/${tile.x}/${tile.y}.png`;
 
 			return tilesBucket.put(objectKey, file as unknown as CloudflareFile, {
 				httpMetadata: {

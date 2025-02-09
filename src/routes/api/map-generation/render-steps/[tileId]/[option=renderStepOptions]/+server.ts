@@ -1,8 +1,6 @@
 import { getDb } from '$lib/server/db';
 import { tilesTable } from '$lib/server/schema';
 import { eq } from 'drizzle-orm';
-import { getWorkerIdOrErrorStatus } from '../../../utils';
-import { File as CloudflareFile } from '@cloudflare/workers-types';
 
 export async function GET({ platform, params }) {
 	const db = getDb();
@@ -13,7 +11,7 @@ export async function GET({ platform, params }) {
 	if (bucket === undefined) return new Response(null, { status: 500 });
 
 	const extention = params.option === 'full-map' ? 'png' : 'tar.xz';
-	const objectKey = `v1/render-step/${tile.id}/${params.option}.${extention}`;
+	const objectKey = `${tile.id}/${params.option}.${extention}`;
 
 	try {
 		const object = await bucket.get(objectKey);

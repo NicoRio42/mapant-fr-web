@@ -205,6 +205,29 @@ export const actions = {
 		await db.delete(areasToGenerateTable).where(eq(areasToGenerateTable.id, areaId)).run();
 		throw redirect(302, '/admin/areas');
 	},
+	rerunTileLidarStep: async ({ request }) => {
+		const formdata = await request.formData();
+		const tileId = formdata.get('tile-id');
+		if (typeof tileId !== 'string') throw error(400);
+
+		const db = getDb();
+		await db
+			.update(tilesTable)
+			.set({
+				lidarStepStatus: 'not-started',
+				lidarStepWorkerId: null,
+				lidarStepStartTime: null,
+				lidarStepFinishTime: null,
+				mapRenderingStepStatus: 'not-started',
+				mapRenderingStepWorkerId: null,
+				mapRenderingStepStartTime: null,
+				mapRenderingStepFinishTime: null
+			})
+			.where(eq(tilesTable.id, tileId))
+			.run();
+
+		throw redirect(302, '/admin/areas');
+	},
 	rerunTileRendering: async ({ request }) => {
 		const formdata = await request.formData();
 		const tileId = formdata.get('tile-id');
@@ -220,6 +243,56 @@ export const actions = {
 				mapRenderingStepFinishTime: null
 			})
 			.where(eq(tilesTable.id, tileId))
+			.run();
+
+		throw redirect(302, '/admin/areas');
+	},
+	rerunLidarStepForWholeArea: async ({ request }) => {
+		const formdata = await request.formData();
+		const areaId = formdata.get('area-id');
+		if (typeof areaId !== 'string') throw error(400);
+
+		const db = getDb();
+
+		const area = await db
+			.select()
+			.from(areasToGenerateTable)
+			.where(eq(areasToGenerateTable.id, areaId))
+			.get();
+
+		if (area === undefined) throw error(404);
+
+		const tilesInside = await db
+			.select({ id: tilesTable.id })
+			.from(tilesTable)
+			.where(
+				and(
+					gt(tilesTable.minX, area.minX - TILE_SIZE_IN_METERS * 2),
+					gt(tilesTable.minY, area.minY - TILE_SIZE_IN_METERS * 2),
+					lt(tilesTable.maxX, area.maxX + TILE_SIZE_IN_METERS * 2),
+					lt(tilesTable.maxY, area.maxY + TILE_SIZE_IN_METERS * 2)
+				)
+			)
+			.all();
+
+		await db
+			.update(tilesTable)
+			.set({
+				lidarStepStatus: 'not-started',
+				lidarStepWorkerId: null,
+				lidarStepStartTime: null,
+				lidarStepFinishTime: null,
+				mapRenderingStepStatus: 'not-started',
+				mapRenderingStepWorkerId: null,
+				mapRenderingStepStartTime: null,
+				mapRenderingStepFinishTime: null
+			})
+			.where(
+				inArray(
+					tilesTable.id,
+					tilesInside.map(({ id }) => id)
+				)
+			)
 			.run();
 
 		throw redirect(302, '/admin/areas');

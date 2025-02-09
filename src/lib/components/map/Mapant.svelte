@@ -48,7 +48,7 @@
 		map = getMap();
 
 		const url = dev
-			? `/api/tiles/v1/{z}/{x}/{y}.png`
+			? `/api/tiles/{z}/{x}/{y}.png`
 			: `${PUBLIC_MAPANT_TILES_BASE_URL}/{z}/{x}/{y}.png`;
 
 		const tileGrid = new TileGrid({

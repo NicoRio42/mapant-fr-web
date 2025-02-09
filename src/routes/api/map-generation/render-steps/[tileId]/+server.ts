@@ -54,22 +54,16 @@ export async function POST({ request, platform, params }) {
 	}
 
 	await Promise.all([
-		bucket.put(
-			`v1/render-step/${tile.id}/rasters.tar.xz`,
-			rastersFile as unknown as CloudflareFile,
-			{
-				httpMetadata: { contentType: rastersFile.type }
-			}
-		),
-		bucket.put(
-			`v1/render-step/${tile.id}/shapefiles.tar.xz`,
-			shapefilesFile as unknown as CloudflareFile,
-			{ httpMetadata: { contentType: shapefilesFile.type } }
-		),
-		bucket.put(`v1/render-step/${tile.id}/pngs.tar.xz`, pngsFile as unknown as CloudflareFile, {
+		bucket.put(`${tile.id}/rasters.tar.xz`, rastersFile as unknown as CloudflareFile, {
+			httpMetadata: { contentType: rastersFile.type }
+		}),
+		bucket.put(`${tile.id}/shapefiles.tar.xz`, shapefilesFile as unknown as CloudflareFile, {
+			httpMetadata: { contentType: shapefilesFile.type }
+		}),
+		bucket.put(`${tile.id}/pngs.tar.xz`, pngsFile as unknown as CloudflareFile, {
 			httpMetadata: { contentType: pngsFile.type }
 		}),
-		bucket.put(`v1/render-step/${tile.id}/full-map.png`, fullMapFile as unknown as CloudflareFile, {
+		bucket.put(`${tile.id}/full-map.png`, fullMapFile as unknown as CloudflareFile, {
 			httpMetadata: { contentType: fullMapFile.type }
 		})
 	]).catch((error) => {

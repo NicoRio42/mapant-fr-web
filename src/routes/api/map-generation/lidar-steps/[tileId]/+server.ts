@@ -15,7 +15,7 @@ export async function GET({ request, platform, params }) {
 	const bucket = platform?.env?.R2_BUCKET;
 	if (bucket === undefined) return new Response(null, { status: 500 });
 
-	const objectKey = `v1/lidar-step/${tile.id}.tar.xz`;
+	const objectKey = `${tile.id}/rasters.tar.xz`;
 
 	try {
 		const object = await bucket.get(objectKey);
@@ -74,7 +74,7 @@ export async function POST({ request, platform, params }) {
 		return new Response('No file uploaded', { status: 400 });
 	}
 
-	const objectKey = `v1/lidar-step/${tile.id}.tar.xz`;
+	const objectKey = `${tile.id}/rasters.tar.xz`;
 
 	try {
 		await bucket.put(objectKey, file as unknown as CloudflareFile, {
