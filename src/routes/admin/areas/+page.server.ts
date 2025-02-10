@@ -247,6 +247,54 @@ export const actions = {
 
 		throw redirect(302, '/admin/areas');
 	},
+	rerunPyramidGeneration: async ({ request }) => {
+		const formdata = await request.formData();
+		const tileId = formdata.get('tile-id');
+		if (typeof tileId !== 'string') throw error(400);
+
+		const db = getDb();
+
+		const tile = await db
+			.select()
+			.from(tilesTable)
+			.innerJoin(mapRenderingStepJobTable, eq(mapRenderingStepJobTable.tileId, tilesTable.id))
+			.where(eq(tilesTable.id, tileId))
+			.get();
+
+		if (tile === undefined) throw error(404);
+
+		const pyramidJobs = getPyramidJobsFromTileList([
+			{
+				xLambert93: tile.tiles.minX,
+				yLambert93: tile.tiles.minY
+			}
+		]);
+
+		const pyramidUpdates = pyramidJobs.map(({ x, y, z }) =>
+			db
+				.update(pyramidRenderingStepJobTable)
+				.set({ status: 'not-started', workerId: null, startTime: null, finishTime: null })
+				.where(
+					and(
+						eq(pyramidRenderingStepJobTable.x, x),
+						eq(pyramidRenderingStepJobTable.y, y),
+						eq(pyramidRenderingStepJobTable.zoom, z),
+						eq(
+							pyramidRenderingStepJobTable.areaToGenerateId,
+							tile.map_rendering_step_jobs.areaToGenerateId
+						)
+					)
+				)
+		);
+
+		const firstUpdate = pyramidUpdates.shift();
+
+		if (firstUpdate !== undefined) {
+			await db.batch([firstUpdate, ...pyramidUpdates]);
+		}
+
+		throw redirect(302, '/admin/areas');
+	},
 	rerunLidarStepForWholeArea: async ({ request }) => {
 		const formdata = await request.formData();
 		const areaId = formdata.get('area-id');

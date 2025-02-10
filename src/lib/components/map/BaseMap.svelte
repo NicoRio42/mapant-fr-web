@@ -16,7 +16,7 @@
 	let showLayerDropDown = $state(false);
 	let isOsmLayerDisplayed = $state(false);
 	let isIgnScan25LayerDisplayed = $state(true);
-	let isMapantV1LayerDisplayed = $state(true);
+	let isMapantV1LayerDisplayed = $state(false);
 	let isMapantLayerDisplayed = $state(true);
 
 	interface Props {
@@ -36,13 +36,13 @@
 		selected = $bindable(null),
 		zoom = 6,
 		fit,
-		isLidarHdTilesLayerDisplayed = $bindable(true),
+		isLidarHdTilesLayerDisplayed = $bindable(false),
 		onViewChange,
 		children
 	}: Props = $props();
 
 	let osmLayerOpacity = $state(0.5);
-	let ignScan25LayerOpacity = $state(0.5);
+	let ignScan25LayerOpacity = $state(0.25);
 	let mapantV1LayerOpacity = $state(1);
 	let mapantLayerOpacity = $state(1);
 	let lidarHdTilesLayerOpacity = $state(1);
@@ -100,6 +100,12 @@
 				/>
 
 				<LayerControlItem
+					label="IGN Scan25"
+					bind:displayed={isIgnScan25LayerDisplayed}
+					bind:opacity={ignScan25LayerOpacity}
+				/>
+
+				<LayerControlItem
 					label="Mapant.fr V1"
 					bind:displayed={isMapantV1LayerDisplayed}
 					bind:opacity={mapantV1LayerOpacity}
@@ -127,12 +133,6 @@
 					label="Mapant.fr"
 					bind:displayed={isMapantLayerDisplayed}
 					bind:opacity={mapantLayerOpacity}
-				/>
-
-				<LayerControlItem
-					label="IGN Scan25"
-					bind:displayed={isIgnScan25LayerDisplayed}
-					bind:opacity={ignScan25LayerOpacity}
 				/>
 
 				<LayerControlItem

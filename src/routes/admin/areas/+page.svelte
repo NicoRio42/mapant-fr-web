@@ -55,146 +55,161 @@
 	<button type="submit" bind:this={submitButton}>Submit</button>
 </form>
 
-{#if selectedAreaId !== null}
+{#snippet simpleForm({
+	action,
+	name,
+	value,
+	text
+}: {
+	action: string;
+	name: string;
+	value: string;
+	text: string;
+})}
+	<form action="?/{action}" method="post" use:confirmSubmit={'Sure?'} use:enhance contents>
+		<input type="hidden" {name} {value} />
+
+		<button type="submit">{text}</button>
+	</form>
+{/snippet}
+
+{#if selectedAreaId !== null || selectedTileId !== null}
 	<dialog open>
 		<article>
-			<ul>
-				<li>
-					<form action="?/delete" method="post" use:confirmSubmit={'Sure?'} use:enhance contents>
-						<input type="hidden" name="area-id" bind:value={selectedAreaId} />
-
-						<button type="submit">Delete</button>
-					</form>
-				</li>
-
-				<li>
-					<form
-						action="?/rerunLidarStepForWholeArea"
-						method="post"
-						use:confirmSubmit={'Sure?'}
-						use:enhance
-						contents
-					>
-						<input type="hidden" name="area-id" bind:value={selectedAreaId} />
-
-						<button type="submit">Rerun lidar step</button>
-					</form>
-				</li>
-
-				<li>
-					<form
-						action="?/rerunTileRenderingForWholeArea"
-						method="post"
-						use:confirmSubmit={'Sure?'}
-						use:enhance
-						contents
-					>
-						<input type="hidden" name="area-id" bind:value={selectedAreaId} />
-
-						<button type="submit">Rerun render step</button>
-					</form>
-				</li>
-
-				<li>
-					<form action="?/merge" method="post" use:confirmSubmit={'Sure?'} use:enhance contents>
-						<input type="hidden" name="area-id" bind:value={selectedAreaId} />
-
-						<button type="submit">Merge</button>
-					</form>
-				</li>
-			</ul>
-
-			<button type="button" class="outlined" onclick={() => (selectedAreaId = null)}>Close</button>
-		</article>
-	</dialog>
-{/if}
-
-{#if selectedTileId !== null}
-	{@const selectedTile = data.areas
-		.flatMap((a) => a.lidarJobs.map((j) => j.tile))
-		.find((t) => t.id === selectedTileId)}
-
-	{#if selectedTile !== undefined}
-		<dialog open>
-			<article>
-				<header>
-					<h2>Tile: {selectedTile.id}</h2>
-				</header>
+			{#if selectedAreaId !== null}
+				<h2>Selected area</h2>
 
 				<ul>
-					{#if selectedTile.lidarStepStatus === 'finished'}
-						<li>
-							<a
-								href="/admin/areas/tiles/{selectedTile.id}/lidar"
-								download="{selectedTile.id}.rasters.tar.xz">Rasters from LiDAR step</a
-							>
-						</li>
-					{/if}
-
-					{#if selectedTile.mapRenderingStepStatus === 'finished'}
-						<li>
-							<a
-								href="/admin/areas/tiles/{selectedTile.id}/rasters"
-								download="{selectedTile.id}.rasters.tar.xz">Rasters</a
-							>
-						</li>
-
-						<li>
-							<a
-								href="/admin/areas/tiles/{selectedTile.id}/shapefiles"
-								download="{selectedTile.id}.shapefiles.tar.xz">Shapefiles</a
-							>
-						</li>
-
-						<li>
-							<a
-								href="/admin/areas/tiles/{selectedTile.id}/pngs"
-								download="{selectedTile.id}.pngs.tar.xz">Pngs</a
-							>
-						</li>
-
-						<li>
-							<a
-								href="/admin/areas/tiles/{selectedTile.id}/full-map"
-								download="{selectedTile.id}.full-map.png">Full map</a
-							>
-						</li>
-					{/if}
-
 					<li>
-						<form
-							action="?/rerunTileLidarStep"
-							method="post"
-							use:confirmSubmit={'Sure?'}
-							use:enhance
-							contents
-						>
-							<input type="hidden" name="tile-id" bind:value={selectedTileId} />
-
-							<button type="submit">Rerun lidar step</button>
-						</form>
+						{@render simpleForm({
+							action: 'delete',
+							name: 'area-id',
+							value: selectedAreaId,
+							text: 'Delete'
+						})}
 					</li>
 
 					<li>
-						<form
-							action="?/rerunTileRendering"
-							method="post"
-							use:confirmSubmit={'Sure?'}
-							use:enhance
-							contents
-						>
-							<input type="hidden" name="tile-id" bind:value={selectedTileId} />
+						{@render simpleForm({
+							action: 'rerunLidarStepForWholeArea',
+							name: 'area-id',
+							value: selectedAreaId,
+							text: 'Rerun lidar step'
+						})}
+					</li>
 
-							<button type="submit">Rerun render step</button>
-						</form>
+					<li>
+						{@render simpleForm({
+							action: 'rerunTileRenderingForWholeArea',
+							name: 'area-id',
+							value: selectedAreaId,
+							text: 'Rerun render step'
+						})}
+					</li>
+
+					<li>
+						{@render simpleForm({
+							action: 'merge',
+							name: 'area-id',
+							value: selectedAreaId,
+							text: 'Merge'
+						})}
 					</li>
 				</ul>
+			{/if}
 
-				<button type="button" class="outlined" onclick={() => (selectedTileId = null)}>Close</button
-				>
-			</article>
-		</dialog>
-	{/if}
+			{#if selectedAreaId !== null && selectedTileId !== null}
+				<hr />
+			{/if}
+
+			{#if selectedTileId !== null}
+				{@const selectedTile = data.areas
+					.flatMap((a) => a.lidarJobs.map((j) => j.tile))
+					.find((t) => t.id === selectedTileId)}
+
+				{#if selectedTile !== undefined}
+					<h2>Tile: {selectedTile.id}</h2>
+
+					<ul>
+						{#if selectedTile.lidarStepStatus === 'finished'}
+							<li>
+								<a
+									href="/admin/areas/tiles/{selectedTile.id}/lidar"
+									download="{selectedTile.id}.rasters.tar.xz">Rasters from LiDAR step</a
+								>
+							</li>
+						{/if}
+
+						{#if selectedTile.mapRenderingStepStatus === 'finished'}
+							<li>
+								<a
+									href="/admin/areas/tiles/{selectedTile.id}/rasters"
+									download="{selectedTile.id}.rasters.tar.xz">Rasters</a
+								>
+							</li>
+
+							<li>
+								<a
+									href="/admin/areas/tiles/{selectedTile.id}/shapefiles"
+									download="{selectedTile.id}.shapefiles.tar.xz">Shapefiles</a
+								>
+							</li>
+
+							<li>
+								<a
+									href="/admin/areas/tiles/{selectedTile.id}/pngs"
+									download="{selectedTile.id}.pngs.tar.xz">Pngs</a
+								>
+							</li>
+
+							<li>
+								<a
+									href="/admin/areas/tiles/{selectedTile.id}/full-map"
+									download="{selectedTile.id}.full-map.png">Full map</a
+								>
+							</li>
+						{/if}
+
+						<li>
+							{@render simpleForm({
+								action: 'rerunTileLidarStep',
+								name: 'tile-id',
+								value: selectedTileId,
+								text: 'Rerun lidar step'
+							})}
+						</li>
+
+						<li>
+							{@render simpleForm({
+								action: 'rerunTileRendering',
+								name: 'tile-id',
+								value: selectedTileId,
+								text: 'Rerun render step'
+							})}
+						</li>
+
+						<li>
+							{@render simpleForm({
+								action: 'rerunPyramidGeneration',
+								name: 'tile-id',
+								value: selectedTileId,
+								text: 'Rerun pyramid generation'
+							})}
+						</li>
+					</ul>
+				{/if}
+			{/if}
+
+			<button
+				type="button"
+				class="outlined"
+				onclick={() => {
+					selectedAreaId = null;
+					selectedTileId = null;
+				}}>Close</button
+			>
+		</article>
+	</dialog>
 {/if}
 
 <BaseMap {onViewChange}>

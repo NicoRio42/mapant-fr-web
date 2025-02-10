@@ -1,9 +1,3 @@
-<script lang="ts" module>
-	import { writable } from 'svelte/store';
-
-	const welcomeDialogHasBeenShown = writable(false);
-</script>
-
 <script lang="ts">
 	import BaseMap from '$lib/components/map/BaseMap.svelte';
 	import { onMount } from 'svelte';
@@ -14,14 +8,6 @@
 	import { page } from '$app/stores';
 
 	let isWelcomeDialogOpen = $state(false);
-
-	onMount(() => {
-		if (!$welcomeDialogHasBeenShown) {
-			setTimeout(() => (isWelcomeDialogOpen = true), 2000);
-		}
-
-		$welcomeDialogHasBeenShown = true;
-	});
 </script>
 
 <MetaTags
