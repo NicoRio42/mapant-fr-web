@@ -134,8 +134,8 @@
 						{#if selectedTile.lidarStepStatus === 'finished'}
 							<li>
 								<a
-									href="/admin/areas/tiles/{selectedTile.id}/lidar"
-									download="{selectedTile.id}.rasters.tar.xz">Rasters from LiDAR step</a
+									href="/admin/areas/tiles/{selectedTile.id}/rasters"
+									download="{selectedTile.id}.rasters.tar.xz">Rasters</a
 								>
 							</li>
 						{/if}
