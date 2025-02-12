@@ -315,7 +315,7 @@
 			<Polygon color="blue" width={2} coords={coordinates} fill="transparent" text={user.email} />
 		{/each}
 
-		{#each displayedTiles as tile (tile.id)}
+		{#each displayedTiles as tile (`${tile.id}_${tile.mapRenderingStepStatus}_${tile.lidarStepStatus}_${tile.lidarJob !== null ? 'true' : 'false'}`)}
 			{@const tileCoordinates = [
 				[tile.minX, tile.maxY],
 				[tile.maxX, tile.maxY],
