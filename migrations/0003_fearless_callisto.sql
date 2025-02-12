@@ -1,0 +1,23 @@
+CREATE INDEX `areas_to_generate_min_x_index` ON `areas_to_generate` (`min_x`);--> statement-breakpoint
+CREATE INDEX `areas_to_generate_min_y_index` ON `areas_to_generate` (`min_y`);--> statement-breakpoint
+CREATE INDEX `areas_to_generate_max_x_index` ON `areas_to_generate` (`max_x`);--> statement-breakpoint
+CREATE INDEX `areas_to_generate_max_y_index` ON `areas_to_generate` (`max_y`);--> statement-breakpoint
+CREATE INDEX `contribution_fk_user` ON `contribution` (`fk_user`);--> statement-breakpoint
+CREATE INDEX `contribution_without_compensation_fk_user` ON `contribution_without_compensation` (`fk_user`);--> statement-breakpoint
+CREATE INDEX `lidar_step_jobs_index_index` ON `lidar_step_jobs` (`index`);--> statement-breakpoint
+CREATE INDEX `map_rendering_step_jobs_index_index` ON `map_rendering_step_jobs` (`index`);--> statement-breakpoint
+CREATE INDEX `pyramid_rendering_step_jobs_index_index` ON `pyramid_rendering_step_jobs` (`index`);--> statement-breakpoint
+CREATE INDEX `pyramid_rendering_step_jobs_x_index` ON `pyramid_rendering_step_jobs` (`x`);--> statement-breakpoint
+CREATE INDEX `pyramid_rendering_step_jobs_y_index` ON `pyramid_rendering_step_jobs` (`y`);--> statement-breakpoint
+CREATE INDEX `pyramid_rendering_step_jobs_zoom_index` ON `pyramid_rendering_step_jobs` (`zoom`);--> statement-breakpoint
+CREATE INDEX `pyramid_rendering_step_jobs_status_index` ON `pyramid_rendering_step_jobs` (`status`);--> statement-breakpoint
+CREATE INDEX `pyramid_rendering_step_jobs_start_time_index` ON `pyramid_rendering_step_jobs` (`start_time`);--> statement-breakpoint
+CREATE INDEX `user_session_user_id_index` ON `user_session` (`user_id`);--> statement-breakpoint
+CREATE INDEX `tiles_min_x_index` ON `tiles` (`min_x`);--> statement-breakpoint
+CREATE INDEX `tiles_min_y_index` ON `tiles` (`min_y`);--> statement-breakpoint
+CREATE INDEX `tiles_max_x_index` ON `tiles` (`max_x`);--> statement-breakpoint
+CREATE INDEX `tiles_max_y_index` ON `tiles` (`max_y`);--> statement-breakpoint
+CREATE INDEX `tiles_lidar_step_status_index` ON `tiles` (`lidar_step_status`);--> statement-breakpoint
+CREATE INDEX `tiles_lidar_step_start_time_index` ON `tiles` (`lidar_step_start_time`);--> statement-breakpoint
+CREATE INDEX `tiles_map_rendering_step_status_index` ON `tiles` (`map_rendering_step_status`);--> statement-breakpoint
+CREATE INDEX `tiles_map_rendering_step_start_time_index` ON `tiles` (`map_rendering_step_start_time`);

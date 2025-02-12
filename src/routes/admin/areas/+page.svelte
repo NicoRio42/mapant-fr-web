@@ -21,7 +21,7 @@
 	let submitButton: HTMLButtonElement | undefined = $state();
 	let selectedAreaId: null | string = $state(null);
 	let selectedTileId: null | string = $state(null);
-	let displayedTiles: Tile[] = $state([]);
+	let displayedTiles: (Tile & { lidarJob: { id: string } | null })[] = $state([]);
 
 	async function onViewChange({ zoom, extent }: { zoom: number; extent: Extent }) {
 		if (zoom < 13) {
@@ -43,8 +43,6 @@
 
 		displayedTiles = await response.json();
 	}
-
-	let tilesInArea = $derived(data.areas.flatMap((a) => a.lidarJobs.map((j) => j.tileId)));
 </script>
 
 <form hidden action="?/add" method="post" use:enhance>
@@ -123,9 +121,7 @@
 			{/if}
 
 			{#if selectedTileId !== null}
-				{@const selectedTile = data.areas
-					.flatMap((a) => a.lidarJobs.map((j) => j.tile))
-					.find((t) => t.id === selectedTileId)}
+				{@const selectedTile = displayedTiles.find((t) => t.id === selectedTileId)}
 
 				{#if selectedTile !== undefined}
 					<h2>Tile: {selectedTile.id}</h2>
@@ -271,21 +267,6 @@
 		/>
 	{/if}
 
-	<VectorLayer>
-		{#each displayedTiles as tile (tile.id)}
-			{#if !tilesInArea.includes(tile.id)}
-				{@const coordinates = [
-					[tile.minX, tile.maxY],
-					[tile.maxX, tile.maxY],
-					[tile.maxX, tile.minY],
-					[tile.minX, tile.minY]
-				]}
-
-				<Polygon color="blue" width={2} coords={coordinates} text={`Id: ${tile.id}`} />
-			{/if}
-		{/each}
-	</VectorLayer>
-
 	<VectorLayer zIndex={5}>
 		{#each data.contributions as { contribution, user } (contribution.id)}
 			{@const coordinates = [
@@ -295,39 +276,37 @@
 				[contribution.minX, contribution.minY]
 			]}
 
-			<Polygon color="blue" width={2} coords={coordinates} fill="#60a5fa4a" text={user.email} />
+			<Polygon color="blue" width={2} coords={coordinates} fill="transparent" text={user.email} />
 		{/each}
 
-		{#each data.areas as area (area.id)}
-			{#each area.lidarJobs as { id, tile } (id)}
-				{@const tileCoordinates = [
-					[tile.minX, tile.maxY],
-					[tile.maxX, tile.maxY],
-					[tile.maxX, tile.minY],
-					[tile.minX, tile.minY]
-				]}
+		{#each displayedTiles as tile (tile.id)}
+			{@const tileCoordinates = [
+				[tile.minX, tile.maxY],
+				[tile.maxX, tile.maxY],
+				[tile.maxX, tile.minY],
+				[tile.minX, tile.minY]
+			]}
 
-				<Polygon
-					color={tile.mapRenderingStepStatus === 'finished'
-						? 'red'
-						: tile.mapRenderingStepStatus === 'ongoing'
-							? 'orange'
-							: tile.lidarStepStatus === 'finished'
-								? 'yellow'
-								: tile.lidarStepStatus === 'ongoing'
-									? 'pink'
-									: 'gray'}
-					width={2}
-					coords={tileCoordinates}
-					onclick={() => (selectedTileId = tile.id)}
-					fill="transparent"
-					text={`Id: ${tile.id} \n Lidar: ${tile.lidarStepStatus} \n Render: ${tile.mapRenderingStepStatus}`}
-				/>
-			{/each}
+			<Polygon
+				color={tile.mapRenderingStepStatus === 'finished'
+					? 'red'
+					: tile.mapRenderingStepStatus === 'ongoing'
+						? 'orange'
+						: tile.lidarStepStatus === 'finished'
+							? 'yellow'
+							: tile.lidarStepStatus === 'ongoing'
+								? 'pink'
+								: tile.lidarJob !== null
+									? 'gray'
+									: 'blue'}
+				width={2}
+				coords={tileCoordinates}
+				onclick={() => (selectedTileId = tile.id)}
+				fill="transparent"
+				text={`Id: ${tile.id} \n Lidar: ${tile.lidarStepStatus} \n Render: ${tile.mapRenderingStepStatus}`}
+			/>
 		{/each}
-	</VectorLayer>
 
-	<VectorLayer zIndex={4}>
 		{#each data.areas as area (area.id)}
 			{@const coordinates = [
 				[area.minX, area.maxY],

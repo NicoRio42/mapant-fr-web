@@ -27,7 +27,7 @@ export async function load() {
 			.from(contributionTable)
 			.innerJoin(userTable, eq(userTable.id, contributionTable.fkUser))
 			.where(eq(contributionTable.paied, true)),
-		db.query.areasToGenerateTable.findMany({ with: { lidarJobs: { with: { tile: true } } } })
+		db.query.areasToGenerateTable.findMany()
 	]);
 
 	return { contributions, areas };

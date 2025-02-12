@@ -33,18 +33,15 @@ export async function GET({ url }) {
 
 	const db = getDb();
 
-	const tiles = await db
-		.select()
-		.from(tilesTable)
-		.where(
-			and(
-				gt(tilesTable.minX, minX - TILE_SIZE_IN_METERS),
-				gt(tilesTable.minY, minY - TILE_SIZE_IN_METERS),
-				lt(tilesTable.maxX, maxX + TILE_SIZE_IN_METERS),
-				lt(tilesTable.maxY, maxY + TILE_SIZE_IN_METERS)
-			)
-		)
-		.all();
+	const tiles = await db.query.tilesTable.findMany({
+		where: and(
+			gt(tilesTable.minX, minX - TILE_SIZE_IN_METERS),
+			gt(tilesTable.minY, minY - TILE_SIZE_IN_METERS),
+			lt(tilesTable.maxX, maxX + TILE_SIZE_IN_METERS),
+			lt(tilesTable.maxY, maxY + TILE_SIZE_IN_METERS)
+		),
+		with: { lidarJob: { columns: { id: true } } }
+	});
 
 	return json(tiles);
 }
