@@ -34,7 +34,7 @@ export async function load() {
 }
 
 export const actions = {
-	add: async ({ request }) => {
+	addArea: async ({ request }) => {
 		const db = getDb();
 
 		const form = await superValidate(
@@ -136,24 +136,33 @@ export const actions = {
 
 		throw redirect(302, '/admin/areas');
 	},
-	merge: async ({ request }) => {
+	mergeArea: async ({ request }) => {
 		const db = getDb();
 
 		const formdata = await request.formData();
 		const areaId = formdata.get('area-id');
 		if (typeof areaId !== 'string') throw error(400);
 
-		const mapRenderingJobsWithTiles = await db
-			.select()
-			.from(mapRenderingStepJobTable)
-			.innerJoin(tilesTable, eq(mapRenderingStepJobTable.tileId, tilesTable.id))
-			.where(eq(mapRenderingStepJobTable.areaToGenerateId, areaId))
-			.all();
+		const [mapRenderingJobsWithTiles, areasExistingPyramidJobs] = await db.batch([
+			db
+				.select()
+				.from(mapRenderingStepJobTable)
+				.innerJoin(tilesTable, eq(mapRenderingStepJobTable.tileId, tilesTable.id))
+				.where(eq(mapRenderingStepJobTable.areaToGenerateId, areaId)),
+			db
+				.select({ id: pyramidRenderingStepJobTable.id })
+				.from(pyramidRenderingStepJobTable)
+				.where(eq(pyramidRenderingStepJobTable.areaToGenerateId, areaId))
+		]);
 
 		if (
 			mapRenderingJobsWithTiles.some(({ tiles }) => tiles.mapRenderingStepStatus !== 'finished')
 		) {
 			throw error(400, 'All map rendering step jobs are not finished for this area.');
+		}
+
+		if (areasExistingPyramidJobs.length !== 0) {
+			throw error(400, 'Area already merged.');
 		}
 
 		const pyramidJobs = getPyramidJobsFromTileList(
@@ -196,13 +205,184 @@ export const actions = {
 				.run();
 		});
 	},
-	delete: async ({ request }) => {
+	deleteArea: async ({ request }) => {
 		const formdata = await request.formData();
 		const areaId = formdata.get('area-id');
 		if (typeof areaId !== 'string') throw error(400);
 
 		const db = getDb();
 		await db.delete(areasToGenerateTable).where(eq(areasToGenerateTable.id, areaId)).run();
+		throw redirect(302, '/admin/areas');
+	},
+	rerunAreasLidarStepJobs: async ({ request }) => {
+		const formdata = await request.formData();
+		const areaId = formdata.get('area-id');
+		if (typeof areaId !== 'string') throw error(400);
+
+		const db = getDb();
+
+		await db
+			.update(tilesTable)
+			.set({
+				lidarStepStatus: 'not-started',
+				lidarStepWorkerId: null,
+				lidarStepStartTime: null,
+				lidarStepFinishTime: null,
+				mapRenderingStepStatus: 'not-started',
+				mapRenderingStepWorkerId: null,
+				mapRenderingStepStartTime: null,
+				mapRenderingStepFinishTime: null
+			})
+			.where(
+				inArray(
+					tilesTable.id,
+					db
+						.select({ id: lidarStepJobTable.tileId })
+						.from(lidarStepJobTable)
+						.where(eq(lidarStepJobTable.areaToGenerateId, areaId))
+				)
+			)
+			.run();
+
+		throw redirect(302, '/admin/areas');
+	},
+	rerunAreasRenderStepJobs: async ({ request }) => {
+		const formdata = await request.formData();
+		const areaId = formdata.get('area-id');
+		if (typeof areaId !== 'string') throw error(400);
+
+		const db = getDb();
+
+		await db
+			.update(tilesTable)
+			.set({
+				mapRenderingStepStatus: 'not-started',
+				mapRenderingStepWorkerId: null,
+				mapRenderingStepStartTime: null,
+				mapRenderingStepFinishTime: null
+			})
+			.where(
+				inArray(
+					tilesTable.id,
+					db
+						.select({ id: mapRenderingStepJobTable.tileId })
+						.from(mapRenderingStepJobTable)
+						.where(eq(mapRenderingStepJobTable.areaToGenerateId, areaId))
+				)
+			)
+			.run();
+
+		throw redirect(302, '/admin/areas');
+	},
+	rerunAreasPyramidStepJobs: async ({ request }) => {
+		const formdata = await request.formData();
+		const areaId = formdata.get('area-id');
+		if (typeof areaId !== 'string') throw error(400);
+
+		const db = getDb();
+
+		await db
+			.update(pyramidRenderingStepJobTable)
+			.set({
+				status: 'not-started',
+				workerId: null,
+				startTime: null,
+				finishTime: null
+			})
+			.where(and(eq(pyramidRenderingStepJobTable.areaToGenerateId, areaId)))
+			.run();
+
+		throw redirect(302, '/admin/areas');
+	},
+	invalidateAreasOngoingLidarJobs: async ({ request }) => {
+		const formdata = await request.formData();
+		const areaId = formdata.get('area-id');
+		if (typeof areaId !== 'string') throw error(400);
+
+		const db = getDb();
+
+		await db
+			.update(tilesTable)
+			.set({
+				lidarStepStatus: 'not-started',
+				lidarStepWorkerId: null,
+				lidarStepStartTime: null,
+				lidarStepFinishTime: null,
+				mapRenderingStepStatus: 'not-started',
+				mapRenderingStepWorkerId: null,
+				mapRenderingStepStartTime: null,
+				mapRenderingStepFinishTime: null
+			})
+			.where(
+				and(
+					eq(tilesTable.lidarStepStatus, 'ongoing'),
+					inArray(
+						tilesTable.id,
+						db
+							.select({ id: lidarStepJobTable.tileId })
+							.from(lidarStepJobTable)
+							.where(eq(lidarStepJobTable.areaToGenerateId, areaId))
+					)
+				)
+			)
+			.run();
+
+		throw redirect(302, '/admin/areas');
+	},
+	invalidateAreasOngoingRenderJobs: async ({ request }) => {
+		const formdata = await request.formData();
+		const areaId = formdata.get('area-id');
+		if (typeof areaId !== 'string') throw error(400);
+
+		const db = getDb();
+
+		await db
+			.update(tilesTable)
+			.set({
+				mapRenderingStepStatus: 'not-started',
+				mapRenderingStepWorkerId: null,
+				mapRenderingStepStartTime: null,
+				mapRenderingStepFinishTime: null
+			})
+			.where(
+				and(
+					eq(tilesTable.mapRenderingStepStatus, 'ongoing'),
+					inArray(
+						tilesTable.id,
+						db
+							.select({ id: mapRenderingStepJobTable.tileId })
+							.from(mapRenderingStepJobTable)
+							.where(eq(mapRenderingStepJobTable.areaToGenerateId, areaId))
+					)
+				)
+			)
+			.run();
+
+		throw redirect(302, '/admin/areas');
+	},
+	invalidateAreasOngoingPyramidJobs: async ({ request }) => {
+		const formdata = await request.formData();
+		const areaId = formdata.get('area-id');
+		if (typeof areaId !== 'string') throw error(400);
+
+		const db = getDb();
+
+		await db
+			.update(pyramidRenderingStepJobTable)
+			.set({
+				status: 'not-started',
+				workerId: null,
+				startTime: null,
+				finishTime: null
+			})
+			.where(
+				and(
+					eq(pyramidRenderingStepJobTable.status, 'ongoing'),
+					eq(pyramidRenderingStepJobTable.areaToGenerateId, areaId)
+				)
+			)
+			.run();
+
 		throw redirect(302, '/admin/areas');
 	},
 	rerunTileLidarStep: async ({ request }) => {
@@ -247,7 +427,7 @@ export const actions = {
 
 		throw redirect(302, '/admin/areas');
 	},
-	rerunPyramidGeneration: async ({ request }) => {
+	rerunTilePyramidGeneration: async ({ request }) => {
 		const formdata = await request.formData();
 		const tileId = formdata.get('tile-id');
 		if (typeof tileId !== 'string') throw error(400);
@@ -292,102 +472,6 @@ export const actions = {
 		if (firstUpdate !== undefined) {
 			await db.batch([firstUpdate, ...pyramidUpdates]);
 		}
-
-		throw redirect(302, '/admin/areas');
-	},
-	rerunLidarStepForWholeArea: async ({ request }) => {
-		const formdata = await request.formData();
-		const areaId = formdata.get('area-id');
-		if (typeof areaId !== 'string') throw error(400);
-
-		const db = getDb();
-
-		const area = await db
-			.select()
-			.from(areasToGenerateTable)
-			.where(eq(areasToGenerateTable.id, areaId))
-			.get();
-
-		if (area === undefined) throw error(404);
-
-		const tilesInside = await db
-			.select({ id: tilesTable.id })
-			.from(tilesTable)
-			.where(
-				and(
-					gt(tilesTable.minX, area.minX - TILE_SIZE_IN_METERS * 2),
-					gt(tilesTable.minY, area.minY - TILE_SIZE_IN_METERS * 2),
-					lt(tilesTable.maxX, area.maxX + TILE_SIZE_IN_METERS * 2),
-					lt(tilesTable.maxY, area.maxY + TILE_SIZE_IN_METERS * 2)
-				)
-			)
-			.all();
-
-		await db
-			.update(tilesTable)
-			.set({
-				lidarStepStatus: 'not-started',
-				lidarStepWorkerId: null,
-				lidarStepStartTime: null,
-				lidarStepFinishTime: null,
-				mapRenderingStepStatus: 'not-started',
-				mapRenderingStepWorkerId: null,
-				mapRenderingStepStartTime: null,
-				mapRenderingStepFinishTime: null
-			})
-			.where(
-				inArray(
-					tilesTable.id,
-					tilesInside.map(({ id }) => id)
-				)
-			)
-			.run();
-
-		throw redirect(302, '/admin/areas');
-	},
-	rerunTileRenderingForWholeArea: async ({ request }) => {
-		const formdata = await request.formData();
-		const areaId = formdata.get('area-id');
-		if (typeof areaId !== 'string') throw error(400);
-
-		const db = getDb();
-
-		const area = await db
-			.select()
-			.from(areasToGenerateTable)
-			.where(eq(areasToGenerateTable.id, areaId))
-			.get();
-
-		if (area === undefined) throw error(404);
-
-		const tilesInside = await db
-			.select({ id: tilesTable.id })
-			.from(tilesTable)
-			.where(
-				and(
-					gt(tilesTable.minX, area.minX - TILE_SIZE_IN_METERS),
-					gt(tilesTable.minY, area.minY - TILE_SIZE_IN_METERS),
-					lt(tilesTable.maxX, area.maxX + TILE_SIZE_IN_METERS),
-					lt(tilesTable.maxY, area.maxY + TILE_SIZE_IN_METERS)
-				)
-			)
-			.all();
-
-		await db
-			.update(tilesTable)
-			.set({
-				mapRenderingStepStatus: 'not-started',
-				mapRenderingStepWorkerId: null,
-				mapRenderingStepStartTime: null,
-				mapRenderingStepFinishTime: null
-			})
-			.where(
-				inArray(
-					tilesTable.id,
-					tilesInside.map(({ id }) => id)
-				)
-			)
-			.run();
 
 		throw redirect(302, '/admin/areas');
 	}

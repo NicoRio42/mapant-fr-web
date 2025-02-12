@@ -45,7 +45,7 @@
 	}
 </script>
 
-<form hidden action="?/add" method="post" use:enhance>
+<form hidden action="?/addArea" method="post" use:enhance>
 	<input type="hidden" name="minX" bind:value={minX} />
 	<input type="hidden" name="maxX" bind:value={maxX} />
 	<input type="hidden" name="minY" bind:value={minY} />
@@ -80,34 +80,70 @@
 				<ul>
 					<li>
 						{@render simpleForm({
-							action: 'delete',
+							action: 'deleteArea',
 							name: 'area-id',
 							value: selectedAreaId,
-							text: 'Delete'
+							text: 'Delete DANGER'
 						})}
 					</li>
 
 					<li>
 						{@render simpleForm({
-							action: 'rerunLidarStepForWholeArea',
+							action: 'rerunAreasLidarStepJobs',
 							name: 'area-id',
 							value: selectedAreaId,
-							text: 'Rerun lidar step'
+							text: 'Rerun lidar step DANGER'
 						})}
 					</li>
 
 					<li>
 						{@render simpleForm({
-							action: 'rerunTileRenderingForWholeArea',
+							action: 'rerunAreasRenderStepJobs',
 							name: 'area-id',
 							value: selectedAreaId,
-							text: 'Rerun render step'
+							text: 'Rerun render step DANGER'
 						})}
 					</li>
 
 					<li>
 						{@render simpleForm({
-							action: 'merge',
+							action: 'rerunAreasPyramidStepJobs',
+							name: 'area-id',
+							value: selectedAreaId,
+							text: 'Rerun pyramid step DANGER'
+						})}
+					</li>
+
+					<li>
+						{@render simpleForm({
+							action: 'invalidateAreasOngoingLidarJobs',
+							name: 'area-id',
+							value: selectedAreaId,
+							text: 'Invalidate ongoing lidar jobs'
+						})}
+					</li>
+
+					<li>
+						{@render simpleForm({
+							action: 'invalidateAreasOngoingRenderJobs',
+							name: 'area-id',
+							value: selectedAreaId,
+							text: 'Invalidate ongoing render jobs'
+						})}
+					</li>
+
+					<li>
+						{@render simpleForm({
+							action: 'invalidateAreasOngoingPyramidJobs',
+							name: 'area-id',
+							value: selectedAreaId,
+							text: 'Invalidate ongoing pyramid jobs'
+						})}
+					</li>
+
+					<li>
+						{@render simpleForm({
+							action: 'mergeArea',
 							name: 'area-id',
 							value: selectedAreaId,
 							text: 'Merge'
@@ -186,7 +222,7 @@
 
 						<li>
 							{@render simpleForm({
-								action: 'rerunPyramidGeneration',
+								action: 'rerunTilePyramidGeneration',
 								name: 'tile-id',
 								value: selectedTileId,
 								text: 'Rerun pyramid generation'
