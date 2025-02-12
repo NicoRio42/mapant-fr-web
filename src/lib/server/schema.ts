@@ -44,55 +44,33 @@ export const contributionWithoutCompensationTable = sqliteTable(
 	})
 );
 
-export const tilesTable = sqliteTable(
-	'tiles',
-	{
-		id,
-		minX: real('min_x').notNull(),
-		minY: real('min_y').notNull(),
-		maxX: real('max_x').notNull(),
-		maxY: real('max_y').notNull(),
-		lidarFileUrl: text('lidar_file_url').notNull(),
-		lidarStepStatus: text('lidar_step_status', { enum: ['not-started', 'ongoing', 'finished'] })
-			.default('not-started')
-			.notNull(),
-		lidarStepWorkerId: text('lidar_step_worker_id').references(() => workersTable.id, {
-			onDelete: 'set null'
-		}),
-		lidarStepStartTime: integer('lidar_step_start_time', { mode: 'timestamp_ms' }),
-		lidarStepFinishTime: integer('lidar_step_finish_time', { mode: 'timestamp_ms' }),
-		mapRenderingStepStatus: text('map_rendering_step_status', {
-			enum: ['not-started', 'ongoing', 'finished']
-		})
-			.default('not-started')
-			.notNull(),
-		mapRenderingStepWorkerId: text('map_rendering_step_worker_id').references(
-			() => workersTable.id,
-			{
-				onDelete: 'set null'
-			}
-		),
-		mapRenderingStepStartTime: integer('map_rendering_step_start_time', { mode: 'timestamp_ms' }),
-		mapRenderingStepFinishTime: integer('map_rendering_step_finish_time', { mode: 'timestamp_ms' }),
-		isMergeable: integer('is_mergeable', { mode: 'boolean' }).default(false)
-	},
-	(table) => ({
-		minXIndex: index('tiles_min_x_index').on(table.minX),
-		minYIndex: index('tiles_min_y_index').on(table.minY),
-		maxXIndex: index('tiles_max_x_index').on(table.maxX),
-		maxYIndex: index('tiles_max_y_index').on(table.maxY),
-		lidarStepStatusIndex: index('tiles_lidar_step_status_index').on(table.lidarStepStatus),
-		lidarStepStartTimeIndex: index('tiles_lidar_step_start_time_index').on(
-			table.lidarStepStartTime
-		),
-		mapRenderingStepStatusIndex: index('tiles_map_rendering_step_status_index').on(
-			table.mapRenderingStepStatus
-		),
-		mapRenderingStepStartTimeIndex: index('tiles_map_rendering_step_start_time_index').on(
-			table.mapRenderingStepStartTime
-		)
+export const tilesTable = sqliteTable('tiles', {
+	id,
+	minX: real('min_x').notNull(),
+	minY: real('min_y').notNull(),
+	maxX: real('max_x').notNull(),
+	maxY: real('max_y').notNull(),
+	lidarFileUrl: text('lidar_file_url').notNull(),
+	lidarStepStatus: text('lidar_step_status', { enum: ['not-started', 'ongoing', 'finished'] })
+		.default('not-started')
+		.notNull(),
+	lidarStepWorkerId: text('lidar_step_worker_id').references(() => workersTable.id, {
+		onDelete: 'set null'
+	}),
+	lidarStepStartTime: integer('lidar_step_start_time', { mode: 'timestamp_ms' }),
+	lidarStepFinishTime: integer('lidar_step_finish_time', { mode: 'timestamp_ms' }),
+	mapRenderingStepStatus: text('map_rendering_step_status', {
+		enum: ['not-started', 'ongoing', 'finished']
 	})
-);
+		.default('not-started')
+		.notNull(),
+	mapRenderingStepWorkerId: text('map_rendering_step_worker_id').references(() => workersTable.id, {
+		onDelete: 'set null'
+	}),
+	mapRenderingStepStartTime: integer('map_rendering_step_start_time', { mode: 'timestamp_ms' }),
+	mapRenderingStepFinishTime: integer('map_rendering_step_finish_time', { mode: 'timestamp_ms' }),
+	isMergeable: integer('is_mergeable', { mode: 'boolean' }).default(false)
+});
 
 export const tilesTableRelations = relations(tilesTable, ({ one }) => ({
 	lidarJob: one(lidarStepJobTable, {
@@ -104,28 +82,19 @@ export const tilesTableRelations = relations(tilesTable, ({ one }) => ({
 export type Tile = typeof tilesTable.$inferSelect;
 export type TileInsert = typeof tilesTable.$inferInsert;
 
-export const areasToGenerateTable = sqliteTable(
-	'areas_to_generate',
-	{
-		id,
-		minX: real('min_x').notNull(),
-		minY: real('min_y').notNull(),
-		maxX: real('max_x').notNull(),
-		maxY: real('max_y').notNull(),
-		pyramidGenerationStepStatus: text('pyramid_generation_step_status', {
-			enum: ['not-started', 'ongoing', 'finished']
-		})
-			.default('not-started')
-			.notNull(),
-		isMergeable: integer('is_mergeable', { mode: 'boolean' }).default(false)
-	},
-	(table) => ({
-		minXIndex: index('areas_to_generate_min_x_index').on(table.minX),
-		minYIndex: index('areas_to_generate_min_y_index').on(table.minY),
-		maxXIndex: index('areas_to_generate_max_x_index').on(table.maxX),
-		maxYIndex: index('areas_to_generate_max_y_index').on(table.maxY)
+export const areasToGenerateTable = sqliteTable('areas_to_generate', {
+	id,
+	minX: real('min_x').notNull(),
+	minY: real('min_y').notNull(),
+	maxX: real('max_x').notNull(),
+	maxY: real('max_y').notNull(),
+	pyramidGenerationStepStatus: text('pyramid_generation_step_status', {
+		enum: ['not-started', 'ongoing', 'finished']
 	})
-);
+		.default('not-started')
+		.notNull(),
+	isMergeable: integer('is_mergeable', { mode: 'boolean' }).default(false)
+});
 
 export const areasToGenerateTableRelations = relations(areasToGenerateTable, ({ many }) => ({
 	lidarJobs: many(lidarStepJobTable)
@@ -146,7 +115,6 @@ export const lidarStepJobTable = sqliteTable(
 			.references(() => areasToGenerateTable.id, { onDelete: 'cascade' })
 	},
 	(table) => ({
-		indexIndex: index('lidar_step_jobs_index_index').on(table.index),
 		tileIdIndex: index('lidar_step_jobs_tile_id_index').on(table.tileId),
 		areaToGenerateIdIndex: index('lidar_step_jobs_area_to_generate_id_index').on(
 			table.areaToGenerateId
@@ -178,7 +146,6 @@ export const mapRenderingStepJobTable = sqliteTable(
 			.references(() => areasToGenerateTable.id, { onDelete: 'cascade' })
 	},
 	(table) => ({
-		indexIndex: index('map_rendering_step_jobs_index_index').on(table.index),
 		tileIdIndex: index('map_rendering_step_jobs_tile_id_index').on(table.tileId),
 		areaToGenerateIdIndex: index('map_rendering_step_jobs_area_to_generate_id_index').on(
 			table.areaToGenerateId
@@ -210,15 +177,9 @@ export const pyramidRenderingStepJobTable = sqliteTable(
 		finishTime: integer('finish_time', { mode: 'timestamp_ms' })
 	},
 	(table) => ({
-		indexIndex: index('pyramid_rendering_step_jobs_index_index').on(table.index),
 		areaToGenerateIdIndex: index('pyramid_rendering_step_jobs_area_to_generate_id_index').on(
 			table.areaToGenerateId
-		),
-		xIndex: index('pyramid_rendering_step_jobs_x_index').on(table.x),
-		yIndex: index('pyramid_rendering_step_jobs_y_index').on(table.y),
-		zoomIndex: index('pyramid_rendering_step_jobs_zoom_index').on(table.zoom),
-		statusIndex: index('pyramid_rendering_step_jobs_status_index').on(table.status),
-		startTimeIndex: index('pyramid_rendering_step_jobs_start_time_index').on(table.startTime)
+		)
 	})
 );
 
