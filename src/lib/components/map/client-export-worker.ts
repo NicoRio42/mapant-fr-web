@@ -25,9 +25,16 @@ self.onmessage = async (event) => {
 	for (let x = 0; x < maxXForDrawing; x++) {
 		for (let y = 0; y < maxYForDrawing; y++) {
 			imgsCount++;
-			const blob = await fetch(tiles[x][y]).then((r) => r.blob());
+			const response = await fetch(tiles[x][y]);
 
-			if (!blob || blob.type === 'text/plain') {
+			if (!response.ok) {
+				if (imgsCount === imgsNumber) drawImgsAndDownloadFile();
+				continue;
+			}
+
+			const blob = await response.blob();
+
+			if (!blob) {
 				if (imgsCount === imgsNumber) drawImgsAndDownloadFile();
 				continue;
 			}
