@@ -58,7 +58,7 @@ export async function clientExport({
 		imgs.forEach(({ img, x, y }) => ctx.drawImage(img, x, y));
 
 		const link = document.createElement('a');
-		link.download = 'mapant-fr-export.png';
+		link.download = `export-${x1}-${y1}-${x2}-${y2}.png`;
 		link.href = canvas.toDataURL();
 		link.click();
 	}
