@@ -58,7 +58,11 @@
 			source: new XYZ({
 				url,
 				projection: 'EPSG:2154',
-				tileGrid
+				tileGrid,
+				attributions: [
+					'© <a href="https://www.ign.fr/" target="_blank">IGN</a>',
+					'© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
+				]
 			}),
 			zIndex: 1,
 			visible,
