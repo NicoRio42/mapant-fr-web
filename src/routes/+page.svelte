@@ -1,6 +1,5 @@
 <script lang="ts">
 	import BaseMap from '$lib/components/map/BaseMap.svelte';
-	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import welcomePopupContent from './welcome-popup.md';
 	import { MetaTags } from 'svelte-meta-tags';
@@ -185,19 +184,14 @@
 	{#if isDrawingExport}
 		<DrawBox
 			ondrawend={async (e) => {
+				isDrawingExport = false;
 				const extent = e.feature.getGeometry()?.getExtent();
-
-				if (!extent) {
-					isDrawingExport = false;
-					return;
-				}
-
+				if (!extent) return;
 				const [x1, y1, x2, y2] = extent;
 				isExportLoading = true;
 				const error = await clientExport({ x1, y1, x2, y2 });
 				isExportLoading = false;
 				if (error !== null) isExportAreaTooBigPopupOpen = true;
-				isDrawingExport = false;
 			}}
 		/>
 	{/if}

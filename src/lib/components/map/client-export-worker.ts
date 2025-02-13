@@ -9,6 +9,7 @@ self.onmessage = async (event) => {
 
 	function drawImgsAndDownloadFile() {
 		imgs.forEach(({ bitmap, x, y }) => ctx.drawImage(bitmap, x, y));
+
 		offscreen.convertToBlob().then((blob) => {
 			self.postMessage({
 				blob,
@@ -21,23 +22,26 @@ self.onmessage = async (event) => {
 	const maxXForDrawing = tiles.length;
 	const maxYForDrawing = tiles[0].length;
 
+	console.log(tiles);
+
 	for (let x = 0; x < maxXForDrawing; x++) {
 		for (let y = 0; y < maxYForDrawing; y++) {
+			imgsCount++;
 			const blob = await fetch(tiles[x][y]).then((r) => r.blob());
 
 			if (!blob || blob.type === 'text/plain') {
-				imgsCount++;
+				if (imgsCount === imgsNumber) drawImgsAndDownloadFile();
 				continue;
 			}
 
 			const bitmap = await createImageBitmap(blob);
+
 			imgs.push({
 				bitmap,
 				x: x * TILE_PIXEL_SIZE - xOffset,
 				y: height - TILE_PIXEL_SIZE - y * TILE_PIXEL_SIZE + yOffset
 			});
 
-			imgsCount++;
 			if (imgsCount === imgsNumber) drawImgsAndDownloadFile();
 		}
 	}

@@ -1,6 +1,6 @@
 import { PUBLIC_MAPANT_ASSETS_BASE_URL } from '$env/static/public';
 
-const EXPORT_TILE_LIMIT = 20_000;
+const EXPORT_TILE_LIMIT = 10_000 * 10_000;
 const TILE_PIXEL_SIZE = 2362;
 
 export async function clientExport({
@@ -15,7 +15,7 @@ export async function clientExport({
 	y2: number;
 }): Promise<null | 'AREA_TOO_BIG'> {
 	return new Promise<null | 'AREA_TOO_BIG'>((resolve) => {
-		if (Math.abs(x2 - x1) > EXPORT_TILE_LIMIT || Math.abs(y2 - y1) > EXPORT_TILE_LIMIT) {
+		if (Math.abs(x2 - x1) * Math.abs(y2 - y1) > EXPORT_TILE_LIMIT) {
 			resolve('AREA_TOO_BIG');
 		}
 
@@ -54,5 +54,7 @@ export async function clientExport({
 			link.click();
 			resolve(null);
 		};
+
+		worker.onerror = console.error;
 	});
 }
