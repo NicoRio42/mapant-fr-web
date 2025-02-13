@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser, dev } from '$app/environment';
+	import { browser } from '$app/environment';
 	import { PUBLIC_MAPANT_TILES_BASE_URL } from '$env/static/public';
 	import { type Map } from 'ol';
 	import TileLayer from 'ol/layer/Tile';
@@ -46,10 +46,7 @@
 
 	onMount(() => {
 		map = getMap();
-
-		const url = dev
-			? `/api/tiles/{z}/{x}/{y}.png`
-			: `${PUBLIC_MAPANT_TILES_BASE_URL}/{z}/{x}/{y}.png`;
+		const url = `${PUBLIC_MAPANT_TILES_BASE_URL}/{z}/{x}/{y}.png`;
 
 		const tileGrid = new TileGrid({
 			origin: [MIN_X, MAX_Y],

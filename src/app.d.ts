@@ -19,6 +19,7 @@ declare global {
 declare module '$env/static/public' {
 	export const PUBLIC_CF_PAGES_BRANCH: string;
 	export const PUBLIC_MAPANT_TILES_BASE_URL: string;
+	export const PUBLIC_MAPANT_ASSETS_BASE_URL: string;
 }
 
 declare module '$env/static/private' {

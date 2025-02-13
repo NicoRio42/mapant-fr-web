@@ -6,8 +6,14 @@
 	import { MetaTags } from 'svelte-meta-tags';
 	import { WEBSITE_NAME } from '$lib/constants';
 	import { page } from '$app/stores';
+	import DrawBox from '$lib/components/map/DrawBox.svelte';
+	import { clientExport } from '$lib/components/map/client-export';
 
 	let isWelcomeDialogOpen = $state(false);
+	let isDrawingExport = $state(false);
+	let isExportWarningPopupOpen = $state(false);
+	let isExportAreaTooBigPopupOpen = $state(false);
+	let isExportLoading = $state(false);
 </script>
 
 <MetaTags
@@ -63,7 +69,104 @@
 	</dialog>
 {/if}
 
-<BaseMap>
+{#if isExportWarningPopupOpen}
+	<dialog open transition:fade={{ duration: 125 }}>
+		<article>
+			<p font-bold mt-4>Vous êtes sur le point d'exporter une zone de la carte Mapant.fr</p>
+
+			<p>
+				Attention, la possession de cette carte n'implique pas un droit d'accès permanent au
+				terrain. Avant de visiter la zone cartographiée, assurez vous d'avoir les droits d'accès
+				nécessaires.
+			</p>
+
+			<p>
+				Mapant.fr et Nicolas Rio déclinent toute responsabilité en cas d'accès non autorisé à une
+				zone cartographiée par la carte exportée.
+			</p>
+
+			<p>
+				L'export généré est une image au format png. La carte doit être imprimée à la résolution
+				600dpi pour être à l'échelle 1:10000.
+			</p>
+
+			<p flex justify-end gap-4>
+				<button
+					type="button"
+					m-0
+					class="outline"
+					onclick={() => (isExportWarningPopupOpen = false)}
+				>
+					Annuler
+				</button>
+
+				<button
+					type="button"
+					m-0
+					flex="!~"
+					items-center
+					gap-2
+					w-fit
+					onclick={() => {
+						isExportWarningPopupOpen = false;
+						isDrawingExport = true;
+					}}
+				>
+					Exporter
+
+					<i i-carbon-arrow-right block h-5 w-5></i>
+				</button>
+			</p>
+		</article>
+	</dialog>
+{/if}
+
+{#if isExportAreaTooBigPopupOpen}
+	<dialog open transition:fade={{ duration: 125 }}>
+		<article>
+			<p font-bold mt-4>La zone est trop grande pour être exportée.</p>
+
+			<p flex justify-end gap-4>
+				<button
+					type="button"
+					m-0
+					class="outline"
+					onclick={() => (isExportAreaTooBigPopupOpen = false)}
+				>
+					Fermer
+				</button>
+			</p>
+		</article>
+	</dialog>
+{/if}
+
+<BaseMap class={isDrawingExport ? 'cursor-crosshair' : undefined}>
+	<button
+		absolute
+		top-12
+		right-2
+		flex
+		items-center
+		justify-center
+		w-8
+		h-8
+		p-0
+		bg-white
+		class="outline"
+		type="button"
+		aria-label="Draw"
+		onclick={() => {
+			if (isDrawingExport) isDrawingExport = false;
+			else isExportWarningPopupOpen = true;
+		}}
+	>
+		{#if isExportLoading}
+			<i aria-busy="true" w-5 h-5 block></i>
+		{:else}
+			<i i-carbon-download w-5 h-5 block></i>
+		{/if}
+	</button>
+
 	<button
 		onclick={() => (isWelcomeDialogOpen = true)}
 		type="button"
@@ -77,6 +180,26 @@
 	>
 		Message d'accueil
 	</button>
+
+	{#if isDrawingExport}
+		<DrawBox
+			ondrawend={async (e) => {
+				const extent = e.feature.getGeometry()?.getExtent();
+
+				if (!extent) {
+					isDrawingExport = false;
+					return;
+				}
+
+				const [x1, y1, x2, y2] = extent;
+				isExportLoading = true;
+				const error = await clientExport({ x1, y1, x2, y2 });
+				isExportLoading = false;
+				if (error !== null) isExportAreaTooBigPopupOpen = true;
+				isDrawingExport = false;
+			}}
+		/>
+	{/if}
 </BaseMap>
 
 <style>

@@ -28,6 +28,7 @@
 		isLidarHdTilesLayerDisplayed?: boolean;
 		onViewChange?: (params: { zoom: number; extent: Extent }) => void;
 		children?: import('svelte').Snippet;
+		class?: string;
 	}
 
 	let {
@@ -38,7 +39,8 @@
 		fit,
 		isLidarHdTilesLayerDisplayed = $bindable(false),
 		onViewChange,
-		children
+		children,
+		class: classList
 	}: Props = $props();
 
 	let osmLayerOpacity = $state(0.5);
@@ -48,7 +50,7 @@
 	let lidarHdTilesLayerOpacity = $state(1);
 </script>
 
-<main grow relative bg-white>
+<main grow relative bg-white class={classList}>
 	<OLMap bind:map bind:center {fit} {zoom} {onViewChange}>
 		<Osm visible={isOsmLayerDisplayed} opacity={osmLayerOpacity} />
 
