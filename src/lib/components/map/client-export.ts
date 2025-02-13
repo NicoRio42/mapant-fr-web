@@ -58,7 +58,7 @@ export async function clientExport({
 		imgs.forEach(({ img, x, y }) => ctx.drawImage(img, x, y));
 
 		const link = document.createElement('a');
-		link.download = `export-${x1}-${y1}-${x2}-${y2}.png`;
+		link.download = `export-${Math.round(x1)}-${Math.round(y1)}-${Math.round(x2)}-${Math.round(y2)}.png`;
 		link.href = canvas.toDataURL();
 		link.click();
 	}
