@@ -1,6 +1,6 @@
 import { PUBLIC_MAPANT_ASSETS_BASE_URL } from '$env/static/public';
 
-const EXPORT_TILE_LIMIT = 10_000 * 10_000;
+const EXPORT_TILE_LIMIT = 50 * 1_000 * 1_000;
 const TILE_PIXEL_SIZE = 2362;
 
 export async function clientExport({
