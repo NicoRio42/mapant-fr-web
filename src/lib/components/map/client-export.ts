@@ -37,8 +37,11 @@ export async function clientExport({
 		tiles.push(column);
 	}
 
-	canvas.width = (TILE_PIXEL_SIZE * Math.abs(x2 - x1)) / 1000;
-	canvas.height = (TILE_PIXEL_SIZE * Math.abs(y2 - y1)) / 1000;
+	const width = (TILE_PIXEL_SIZE * Math.abs(x2 - x1)) / 1000;
+	const height = (TILE_PIXEL_SIZE * Math.abs(y2 - y1)) / 1000;
+
+	canvas.width = width;
+	canvas.height = height;
 
 	const xOffset = ((Math.min(x1, x2) - minX) * TILE_PIXEL_SIZE) / 1000;
 	const yOffset = ((Math.min(y1, y2) - minY) * TILE_PIXEL_SIZE) / 1000;
@@ -52,7 +55,7 @@ export async function clientExport({
 	const imgsNumber = tiles.length * tiles[0].length;
 
 	function drawImgsAndDownloadFile() {
-		imgs.forEach((img) => ctx.drawImage(img.img, img.x, img.y));
+		imgs.forEach(({ img, x, y }) => ctx.drawImage(img, x, y));
 
 		const link = document.createElement('a');
 		link.download = 'mapant-fr-export.png';
@@ -78,7 +81,7 @@ export async function clientExport({
 				imgs.push({
 					img,
 					x: x * TILE_PIXEL_SIZE - xOffset,
-					y: canvas.height - TILE_PIXEL_SIZE - y * TILE_PIXEL_SIZE + yOffset
+					y: height - TILE_PIXEL_SIZE - y * TILE_PIXEL_SIZE + yOffset
 				});
 
 				imgsCount++;
