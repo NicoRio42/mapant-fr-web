@@ -22,8 +22,6 @@ self.onmessage = async (event) => {
 	const maxXForDrawing = tiles.length;
 	const maxYForDrawing = tiles[0].length;
 
-	console.log(tiles);
-
 	for (let x = 0; x < maxXForDrawing; x++) {
 		for (let y = 0; y < maxYForDrawing; y++) {
 			imgsCount++;
