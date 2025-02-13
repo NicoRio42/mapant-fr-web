@@ -155,6 +155,7 @@
 		class="outline"
 		type="button"
 		aria-label="Draw"
+		disabled={isExportLoading}
 		onclick={() => {
 			if (isDrawingExport) isDrawingExport = false;
 			else isExportWarningPopupOpen = true;
