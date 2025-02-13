@@ -15,6 +15,7 @@ self.onmessage = async (event) => {
 				blob,
 				fileName: `export-${Math.round(x1)}-${Math.round(y1)}-${Math.round(x2)}-${Math.round(y2)}.png`
 			});
+
 			self.close();
 		});
 	}
@@ -24,30 +25,35 @@ self.onmessage = async (event) => {
 
 	for (let x = 0; x < maxXForDrawing; x++) {
 		for (let y = 0; y < maxYForDrawing; y++) {
-			imgsCount++;
-			const response = await fetch(tiles[x][y]);
+			fetch(tiles[x][y])
+				.then((response) => {
+					if (!response.ok) {
+						return null;
+					}
 
-			if (!response.ok) {
-				if (imgsCount === imgsNumber) drawImgsAndDownloadFile();
-				continue;
-			}
+					return response.blob();
+				})
+				.then((blob) => {
+					if (!blob) {
+						return null;
+					}
 
-			const blob = await response.blob();
+					return createImageBitmap(blob);
+				})
+				.then((bitmap) => {
+					if (bitmap === null) return;
 
-			if (!blob) {
-				if (imgsCount === imgsNumber) drawImgsAndDownloadFile();
-				continue;
-			}
-
-			const bitmap = await createImageBitmap(blob);
-
-			imgs.push({
-				bitmap,
-				x: x * TILE_PIXEL_SIZE - xOffset,
-				y: height - TILE_PIXEL_SIZE - y * TILE_PIXEL_SIZE + yOffset
-			});
-
-			if (imgsCount === imgsNumber) drawImgsAndDownloadFile();
+					imgs.push({
+						bitmap,
+						x: x * TILE_PIXEL_SIZE - xOffset,
+						y: height - TILE_PIXEL_SIZE - y * TILE_PIXEL_SIZE + yOffset
+					});
+				})
+				.catch((e) => console.error(e))
+				.finally(() => {
+					imgsCount++;
+					if (imgsCount === imgsNumber) drawImgsAndDownloadFile();
+				});
 		}
 	}
 };
