@@ -50,7 +50,7 @@
 				label="Me tenir informé de la progression du projet"
 			/>
 
-			<button type="submit" aria-busy={$delayed} class="big" mt-4> Valider </button>
+			<button type="submit" aria-busy={$delayed} class="big outline" mt-4> Valider </button>
 
 			<p>
 				Vous avez déjà un compte ? <a

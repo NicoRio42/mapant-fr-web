@@ -32,7 +32,7 @@
 
 <Dialog bind:open={isWelcomeDialogOpen}>
 	<div flex mt-4>
-		<h1 grow>Le Mapant nouveau est arrivé !</h1>
+		<h2 text-5 font-bold grow>Le Mapant nouveau est arrivé !</h2>
 
 		<button
 			type="button"
