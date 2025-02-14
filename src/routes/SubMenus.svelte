@@ -12,7 +12,7 @@
 	<a href="/about" flex items-center gap-2 py-0>
 		<i i-carbon-information block w5 h5></i>
 
-		Infos
+		À propos
 	</a>
 </li>
 

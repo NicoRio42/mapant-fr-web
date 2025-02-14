@@ -34,7 +34,7 @@ Une fois ce nuage de points généré, s'en suit une étape dite de classificati
 
 ## Les courbes de niveau
 
-Pour générer les courbes de niveau, on utilise les points correspondant au sol. Grâce à ces points, on génère un Modèle Numérique de Terrain (MNT). Cela consiste à découper la zone en petits carrés de taille fixe, et de leur associé l'altitude moyenne des point sol contenu dans ce carré.
+Pour générer les courbes de niveau, on utilise les points correspondant au sol. Grâce à ces points, on génère un Modèle Numérique de Terrain (MNT). Cela consiste à découper la zone en petits carrés de taille fixe, et de leur associer l'altitude moyenne des points sol contenus dans ce carré.
 
 Le MNT est ensuite utilisé pour générer les courbes de niveau. Si on représente le MNT par une surface en 3D, les courbes de niveau sont à l'intersection entre cette surface et des plans horizontaux disposés à altitudes régulières.
 
@@ -44,7 +44,7 @@ Le MNT est ensuite utilisé pour générer les courbes de niveau. Si on représe
 
 ## Les buttes et dépressions
 
-Pour les buttes et les dépressions, on génère des courbes de niveau avec une équidistance très faible (par exemple 25cm). On cherche ensuite des courbes de niveau concentriques et de petit diamètre (par éxemple moins de 2 mètres). Si les cercles correspondent à des courbes de niveau de plus en plus hautes à mesure quel'on se rapproche du centre, on a détecté une bute. Sinon c'est une dépression.
+Pour les buttes et les dépressions, on génère des courbes de niveau avec une équidistance très faible (par exemple 25cm). On cherche ensuite des courbes de niveau concentriques et de petit diamètre (par exemple moins de 2 mètres). Si les cercles correspondent à des courbes de niveau de plus en plus hautes à mesure quel'on se rapproche du centre, on a détecté une bute. Sinon c'est une dépression.
 
 ## Les falaises
 

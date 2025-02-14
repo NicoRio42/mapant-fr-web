@@ -1,12 +1,12 @@
 <script lang="ts">
-	import BaseMap from '$lib/components/map/BaseMap.svelte';
-	import { fade } from 'svelte/transition';
-	import welcomePopupContent from './welcome-popup.md';
-	import { MetaTags } from 'svelte-meta-tags';
-	import { WEBSITE_NAME } from '$lib/constants';
 	import { page } from '$app/stores';
+	import Dialog from '$lib/components/Dialog.svelte';
+	import BaseMap from '$lib/components/map/BaseMap.svelte';
 	import DrawBox from '$lib/components/map/DrawBox.svelte';
 	import { clientExport } from '$lib/components/map/client-export';
+	import { WEBSITE_NAME } from '$lib/constants';
+	import { MetaTags } from 'svelte-meta-tags';
+	import welcomePopupContent from './welcome-popup.md';
 
 	let isWelcomeDialogOpen = $state(false);
 	let isDrawingExport = $state(false);
@@ -30,114 +30,85 @@
 	twitter={{ cardType: 'summary_large_image' }}
 />
 
-{#if isWelcomeDialogOpen}
-	<dialog open transition:fade={{ duration: 125 }}>
-		<article>
-			<div flex>
-				<h1 grow>Road to Mapant.fr V2 !</h1>
+<Dialog bind:open={isWelcomeDialogOpen}>
+	<div flex mt-4>
+		<h1 grow>Le Mapant nouveau est arrivé !</h1>
 
-				<button
-					type="button"
-					m-0
-					p-1
-					border-none
-					h-fit
-					class="outline"
-					onclick={() => (isWelcomeDialogOpen = false)}
-				>
-					<i i-carbon-close-large w-5 h-5 block></i>
-				</button>
-			</div>
+		<button
+			type="button"
+			m-0
+			p-1
+			border-none
+			h-fit
+			class="outline"
+			onclick={() => (isWelcomeDialogOpen = false)}
+		>
+			<i i-carbon-close-large w-5 h-5 block></i>
+		</button>
+	</div>
 
-			{@html welcomePopupContent}
+	{@html welcomePopupContent}
 
-			<p text="right 5 gray-6"><em>Nicolas Rio</em></p>
+	<p text="right 5 gray-6"><em>Nicolas Rio</em></p>
 
-			<p flex justify-end gap-4>
-				<button type="button" m-0 class="outline" onclick={() => (isWelcomeDialogOpen = false)}>
-					Fermer
-				</button>
+	<p flex justify-end gap-4>
+		<button type="button" m-0 onclick={() => (isWelcomeDialogOpen = false)}>
+			Retour à la carte
+		</button>
+	</p>
+</Dialog>
 
-				<a href="/contribute/step-1" role="button" flex="!~" items-center gap-2 w-fit>
-					Contribuer
+<Dialog bind:open={isExportWarningPopupOpen}>
+	<p font-bold mt-4>Vous êtes sur le point d'exporter une zone de la carte Mapant.fr</p>
 
-					<i i-carbon-arrow-right block h-5 w-5></i>
-				</a>
-			</p>
-		</article>
-	</dialog>
-{/if}
+	<p>
+		Attention, la possession de cette carte n'implique pas un droit d'accès permanent au terrain.
+		Avant de visiter la zone cartographiée, assurez vous d'avoir les droits d'accès nécessaires.
+	</p>
 
-{#if isExportWarningPopupOpen}
-	<dialog open transition:fade={{ duration: 125 }}>
-		<article>
-			<p font-bold mt-4>Vous êtes sur le point d'exporter une zone de la carte Mapant.fr</p>
+	<p>
+		Mapant.fr et Nicolas Rio déclinent toute responsabilité en cas d'accès non autorisé à une zone
+		cartographiée par la carte exportée.
+	</p>
 
-			<p>
-				Attention, la possession de cette carte n'implique pas un droit d'accès permanent au
-				terrain. Avant de visiter la zone cartographiée, assurez vous d'avoir les droits d'accès
-				nécessaires.
-			</p>
+	<p>
+		L'export généré est une image au format png. La carte doit être imprimée à la résolution 600dpi
+		pour être à l'échelle 1:10000.
+	</p>
 
-			<p>
-				Mapant.fr et Nicolas Rio déclinent toute responsabilité en cas d'accès non autorisé à une
-				zone cartographiée par la carte exportée.
-			</p>
+	<p flex justify-end gap-4>
+		<button type="button" m-0 class="outline" onclick={() => (isExportWarningPopupOpen = false)}>
+			Annuler
+		</button>
 
-			<p>
-				L'export généré est une image au format png. La carte doit être imprimée à la résolution
-				600dpi pour être à l'échelle 1:10000.
-			</p>
+		<button
+			type="button"
+			m-0
+			flex="!~"
+			items-center
+			gap-2
+			w-fit
+			onclick={() => {
+				isExportWarningPopupOpen = false;
+				isDrawingExport = true;
+			}}
+		>
+			Exporter
 
-			<p flex justify-end gap-4>
-				<button
-					type="button"
-					m-0
-					class="outline"
-					onclick={() => (isExportWarningPopupOpen = false)}
-				>
-					Annuler
-				</button>
+			<i i-carbon-arrow-right block h-5 w-5></i>
+		</button>
+	</p>
+</Dialog>
 
-				<button
-					type="button"
-					m-0
-					flex="!~"
-					items-center
-					gap-2
-					w-fit
-					onclick={() => {
-						isExportWarningPopupOpen = false;
-						isDrawingExport = true;
-					}}
-				>
-					Exporter
+<Dialog bind:open={isExportAreaTooBigPopupOpen}>
+	<p font-bold mt-4>La zone est trop grande pour être exportée.</p>
 
-					<i i-carbon-arrow-right block h-5 w-5></i>
-				</button>
-			</p>
-		</article>
-	</dialog>
-{/if}
-
-{#if isExportAreaTooBigPopupOpen}
-	<dialog open transition:fade={{ duration: 125 }}>
-		<article>
-			<p font-bold mt-4>La zone est trop grande pour être exportée.</p>
-
-			<p flex justify-end gap-4>
-				<button
-					type="button"
-					m-0
-					class="outline"
-					onclick={() => (isExportAreaTooBigPopupOpen = false)}
-				>
-					Fermer
-				</button>
-			</p>
-		</article>
-	</dialog>
-{/if}
+	<p flex justify-end gap-4>
+		<button type="button" m-0 class="outline" onclick={() => (isExportAreaTooBigPopupOpen = false)}>
+			Fermer
+		</button>
+	</p>
+</Dialog>
 
 <BaseMap class={isDrawingExport ? 'cursor-crosshair' : undefined}>
 	<button
@@ -167,19 +138,30 @@
 		{/if}
 	</button>
 
-	<button
-		onclick={() => (isWelcomeDialogOpen = true)}
-		type="button"
-		absolute
-		bottom-6
-		right-2
-		m-0
-		p="x-2 y-1"
-		bg-white
-		class="outline"
-	>
-		Message d'accueil
-	</button>
+	<div absolute bottom-6 right-2>
+		<button
+			onclick={() => (isWelcomeDialogOpen = true)}
+			type="button"
+			relative
+			m-0
+			p="x-2 y-1"
+			bg-white
+			class="outline"
+		>
+			Infos
+
+			<span
+				absolute
+				top="-3"
+				left-0
+				text="3 white"
+				px-1
+				rounded-full
+				font-bold
+				bg-primary-background>new</span
+			>
+		</button>
+	</div>
 
 	{#if isDrawingExport}
 		<DrawBox
@@ -196,10 +178,3 @@
 		/>
 	{/if}
 </BaseMap>
-
-<style>
-	article {
-		max-height: calc(100vh - var(--pico-spacing) * 2);
-		max-height: calc(100svh - var(--pico-spacing) * 2);
-	}
-</style>

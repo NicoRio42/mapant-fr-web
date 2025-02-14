@@ -17,6 +17,7 @@ export async function clientExport({
 	return new Promise<null | 'AREA_TOO_BIG'>((resolve) => {
 		if (Math.abs(x2 - x1) * Math.abs(y2 - y1) > EXPORT_TILE_LIMIT) {
 			resolve('AREA_TOO_BIG');
+			return;
 		}
 
 		const tiles: string[][] = [];

@@ -2,6 +2,6 @@ Le projet Mapant.fr a pour but de créer la **carte de France la plus détaillé
 
 ## Contribuer à Mapant.fr
 
-Mapant.fr est développé par **Nicolas Rio**, développeur indépendant et ancien membre de l'**équipe de France de Course d'Orientation**.
+Mapant.fr est développé par **Nicolas Rio**, développeur indépendant et pratiquant de course d'orientation en compétition.
 
 Vous pouvez **contribuer financièrement** à Mapant.fr. En contrepartie, vous pourrez sélectionner une zone qui sera **traitée en priorité**.
