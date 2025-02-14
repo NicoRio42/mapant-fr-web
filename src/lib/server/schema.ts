@@ -12,13 +12,15 @@ export const contributionTable = sqliteTable(
 	{
 		id,
 		fkUser: text('fk_user').references(() => userTable.id, { onDelete: 'set null' }),
+		email: text('email'),
 		formula: text('formula', { enum: ['1', '2', '3', '4', '5'] }).notNull(),
 		minX: real('min_x').notNull(),
 		minY: real('min_y').notNull(),
 		maxX: real('max_x').notNull(),
 		maxY: real('max_y').notNull(),
 		paied: integer('paied', { mode: 'boolean' }).default(false),
-		processed: integer('processed', { mode: 'boolean' }).default(false)
+		createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+		paiedAt: integer('paied_at', { mode: 'timestamp' })
 	},
 	(table) => ({
 		fkUserIndex: index('contribution_fk_user').on(table.fkUser)
@@ -32,8 +34,11 @@ export const contributionWithoutCompensationTable = sqliteTable(
 	{
 		id,
 		fkUser: text('fk_user').references(() => userTable.id, { onDelete: 'set null' }),
+		email: text('email'),
 		formula: text('formula', { enum: ['1', '2', '3', '4', '5'] }).notNull(),
-		paied: integer('paied', { mode: 'boolean' }).default(false)
+		paied: integer('paied', { mode: 'boolean' }).default(false),
+		createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+		paiedAt: integer('paied_at', { mode: 'timestamp' })
 	},
 	(table) => ({
 		fkUserIndex: index('contribution_without_compensation_fk_user').on(table.fkUser)
