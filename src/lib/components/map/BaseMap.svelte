@@ -70,22 +70,23 @@
 		onViewChange?.(params);
 		if (!persistMapState) return;
 
-		goto(`#${params.zoom}|${params.center[0]}|${params.center[1]}|${params.rotation}`);
+		localStorage.setItem(
+			'mapState',
+			`${params.zoom}|${params.center[0]}|${params.center[1]}|${params.rotation}`
+		);
 	}
 
 	onMount(() => {
 		if (!persistMapState) return;
-		let hash = $page.url.hash;
-		if (hash === '') return;
-		hash = hash.slice(1);
+		let mapState = localStorage.getItem('mapState');
+		if (mapState === null) return;
 
-		const [zoomFromHash, centerLatFromHash, centerLonFromHash, rotationFromHash] = hash
-			.split('|')
-			.map((s) => parseFloat(s));
+		const [zoomLocalStorage, centerLatLocalStorage, centerLonLocalStorage, rotationLocalStorage] =
+			mapState.split('|').map((s) => parseFloat(s));
 
-		center = [centerLatFromHash, centerLonFromHash];
-		zoom = zoomFromHash;
-		rotation = rotationFromHash;
+		center = [centerLatLocalStorage, centerLonLocalStorage];
+		zoom = zoomLocalStorage;
+		rotation = rotationLocalStorage;
 	});
 </script>
 
