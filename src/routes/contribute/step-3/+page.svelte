@@ -51,7 +51,7 @@
 
 <Stepper selectedStepNumber={3} />
 
-<h1 m-0 mt-2 text="6 center" leading-6>Choisir la zone</h1>
+<h1 my-4 text="6 center" leading-6>Choisir la zone</h1>
 
 <BaseMap
 	bind:center

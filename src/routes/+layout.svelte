@@ -116,7 +116,7 @@
 				>
 					<i i-carbon-crop-growth block w5 h5></i>
 
-					Contribuer
+					Faire un don
 				</a>
 			</li>
 
