@@ -13,9 +13,12 @@
 		Merci pour votre contribution !
 	</h1>
 
-	<p>
-		Nous vous tiendrons informé par email si vous avez coché cette option lors de votre inscription.
-	</p>
+	{#if isUserConnected}
+		<p>
+			Nous vous tiendrons informé par email si vous avez coché cette option lors de votre
+			inscription.
+		</p>
+	{/if}
 
 	<p>
 		Si vous avez besoin d'une facture, ou pour toute autre question, n'hésitez pas à envoyer un mail
