@@ -11,9 +11,7 @@ export const contributionTable = sqliteTable(
 	'contribution',
 	{
 		id,
-		fkUser: text('fk_user')
-			.notNull()
-			.references(() => userTable.id, { onDelete: 'cascade' }),
+		fkUser: text('fk_user').references(() => userTable.id, { onDelete: 'set null' }),
 		formula: text('formula', { enum: ['1', '2', '3', '4', '5'] }).notNull(),
 		minX: real('min_x').notNull(),
 		minY: real('min_y').notNull(),
@@ -33,9 +31,7 @@ export const contributionWithoutCompensationTable = sqliteTable(
 	'contribution_without_compensation',
 	{
 		id,
-		fkUser: text('fk_user')
-			.notNull()
-			.references(() => userTable.id, { onDelete: 'cascade' }),
+		fkUser: text('fk_user').references(() => userTable.id, { onDelete: 'set null' }),
 		formula: text('formula', { enum: ['1', '2', '3', '4', '5'] }).notNull(),
 		paied: integer('paied', { mode: 'boolean' }).default(false)
 	},
