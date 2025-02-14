@@ -1,6 +1,6 @@
-Ça y-est, après de longs mois d'attente, les **premières dalles** du projet Mapant.fr ont été générées. Comme promis, ce sont les zones sélectionnées par les contributeurs qui ont été **traitées en priorité**. Merci encore à eux d'avoir financé une partie des coûts et du travail pour en arriver là !
+Ça y-est, les **premières dalles** du projet Mapant.fr ont été générées. Comme promis, ce sont les zones sélectionnées par les contributeurs qui ont été **traitées en priorité**. Merci encore à eux d'avoir financé une partie des coûts et du travail pour en arriver là !
 
-Les dales que vous voyez ne sont pas la version finale de la carte mapant.fr. C'est un **premier jet** qui a deux objectifs :
+Les dalles disponibles aujourd'hui ne sont pas la version finale de la carte mapant.fr. C'est un **premier jet** qui a deux objectifs :
 
 - faire un **test grandeur nature** du système de distribution des calculs,
 - recueillir des **retours** sur la qualité de la carte générée.

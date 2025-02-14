@@ -20,5 +20,9 @@ export function load() {
 		posts.push({ slug: slug.substring(8).replace('.md', ''), content, frontmatter });
 	});
 
+	posts.sort(
+		(p1, p2) => new Date(p2.frontmatter.date).getTime() - new Date(p1.frontmatter.date).getTime()
+	);
+
 	return { posts };
 }
