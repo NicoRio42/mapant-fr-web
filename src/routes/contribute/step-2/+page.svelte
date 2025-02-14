@@ -7,6 +7,8 @@
 <Stepper selectedStepNumber={2} />
 
 <main p="x-4 b-12" mx-auto max-w-300>
+	<h1 m="x-4 y-8" text="6 center" leading-6>Choisir une formule</h1>
+
 	<p max-w-200 m="x-auto t-4" text-5>
 		En contrepartie de votre contribution, vous pouvez sélectionner une zone sur la carte de France.
 		Elle sera <strong> traitée en priorité</strong> lors de la génération de la carte à partir des données

@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { page } from '$app/stores';
 	import Toggle from '$lib/components/Toggle.svelte';
 	import BaseMap from '$lib/components/map/BaseMap.svelte';
@@ -19,18 +17,19 @@
 	let showDropdown = $state(false);
 	let isLidarHdTilesLayerDisplayed = $state(true);
 	let showHelp = $state(true);
-	let selectedFormula: ContributionFormula = $state();
+	let selectedFormula = $derived(
+		CONTRIBUTION_FORMULAS.find((f) => f.id === $page.url.searchParams.get('formula')) ??
+			CONTRIBUTION_FORMULAS[0]
+	);
 
-	run(() => {
-		selectedFormula =
-			CONTRIBUTION_FORMULAS.find((f) => f.id === $page.url.searchParams.get('formula')) ??
-			CONTRIBUTION_FORMULAS[0];
-
+	$effect(() => {
+		console.log(selectedFormula);
 		showHelp = true;
 	});
 
 	let isMegaTileFormula = $derived(selectedFormula.id === '5');
-	run(() => {
+
+	$effect(() => {
 		if (isMegaTileFormula) isLidarHdTilesLayerDisplayed = true;
 	});
 
@@ -51,6 +50,8 @@
 </script>
 
 <Stepper selectedStepNumber={3} />
+
+<h1 m-0 mt-2 text="6 center" leading-6>Choisir la zone</h1>
 
 <BaseMap
 	bind:center

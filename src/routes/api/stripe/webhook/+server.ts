@@ -39,17 +39,19 @@ export async function POST({ request }) {
 		return new Response(null, { status: 400 });
 	}
 
+	const email = event.data.object.customer_details?.email ?? event.data.object.customer_email;
+
 	const db = getDb();
 
 	const [contribution] = await db
 		.update(contributionTable)
-		.set({ paied: true })
+		.set({ paied: true, paiedAt: new Date(), email })
 		.where(eq(contributionTable.id, event.data.object.client_reference_id))
 		.returning();
 
 	const [contributionWithoutCompensation] = await db
 		.update(contributionWithoutCompensationTable)
-		.set({ paied: true })
+		.set({ paied: true, paiedAt: new Date(), email })
 		.where(eq(contributionWithoutCompensationTable.id, event.data.object.client_reference_id))
 		.returning();
 
@@ -57,20 +59,11 @@ export async function POST({ request }) {
 		console.error('[STRIPE_WEBHOOK] No contribution matches the given client_reference_id.');
 	}
 
-	const user =
-		contribution === undefined
-			? await db
-					.select()
-					.from(userTable)
-					.where(eq(userTable.id, contributionWithoutCompensation.fkUser))
-					.get()
-			: await db.select().from(userTable).where(eq(userTable.id, contribution.fkUser)).get();
-
-	if (user !== undefined) {
+	if (email !== null) {
 		await sendEmail(
 			'Merci !',
 			'Merci pour votre contribution au développement de Mapant.fr !',
-			user.email
+			email
 		);
 	}
 

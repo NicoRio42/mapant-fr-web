@@ -16,23 +16,47 @@
 <Stepper selectedStepNumber={1} />
 
 <main>
-	<form method="post" use:enhance max-w-100 px-4 mx-auto mt-8>
-		<EmailField {form} field="email" label="Adresse email" />
+	<div max-w-100 px-4 mx-auto>
+		<a
+			href="/contribute/step-2"
+			role="button"
+			class="big"
+			w-full
+			mt-8
+			flex="!~"
+			justify-center
+			items-center
+			gap-2
+		>
+			<i i-carbon-crop-growth inline-block w-6 h-6></i>
 
-		<PasswordField {form} field="password" label="Mot de passe" />
+			Faire un don rapide
+		</a>
 
-		<CheckboxField
-			{form}
-			field="keepInTouch"
-			label="Me tenir informé de la progression du projet"
-		/>
+		<p text-center mt-8>Ou</p>
 
-		<button type="submit" aria-busy={$delayed} class="big" mt-4> Valider </button>
+		<p m="t-8 b-0" text="6 center">Créer un compte</p>
 
-		<p>
-			Vous avez déjà un compte ? <a
-				href="/login?redirect-url={encodeURIComponent('/contribute/step-2')}">Connectez vous !</a
-			>
-		</p>
-	</form>
+		<p text="center 3.5" mt-0>(Pour garder une trace de vos contributions)</p>
+
+		<form method="post" use:enhance mt-8>
+			<EmailField {form} field="email" label="Adresse email" />
+
+			<PasswordField {form} field="password" label="Mot de passe" />
+
+			<CheckboxField
+				{form}
+				field="keepInTouch"
+				label="Me tenir informé de la progression du projet"
+			/>
+
+			<button type="submit" aria-busy={$delayed} class="big" mt-4> Valider </button>
+
+			<p>
+				Vous avez déjà un compte ? <a
+					href="/login?redirect-url={encodeURIComponent('/contribute/step-2')}">Connectez vous !</a
+				>
+			</p>
+		</form>
+	</div>
 </main>

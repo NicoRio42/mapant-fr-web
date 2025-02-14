@@ -1,5 +1,7 @@
 <script>
 	import Stepper from '../Stepper.svelte';
+
+	let { isUserConnected } = $props();
 </script>
 
 <Stepper selectedStepNumber={4} />
@@ -16,21 +18,23 @@
 	</p>
 
 	<p>
-		Si vous avez besoins d'une facture, ou pour toute autre question, n'hésitez pas à envoyer un
-		mail à <a href="mailto:contact@mapant.fr" target="_blank">contact@mapant.fr</a>.
+		Si vous avez besoin d'une facture, ou pour toute autre question, n'hésitez pas à envoyer un mail
+		à <a href="mailto:contact@mapant.fr" target="_blank">contact@mapant.fr</a>.
 	</p>
 
 	<p>
-		<a role="button" class="outline !flex" items-center gap-2 w-fit href="/contribute/step-1">
+		<a role="button" class="outline !flex" items-center gap-2 w-fit href="/contribute/step-2">
 			<i i-carbon-crop-growth block w-5 h-5></i>
 			Faire une autre contribution
 		</a>
 	</p>
 
-	<p>
-		<a role="button" class="outline !flex" items-center gap-2 w-fit href="/contributions">
-			<i i-carbon-view block w-5 h-5></i>
-			Voir mes contributions
-		</a>
-	</p>
+	{#if isUserConnected}
+		<p>
+			<a role="button" class="outline !flex" items-center gap-2 w-fit href="/contributions">
+				<i i-carbon-view block w-5 h-5></i>
+				Voir mes contributions
+			</a>
+		</p>
+	{/if}
 </main>
