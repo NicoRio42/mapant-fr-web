@@ -52,7 +52,7 @@
 	<p text="right 5 gray-6"><em>Nicolas Rio</em></p>
 
 	<p flex justify-end gap-4>
-		<button type="button" m-0 onclick={() => (isWelcomeDialogOpen = false)}>
+		<button type="button" class="outline" m-0 onclick={() => (isWelcomeDialogOpen = false)}>
 			Retour à la carte
 		</button>
 	</p>
@@ -68,7 +68,7 @@
 
 	<p>
 		Mapant.fr et Nicolas Rio déclinent toute responsabilité en cas d'accès non autorisé à une zone
-		cartographiée par la carte exportée.
+		de la carte Mapant.fr.
 	</p>
 
 	<p>
@@ -110,7 +110,7 @@
 	</p>
 </Dialog>
 
-<BaseMap class={isDrawingExport ? 'cursor-crosshair' : undefined}>
+<BaseMap persistMapState class={isDrawingExport ? 'cursor-crosshair' : undefined}>
 	<button
 		absolute
 		top-12

@@ -4,14 +4,14 @@
 	import BaseMap from '$lib/components/map/BaseMap.svelte';
 	import Polygon from '$lib/components/map/Polygon.svelte';
 	import VectorLayer from '$lib/components/map/VectorLayer.svelte';
-	import { CONTRIBUTION_FORMULAS, FRANCE_CENTER, type ContributionFormula } from '$lib/constants';
+	import { CONTRIBUTION_FORMULAS, FRANCE_CENTER } from '$lib/constants';
 	import type { Feature } from 'ol';
 	import Stepper from '../Stepper.svelte';
 	import { clickOutside } from '$lib/actions/click-outside';
 	import { fade } from 'svelte/transition';
+	import type { Coordinate } from 'ol/coordinate';
 
-	let { center = $bindable(FRANCE_CENTER) } = $props();
-
+	let center: Coordinate = $state(FRANCE_CENTER);
 	let isLandscape = $state(false);
 	let selected: Feature | null = $state(null);
 	let showDropdown = $state(false);
@@ -54,11 +54,12 @@
 <h1 my-4 text="6 center" leading-6>Choisir la zone</h1>
 
 <BaseMap
-	bind:center
+	{center}
 	bind:selected
 	bind:isLidarHdTilesLayerDisplayed
 	zoom={7}
 	allowLidarTileSelection={isMegaTileFormula}
+	onViewChange={({ center: newCenter }) => (center = newCenter)}
 >
 	{#if !isMegaTileFormula}
 		<VectorLayer>

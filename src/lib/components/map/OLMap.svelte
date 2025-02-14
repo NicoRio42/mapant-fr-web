@@ -3,24 +3,31 @@
 	import { FRANCE_CENTER } from '$lib/constants';
 	import { Map, View } from 'ol';
 	import { defaults as defaultControls } from 'ol/control/defaults.js';
+	import type { Coordinate } from 'ol/coordinate';
 	import type { Extent } from 'ol/extent';
 	import { DblClickDragZoom, defaults as defaultInteractions } from 'ol/interaction.js';
-	import { transform } from 'ol/proj.js';
 	import { register } from 'ol/proj/proj4.js';
 	import proj4 from 'proj4';
 	import { onDestroy, onMount, setContext } from 'svelte';
 
 	interface Props {
-		center?: any;
+		center?: Coordinate;
 		zoom?: number;
+		rotation?: number;
 		fit?: Extent;
 		map?: Map;
-		onViewChange?: (params: { zoom: number; extent: Extent }) => void;
+		onViewChange?: (params: {
+			zoom: number;
+			extent: Extent;
+			center: Coordinate;
+			rotation: number;
+		}) => void;
 		children?: import('svelte').Snippet;
 	}
 
 	let {
-		center = $bindable(FRANCE_CENTER),
+		center = FRANCE_CENTER,
+		rotation = 0,
 		zoom = 6,
 		fit,
 		map = $bindable(undefined),
@@ -35,6 +42,18 @@
 			view.fit(fit, { padding: [20, 20, 20, 20] });
 	});
 
+	$effect(() => {
+		if (browser && view !== undefined && zoom !== undefined) view.setZoom(zoom);
+	});
+
+	$effect(() => {
+		if (browser && view !== undefined && center !== undefined) view.setCenter(center);
+	});
+
+	$effect(() => {
+		if (browser && view !== undefined && rotation !== undefined) view.setRotation(rotation);
+	});
+
 	setContext('map', () => map);
 
 	onMount(() => {
@@ -42,8 +61,9 @@
 
 		view = new View({
 			projection: 'EPSG:2154',
-			center: transform(center, 'EPSG:4326', 'EPSG:2154'),
-			zoom
+			center,
+			zoom,
+			rotation
 		});
 
 		map = new Map({
@@ -58,11 +78,12 @@
 		map.on('moveend', (event) => {
 			const view = event.map.getView();
 			const newCenter = event.map.getView().getCenter();
-			if (newCenter !== undefined) center = newCenter;
+			const rotation = event.map.getView().getRotation();
 			const newZoom = event.map.getView().getZoom();
-			const newExtent = view.calculateExtent(event.map.getSize());
-			if (onViewChange !== undefined && newZoom !== undefined && newExtent !== undefined) {
-				onViewChange({ zoom: newZoom, extent: newExtent });
+			const extent = view.calculateExtent(event.map.getSize());
+
+			if (onViewChange !== undefined && newZoom !== undefined && newCenter !== undefined) {
+				onViewChange({ zoom: newZoom, extent, center: newCenter, rotation });
 			}
 		});
 	});

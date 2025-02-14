@@ -4,13 +4,17 @@
 	import MapantLegacy from '$lib/components/map/MapantLegacy.svelte';
 	import Mapant from '$lib/components/map/Mapant.svelte';
 	import OLMap from '$lib/components/map/OLMap.svelte';
-	import { FRANCE_CENTER, MAPANT_V1_CENTER, MAPANT_V1_EXTENT } from '$lib/constants';
+	import { MAPANT_V1_CENTER, MAPANT_V1_EXTENT } from '$lib/constants';
 	import type { Feature, Map } from 'ol';
 	import type { Extent } from 'ol/extent';
 	import { fade } from 'svelte/transition';
 	import LayerControlItem from './LayerControlItem.svelte';
 	import Osm from './OSM.svelte';
 	import Scan25IgnWebMercator from './Scan25IgnWebMercator.svelte';
+	import type { Coordinate } from 'ol/coordinate';
+	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 
 	let map: Map | undefined = $state(undefined);
 	let showLayerDropDown = $state(false);
@@ -20,19 +24,25 @@
 	let isMapantLayerDisplayed = $state(true);
 
 	interface Props {
-		center?: any;
+		center?: Coordinate;
 		zoom?: number;
 		allowLidarTileSelection?: boolean;
 		selected?: Feature | null;
 		fit?: Extent;
 		isLidarHdTilesLayerDisplayed?: boolean;
-		onViewChange?: (params: { zoom: number; extent: Extent }) => void;
+		onViewChange?: (params: {
+			zoom: number;
+			extent: Extent;
+			center: Coordinate;
+			rotation: number;
+		}) => void;
 		children?: import('svelte').Snippet;
 		class?: string;
+		persistMapState?: boolean;
 	}
 
 	let {
-		center = $bindable(FRANCE_CENTER),
+		center,
 		allowLidarTileSelection = false,
 		selected = $bindable(null),
 		zoom = 6,
@@ -40,7 +50,8 @@
 		isLidarHdTilesLayerDisplayed = $bindable(false),
 		onViewChange,
 		children,
-		class: classList
+		class: classList,
+		persistMapState = false
 	}: Props = $props();
 
 	let osmLayerOpacity = $state(0.5);
@@ -48,10 +59,38 @@
 	let mapantV1LayerOpacity = $state(1);
 	let mapantLayerOpacity = $state(1);
 	let lidarHdTilesLayerOpacity = $state(1);
+	let rotation = $state(0);
+
+	function onViewChangeCombined(params: {
+		zoom: number;
+		extent: Extent;
+		center: Coordinate;
+		rotation: number;
+	}) {
+		onViewChange?.(params);
+		if (!persistMapState) return;
+
+		goto(`#${params.zoom}|${params.center[0]}|${params.center[1]}|${params.rotation}`);
+	}
+
+	onMount(() => {
+		if (!persistMapState) return;
+		let hash = $page.url.hash;
+		if (hash === '') return;
+		hash = hash.slice(1);
+
+		const [zoomFromHash, centerLatFromHash, centerLonFromHash, rotationFromHash] = hash
+			.split('|')
+			.map((s) => parseFloat(s));
+
+		center = [centerLatFromHash, centerLonFromHash];
+		zoom = zoomFromHash;
+		rotation = rotationFromHash;
+	});
 </script>
 
 <main grow relative bg-white class={classList}>
-	<OLMap bind:map bind:center {fit} {zoom} {onViewChange}>
+	<OLMap bind:map {center} {fit} {zoom} {rotation} onViewChange={onViewChangeCombined}>
 		<Osm visible={isOsmLayerDisplayed} opacity={osmLayerOpacity} />
 
 		<Scan25IgnWebMercator visible={isIgnScan25LayerDisplayed} opacity={ignScan25LayerOpacity} />
