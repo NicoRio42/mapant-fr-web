@@ -1,4 +1,4 @@
-Ça y-est, les **premières dalles** du projet Mapant.fr ont été générées. Comme promis, ce sont les zones sélectionnées par les contributeurs qui ont été **traitées en priorité**. Merci encore à eux d'avoir financé une partie des coûts et du travail pour en arriver là ! _(Il est encore possible de faire un don si vous avez envie d'aider au financement de la suite du projet : [faire un don](/contribute/step-1))_
+Ça y est, les **premières dalles** du projet Mapant.fr ont été générées. Comme promis, ce sont les zones sélectionnées par les contributeurs qui ont été **traitées en priorité**. Merci encore à eux d'avoir financé une partie des coûts et du travail pour en arriver là ! _(Il est encore possible de faire un don si vous avez envie d'aider au financement de la suite du projet : [faire un don](/contribute/step-1).)_
 
 Les dalles disponibles aujourd'hui ne sont pas la version finale de la carte mapant.fr. C'est un **premier jet** qui a deux objectifs :
 
@@ -7,4 +7,4 @@ Les dalles disponibles aujourd'hui ne sont pas la version finale de la carte map
 
 Si vous avez l'occasion de confronter la carte à la **réalité du terrain**, n'hésitez pas à m'envoyer un mail ([contact@mapant.fr](mailto:contact@mapant.fr)) avec vos retours (trop/pas assez de vert, de falaises...).
 
-_(Attention, la possession de cette carte n'implique pas un droit d'accès permanent au terrain. Avant de visiter la zone cartographiée, assurez vous d'avoir les droits d'accès nécessaires. Mapant.fr et Nicolas Rio déclinent toute responsabilité en cas d'accès non autorisé à une zone de la carte Mapant.fr.)_
+_(Attention, la possession de cette carte n'implique pas un droit d'accès permanent au terrain. Avant de visiter la zone cartographiée, assurez-vous d'avoir les droits d'accès nécessaires. Mapant.fr et Nicolas Rio déclinent toute responsabilité en cas d'accès non autorisé à une zone de la carte Mapant.fr.)_

@@ -16,7 +16,7 @@ Les dalles disponibles aujourd'hui ne sont pas la version finale de la carte map
 Si vous avez l'occasion de confronter la carte à la **réalité du terrain**, n'hésitez pas à m'envoyer un mail ([contact@mapant.fr](mailto:contact@mapant.fr)) avec vos retours (trop/pas assez de vert, de falaises...).
 
 !!! caution Attention
-La possession de cette carte n'implique pas un droit d'accès permanent au terrain. Avant de visiter la zone cartographiée, assurez vous d'avoir les droits d'accès nécessaires. Mapant.fr et Nicolas Rio déclinent toute responsabilité en cas d'accès non autorisé à une zone de la carte Mapant.fr.
+La possession de cette carte n'implique pas un droit d'accès permanent au terrain. Avant de visiter la zone cartographiée, assurez-vous d'avoir les droits d'accès nécessaires. Mapant.fr et Nicolas Rio déclinent toute responsabilité en cas d'accès non autorisé à une zone de la carte Mapant.fr.
 !!!
 
 Quelques chiffres pour ce premier jet :
