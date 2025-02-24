@@ -1,8 +1,9 @@
-import { defineConfig } from 'drizzle-kit';
+import type { Config } from 'drizzle-kit';
+import { env } from 'node:process';
 
-export default defineConfig({
+export default {
 	schema: './src/lib/server/schema.ts',
 	out: './migrations',
 	dialect: 'turso',
-	dbCredentials: { url: 'file:main.db' }
-});
+	dbCredentials: { url: env.TURSO_DB_URL ?? '', authToken: env.TURSO_DB_TOKEN }
+} satisfies Config;

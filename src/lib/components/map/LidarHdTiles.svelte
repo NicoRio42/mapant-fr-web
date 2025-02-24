@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { browser } from '$app/environment';
 	import type { Feature, Map, MapBrowserEvent } from 'ol';
 	import GeoJSON from 'ol/format/GeoJSON.js';
+	import type { Geometry } from 'ol/geom';
 	import VectorLayer from 'ol/layer/Vector';
 	import VectorSource from 'ol/source/Vector';
 	import Fill from 'ol/style/Fill';
@@ -26,13 +25,14 @@
 	}: Props = $props();
 
 	const getMap = getContext<() => Map>('map');
-	let map: Map = $state();
-	let vectorLayer: VectorLayer<VectorSource> = $state();
+	let map: Map | undefined = $state();
+	let vectorLayer: VectorLayer<Feature<Geometry>> | undefined = $state();
 
-	run(() => {
+	$effect(() => {
 		if (browser && vectorLayer) vectorLayer.setVisible(visible);
 	});
-	run(() => {
+
+	$effect(() => {
 		if (browser && vectorLayer) vectorLayer.setOpacity(opacity);
 	});
 
@@ -62,7 +62,7 @@
 			hovered = null;
 		}
 
-		if (!e.dragging) {
+		if (map && !e.dragging) {
 			map.getTargetElement().style.cursor = map.hasFeatureAtPixel(
 				map.getEventPixel(e.originalEvent),
 				{ checkWrapped: true, layerFilter: (layer) => layer === vectorLayer }
@@ -71,7 +71,7 @@
 				: '';
 		}
 
-		map.forEachFeatureAtPixel(
+		map?.forEachFeatureAtPixel(
 			e.pixel,
 			function (f) {
 				// @ts-ignore
@@ -89,7 +89,7 @@
 			selected = null;
 		}
 
-		map.forEachFeatureAtPixel(
+		map?.forEachFeatureAtPixel(
 			e.pixel,
 			function (f) {
 				// @ts-ignore
@@ -101,7 +101,7 @@
 		);
 	}
 
-	run(() => {
+	$effect(() => {
 		if (browser && allowSelection) {
 			map?.on('click', mapClickListener);
 			map?.on('pointermove', mapPointermoveListener);

@@ -15,6 +15,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import AzimutNord from './AzimutNord.svelte';
 
 	let map: Map | undefined = $state(undefined);
 	let showLayerDropDown = $state(false);
@@ -106,6 +107,10 @@
 			allowSelection={allowLidarTileSelection}
 			bind:selected
 		/>
+
+		{#if $page.url.searchParams.has('azimut-nord')}
+			<AzimutNord />
+		{/if}
 
 		{@render children?.()}
 	</OLMap>
