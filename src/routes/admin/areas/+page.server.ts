@@ -25,7 +25,7 @@ export async function load() {
 		db
 			.select()
 			.from(contributionTable)
-			.innerJoin(userTable, eq(userTable.id, contributionTable.fkUser))
+			.leftJoin(userTable, eq(userTable.id, contributionTable.fkUser))
 			.where(eq(contributionTable.paied, true)),
 		db.query.areasToGenerateTable.findMany()
 	]);

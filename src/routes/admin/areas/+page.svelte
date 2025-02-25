@@ -243,7 +243,7 @@
 	</dialog>
 {/if}
 
-<BaseMap {onViewChange}>
+<BaseMap {onViewChange} persistMapState>
 	<button
 		absolute
 		top-12
@@ -292,7 +292,13 @@
 				[contribution.minX, contribution.minY]
 			]}
 
-			<Polygon color="blue" width={2} coords={coordinates} fill="transparent" text={user.email} />
+			<Polygon
+				color="blue"
+				width={2}
+				coords={coordinates}
+				fill="transparent"
+				text={user?.email ?? undefined}
+			/>
 		{/each}
 
 		{#each displayedTiles as tile (`${tile.id}_${tile.mapRenderingStepStatus}_${tile.lidarStepStatus}_${tile.lidarJob !== null ? 'true' : 'false'}`)}
