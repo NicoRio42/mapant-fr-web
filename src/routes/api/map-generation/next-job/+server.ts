@@ -106,7 +106,7 @@ export async function POST({ request }) {
 				(j) => j.tiles.lidarStepStatus === 'finished'
 			);
 
-			if (everyNeigbhoringLidarJobsAreFinished) {
+			if (everyNeigbhoringLidarJobsAreFinished && job.tiles.lidarStepStatus === 'finished') {
 				nextRenderJob = job;
 				neigbhoringTilesIds = neigbhoringLidarJobs.map(({ tiles }) => tiles.id);
 				break;
