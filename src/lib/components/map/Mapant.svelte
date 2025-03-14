@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { page } from '$app/stores';
 	import { PUBLIC_MAPANT_TILES_BASE_URL } from '$env/static/public';
 	import { type Map } from 'ol';
 	import TileLayer from 'ol/layer/Tile';
@@ -46,7 +47,7 @@
 
 	onMount(() => {
 		map = getMap();
-		const url = `${PUBLIC_MAPANT_TILES_BASE_URL}/{z}/{x}/{y}.png`;
+		const url = `${PUBLIC_MAPANT_TILES_BASE_URL}/{z}/{x}/{y}.png${$page.url.searchParams.has('bypass-cache') ? `?${new Date().getTime()}` : ''}`;
 
 		const tileGrid = new TileGrid({
 			origin: [MIN_X, MAX_Y],
