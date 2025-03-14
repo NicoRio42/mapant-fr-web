@@ -183,7 +183,7 @@ Vous pouvez maintenant lancer cassini ! Pour cela, copiez/collez et validez la c
 cassini batch
 ```
 
-La génération de la carte va prendre un peu de temps, en fonction de la puissance de votre ordinateur et de la quantité de fichier LiDAR à traiter. Une fois la génération terminée, si tout s'est bien passé, vous trouverez un dossier `out` avec un fichier `merged-map.png` à l'intérieur !
+La génération de la carte va prendre un peu de temps, en fonction de la puissance de votre ordinateur et de la quantité de fichier LiDAR à traiter. Une fois la génération terminée, si tout s'est bien passé, vous trouverez un dossier `out` avec un fichier `merged-map.png` à l'intérieur ! La résolution de cette carte est de 600 dpi (points par pouce), pour une échelle de 1:10000. Pour imprimer la carte à la bonne échelle, vous pouvez utiliser l'excellent logiciel de traçage [Purple Pen](https://purple-pen.org/).
 
 ## Pour aller plus loin
 
@@ -225,10 +225,14 @@ cassini batch --skip-lidar
 
 ### Mettre à jour Cassini
 
-Pour mettre à jour Cassini vers une version plus récente, copiez/collez et exécutez la commande :
+Pour mettre à jour Cassini vers une version plus récente, copiez/collez et exécutez ces deux commandes :
 
 ```sh
 docker pull nicorio42/cassini:latest
+```
+
+```sh
+docker image prune -a
 ```
 
 ## Conclusion

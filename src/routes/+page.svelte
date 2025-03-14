@@ -73,7 +73,8 @@
 
 	<p>
 		L'export généré est une image au format png. La carte doit être imprimée à la résolution 600dpi
-		pour être à l'échelle 1:10000.
+		pour être à l'échelle 1:10000. Pour imprimer la carte à la bonne échelle, vous pouvez utiliser
+		l'excellent logiciel de traçage [Purple Pen](https://purple-pen.org/).
 	</p>
 
 	<p flex justify-end gap-4>
