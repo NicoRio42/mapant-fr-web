@@ -34,38 +34,42 @@ export async function POST({ request }) {
 		)
 	);
 
-	const nextLidarJob = await db
+	const nextLidarJobs = await db
 		.select()
 		.from(lidarStepJobTable)
 		.innerJoin(tilesTable, eq(lidarStepJobTable.tileId, tilesTable.id))
 		.where(nextLidarJobWhereClose)
 		.orderBy(lidarStepJobTable.index)
-		.limit(1)
-		.get();
+		.limit(12)
+		.all();
 
-	if (nextLidarJob !== undefined) {
-		const updatedTiles = await db
-			.update(tilesTable)
-			.set({
-				lidarStepStatus: 'ongoing',
-				lidarStepWorkerId: workerId,
-				lidarStepStartTime: new Date()
-			})
-			.where(and(eq(tilesTable.id, nextLidarJob.tiles.id), nextLidarJobWhereClose))
-			.returning();
+	if (nextLidarJobs.length !== 0) {
+		for (const nextLidarJob of nextLidarJobs) {
+			const updatedTiles = await db
+				.update(tilesTable)
+				.set({
+					lidarStepStatus: 'ongoing',
+					lidarStepWorkerId: workerId,
+					lidarStepStartTime: new Date()
+				})
+				.where(and(eq(tilesTable.id, nextLidarJob.tiles.id), nextLidarJobWhereClose))
+				.returning();
 
-		if (updatedTiles.length !== 0) {
-			return new Response(
-				JSON.stringify({
-					type: 'lidar',
-					data: {
-						tileId: nextLidarJob.tiles.id,
-						tileUrl: nextLidarJob.tiles.lidarFileUrl
-					}
-				} satisfies LidarJob),
-				{ status: 202 }
-			);
-		} else return noJobLeftResponse;
+			if (updatedTiles.length !== 0) {
+				return new Response(
+					JSON.stringify({
+						type: 'lidar',
+						data: {
+							tileId: nextLidarJob.tiles.id,
+							tileUrl: nextLidarJob.tiles.lidarFileUrl
+						}
+					} satisfies LidarJob),
+					{ status: 202 }
+				);
+			}
+		}
+
+		return noJobLeftResponse;
 	}
 
 	const nextRenderJobWhereClause = or(
@@ -86,59 +90,52 @@ export async function POST({ request }) {
 		.innerJoin(tilesTable, eq(mapRenderingStepJobTable.tileId, tilesTable.id))
 		.where(nextRenderJobWhereClause)
 		.orderBy(mapRenderingStepJobTable.index)
-		.limit(5)
+		.limit(12)
 		.all();
 
 	if (nextRenderJobs.length !== 0) {
-		let nextRenderJob: (typeof nextRenderJobs)[number] | undefined = undefined;
-		let neigbhoringTilesIds: string[] | undefined = undefined;
-
-		for (const job of nextRenderJobs) {
+		for (const nextRenderJob of nextRenderJobs) {
 			const neigbhoringLidarJobs = await db
 				.select()
 				.from(lidarStepJobTable)
 				.innerJoin(tilesTable, eq(lidarStepJobTable.tileId, tilesTable.id))
-				.where(inArray(tilesTable.id, getNeigbhoringTilesIds(job.tiles)))
+				.where(inArray(tilesTable.id, getNeigbhoringTilesIds(nextRenderJob.tiles)))
 				.orderBy(lidarStepJobTable.index)
 				.all();
 
-			const everyNeigbhoringLidarJobsAreFinished = neigbhoringLidarJobs.every(
-				(j) => j.tiles.lidarStepStatus === 'finished'
-			);
 
-			if (everyNeigbhoringLidarJobsAreFinished && job.tiles.lidarStepStatus === 'finished') {
-				nextRenderJob = job;
-				neigbhoringTilesIds = neigbhoringLidarJobs.map(({ tiles }) => tiles.id);
-				break;
+			if (
+				neigbhoringLidarJobs.some((j) => j.tiles.lidarStepStatus !== 'finished')
+				|| nextRenderJob.tiles.lidarStepStatus !== 'finished'
+			) {
+				continue;
+			}
+
+			const updatedTiles = await db
+				.update(tilesTable)
+				.set({
+					mapRenderingStepStatus: 'ongoing',
+					mapRenderingStepWorkerId: workerId,
+					mapRenderingStepStartTime: new Date()
+				})
+				.where(and(eq(tilesTable.id, nextRenderJob.tiles.id), nextRenderJobWhereClause))
+				.returning();
+
+			if (updatedTiles.length !== 0) {
+				return new Response(
+					JSON.stringify({
+						type: 'render',
+						data: {
+							tileId: nextRenderJob.tiles.id,
+							neigbhoringTilesIds: neigbhoringLidarJobs.map(({ tiles }) => tiles.id)
+						}
+					} satisfies RenderJob),
+					{ status: 202 }
+				);
 			}
 		}
 
-		if (nextRenderJob === undefined || neigbhoringTilesIds === undefined) {
-			return noJobLeftResponse;
-		}
-
-		const updatedTiles = await db
-			.update(tilesTable)
-			.set({
-				mapRenderingStepStatus: 'ongoing',
-				mapRenderingStepWorkerId: workerId,
-				mapRenderingStepStartTime: new Date()
-			})
-			.where(and(eq(tilesTable.id, nextRenderJob.tiles.id), nextRenderJobWhereClause))
-			.returning();
-
-		if (updatedTiles.length !== 0) {
-			return new Response(
-				JSON.stringify({
-					type: 'render',
-					data: {
-						tileId: nextRenderJob.tiles.id,
-						neigbhoringTilesIds
-					}
-				} satisfies RenderJob),
-				{ status: 202 }
-			);
-		} else return noJobLeftResponse;
+		return noJobLeftResponse;
 	}
 
 	const pyramidJobWhereClause = or(
