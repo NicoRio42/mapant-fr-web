@@ -31,6 +31,7 @@
 	<h1>Workers</h1>
 
 	<form action="?/add" method="post" use:enhance>
+		<!-- svelte-ignore a11y_no_redundant_roles -->
 		<fieldset role="group">
 			<input type="text" placeholder="Worker name" name="name" bind:value={$formStore.name} />
 
@@ -75,6 +76,7 @@
 								justify-center
 								p="!2"
 								class="outline"
+								aria-label="Supprimer le worker"
 							>
 								<i i-carbon-trash-can w-5 h-5 inline-block></i>
 							</button>

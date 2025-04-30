@@ -125,6 +125,7 @@
 					type="button"
 					border-none
 					class="outline focus:shadow-none"
+					aria-label="Menu"
 					onclick={() => {
 						// To make clickOutside work
 						if (showMenu === false) setTimeout(() => (showMenu = true));

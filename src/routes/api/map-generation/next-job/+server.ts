@@ -16,7 +16,7 @@ export async function POST({ request }) {
 	const [workerId, errorStatus] = await getWorkerIdOrErrorStatus(request.headers);
 	if (errorStatus !== null) return new Response(null, { status: errorStatus });
 
-	const noJobLeftResponse = new Response(JSON.stringify({ type: 'NoJobLeft' } satisfies NoJob), {
+	const noJobLeftResponse = new Response(JSON.stringify({ type: 'noJobLeft' } satisfies NoJob), {
 		status: 202
 	});
 
@@ -57,10 +57,10 @@ export async function POST({ request }) {
 		if (updatedTiles.length !== 0) {
 			return new Response(
 				JSON.stringify({
-					type: 'Lidar',
+					type: 'lidar',
 					data: {
-						tile_id: nextLidarJob.tiles.id,
-						tile_url: nextLidarJob.tiles.lidarFileUrl
+						tileId: nextLidarJob.tiles.id,
+						tileUrl: nextLidarJob.tiles.lidarFileUrl
 					}
 				} satisfies LidarJob),
 				{ status: 202 }
@@ -130,10 +130,10 @@ export async function POST({ request }) {
 		if (updatedTiles.length !== 0) {
 			return new Response(
 				JSON.stringify({
-					type: 'Render',
+					type: 'render',
 					data: {
-						tile_id: nextRenderJob.tiles.id,
-						neigbhoring_tiles_ids: neigbhoringTilesIds
+						tileId: nextRenderJob.tiles.id,
+						neigbhoringTilesIds
 					}
 				} satisfies RenderJob),
 				{ status: 202 }
@@ -213,13 +213,13 @@ export async function POST({ request }) {
 
 			return new Response(
 				JSON.stringify({
-					type: 'Pyramid',
+					type: 'pyramid',
 					data: {
 						x: nextPyramidJob.x,
 						y: nextPyramidJob.y,
 						z: nextPyramidJob.zoom,
-						base_zoom_level_tile_id: nextPyramidJob.baseZoomLevelTileId,
-						area_id: nextPyramidJob.areaToGenerateId
+						baseZoomLevelTileId: nextPyramidJob.baseZoomLevelTileId,
+						areaId: nextPyramidJob.areaToGenerateId
 					}
 				} satisfies PyramidJob),
 				{ status: 202 }

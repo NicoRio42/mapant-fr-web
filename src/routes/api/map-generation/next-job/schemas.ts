@@ -1,40 +1,40 @@
 import z from 'zod';
 
 export const lidarJobSchema = z.object({
-	type: z.literal('Lidar'),
+	type: z.literal('lidar'),
 	data: z.object({
-		tile_id: z.string(),
-		tile_url: z.string().url()
+		tileId: z.string(),
+		tileUrl: z.string().url()
 	})
 });
 
 export type LidarJob = z.infer<typeof lidarJobSchema>;
 
 export const renderJobSchema = z.object({
-	type: z.literal('Render'),
+	type: z.literal('render'),
 	data: z.object({
-		tile_id: z.string(),
-		neigbhoring_tiles_ids: z.array(z.string())
+		tileId: z.string(),
+		neigbhoringTilesIds: z.array(z.string())
 	})
 });
 
 export type RenderJob = z.infer<typeof renderJobSchema>;
 
 export const pyramidJobSchema = z.object({
-	type: z.literal('Pyramid'),
+	type: z.literal('pyramid'),
 	data: z.object({
 		x: z.number(),
 		y: z.number(),
 		z: z.number(),
-		base_zoom_level_tile_id: z.string().nullable(),
-		area_id: z.string()
+		baseZoomLevelTileId: z.string().nullable(),
+		areaId: z.string()
 	})
 });
 
 export type PyramidJob = z.infer<typeof pyramidJobSchema>;
 
 export const noJobSchema = z.object({
-	type: z.literal('NoJobLeft')
+	type: z.literal('noJobLeft')
 });
 
 export type NoJob = z.infer<typeof noJobSchema>;

@@ -132,6 +132,7 @@
 			h-8
 			p-0
 			bg-white
+			aria-label="Layers"
 			class="outline"
 			onclick={() => (showLayerDropDown = !showLayerDropDown)}
 		>
@@ -160,6 +161,7 @@
 					<button
 						type="button"
 						class="outline"
+						aria-label="Zoom sur Mapant.fr V1"
 						p-1
 						m-0
 						onclick={() => {

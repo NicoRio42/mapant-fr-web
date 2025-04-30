@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { browser } from '$app/environment';
 	import type { Map } from 'ol';
 	import TileLayer from 'ol/layer/Tile';
@@ -16,12 +14,13 @@
 
 	const getMap = getContext<() => Map>('map');
 	let map: Map;
-	let tileLayer: TileLayer<OSM> = $state();
+	let tileLayer: TileLayer<OSM> | undefined = $state();
 
-	run(() => {
+	$effect(() => {
 		if (browser && tileLayer) tileLayer.setVisible(visible);
 	});
-	run(() => {
+
+	$effect(() => {
 		if (browser && tileLayer) tileLayer.setOpacity(opacity);
 	});
 

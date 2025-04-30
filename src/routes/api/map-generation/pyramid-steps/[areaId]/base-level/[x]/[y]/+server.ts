@@ -64,16 +64,15 @@ export async function POST({ request, params: { areaId, x, y }, platform }) {
 	]);
 
 	const tiles = [{ z: 11, x: parsedX, y: parsedY }, ...zoom12Tiles, ...zoom13Tiles];
-
-	const formData = await request.formData();
-
 	const tilesWithFiles: { file: File; tile: { x: number; y: number; z: number } }[] = [];
+	const formData = await request.formData();
 
 	for (const tile of tiles) {
 		const key = `${tile.z}_${tile.x}_${tile.y}`;
 		const file = formData.get(key);
 
 		if (!file || !(file instanceof File)) {
+			console.error(`Tile ${key} is missing`, [...formData.keys()]);
 			return new Response(`Tile ${key} is missing`, { status: 400 });
 		}
 

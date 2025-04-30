@@ -161,6 +161,7 @@
 		flex
 		items-center
 		justify-center
+		aria-label="Aide"
 		onclick={() => (showHelp = !showHelp)}
 	>
 		<i i-carbon-help block w-5 h-5></i>
@@ -187,6 +188,7 @@
 				shadow="focus:none"
 				text-h1-color
 				class="outline"
+				aria-label="Close"
 				onclick={() => (showHelp = false)}
 			>
 				<i i-carbon-close-large block w-5 h-5></i>

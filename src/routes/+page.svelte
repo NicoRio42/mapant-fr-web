@@ -41,6 +41,7 @@
 			border-none
 			h-fit
 			class="outline"
+			aria-label="Fermer le popup"
 			onclick={() => (isWelcomeDialogOpen = false)}
 		>
 			<i i-carbon-close-large w-5 h-5 block></i>

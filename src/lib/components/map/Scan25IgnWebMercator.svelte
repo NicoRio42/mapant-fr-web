@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { browser } from '$app/environment';
 	import type { Map } from 'ol';
 	import WMTSCapabilities from 'ol/format/WMTSCapabilities.js';
@@ -17,12 +15,13 @@
 
 	const getMap = getContext<() => Map>('map');
 	let map: Map;
-	let tileLayer: TileLayer<WMTS> = $state();
+	let tileLayer: TileLayer<WMTS> | undefined = $state();
 
-	run(() => {
+	$effect(() => {
 		if (browser && tileLayer) tileLayer.setVisible(visible);
 	});
-	run(() => {
+
+	$effect(() => {
 		if (browser && tileLayer) tileLayer.setOpacity(opacity);
 	});
 
