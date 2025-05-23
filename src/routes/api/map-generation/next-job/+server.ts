@@ -150,78 +150,82 @@ export async function POST({ request }) {
 		)
 	);
 
-	const nextPyramidJob = await db
+	const nextPyramidJobs = await db
 		.select()
 		.from(pyramidRenderingStepJobTable)
 		.where(pyramidJobWhereClause)
 		.orderBy(pyramidRenderingStepJobTable.index)
-		.limit(1)
-		.get();
+		.limit(12)
+		.all();
 
-	if (nextPyramidJob !== undefined) {
-		if (nextPyramidJob.baseZoomLevelTileId === null) {
-			// Check if the four tiles needed to generate the tile are already generated
-			const childPyramidJobs = await db
-				.select()
-				.from(pyramidRenderingStepJobTable)
-				.where(
-					and(
-						eq(pyramidRenderingStepJobTable.areaToGenerateId, nextPyramidJob.areaToGenerateId),
-						eq(pyramidRenderingStepJobTable.zoom, nextPyramidJob.zoom + 1),
-						or(
-							and(
-								eq(pyramidRenderingStepJobTable.x, nextPyramidJob.x * 2),
-								eq(pyramidRenderingStepJobTable.y, nextPyramidJob.y * 2)
-							),
-							and(
-								eq(pyramidRenderingStepJobTable.x, nextPyramidJob.x * 2 + 1),
-								eq(pyramidRenderingStepJobTable.y, nextPyramidJob.y * 2)
-							),
-							and(
-								eq(pyramidRenderingStepJobTable.x, nextPyramidJob.x * 2),
-								eq(pyramidRenderingStepJobTable.y, nextPyramidJob.y * 2 + 1)
-							),
-							and(
-								eq(pyramidRenderingStepJobTable.x, nextPyramidJob.x * 2 + 1),
-								eq(pyramidRenderingStepJobTable.y, nextPyramidJob.y * 2 + 1)
+	if (nextPyramidJobs.length !== 0) {
+		for (const nextPyramidJob of nextPyramidJobs) {
+			if (nextPyramidJob.baseZoomLevelTileId === null) {
+				// Check if the four tiles needed to generate the tile are already generated
+				const childPyramidJobs = await db
+					.select()
+					.from(pyramidRenderingStepJobTable)
+					.where(
+						and(
+							eq(pyramidRenderingStepJobTable.areaToGenerateId, nextPyramidJob.areaToGenerateId),
+							eq(pyramidRenderingStepJobTable.zoom, nextPyramidJob.zoom + 1),
+							or(
+								and(
+									eq(pyramidRenderingStepJobTable.x, nextPyramidJob.x * 2),
+									eq(pyramidRenderingStepJobTable.y, nextPyramidJob.y * 2)
+								),
+								and(
+									eq(pyramidRenderingStepJobTable.x, nextPyramidJob.x * 2 + 1),
+									eq(pyramidRenderingStepJobTable.y, nextPyramidJob.y * 2)
+								),
+								and(
+									eq(pyramidRenderingStepJobTable.x, nextPyramidJob.x * 2),
+									eq(pyramidRenderingStepJobTable.y, nextPyramidJob.y * 2 + 1)
+								),
+								and(
+									eq(pyramidRenderingStepJobTable.x, nextPyramidJob.x * 2 + 1),
+									eq(pyramidRenderingStepJobTable.y, nextPyramidJob.y * 2 + 1)
+								)
 							)
 						)
 					)
-				)
-				.all();
+					.all();
 
-			if (childPyramidJobs.some((job) => job.status !== 'finished')) {
-				return noJobLeftResponse;
+				if (childPyramidJobs.some((job) => job.status !== 'finished')) {
+					return noJobLeftResponse;
+				}
+			}
+
+			const updatedPyramidJobs = await db
+				.update(pyramidRenderingStepJobTable)
+				.set({ status: 'ongoing', workerId, startTime: new Date() })
+				.where(and(eq(pyramidRenderingStepJobTable.id, nextPyramidJob.id), pyramidJobWhereClause))
+				.returning();
+
+			if (updatedPyramidJobs.length !== 0) {
+				await db
+					.update(areasToGenerateTable)
+					.set({ pyramidGenerationStepStatus: 'ongoing' })
+					.where(eq(areasToGenerateTable.id, nextPyramidJob.areaToGenerateId))
+					.run();
+
+				return new Response(
+					JSON.stringify({
+						type: 'pyramid',
+						data: {
+							x: nextPyramidJob.x,
+							y: nextPyramidJob.y,
+							z: nextPyramidJob.zoom,
+							baseZoomLevelTileId: nextPyramidJob.baseZoomLevelTileId,
+							areaId: nextPyramidJob.areaToGenerateId
+						}
+					} satisfies PyramidJob),
+					{ status: 202 }
+				);
 			}
 		}
 
-		const updatedPyramidJobs = await db
-			.update(pyramidRenderingStepJobTable)
-			.set({ status: 'ongoing', workerId, startTime: new Date() })
-			.where(and(eq(pyramidRenderingStepJobTable.id, nextPyramidJob.id), pyramidJobWhereClause))
-			.returning();
-
-		if (updatedPyramidJobs.length !== 0) {
-			await db
-				.update(areasToGenerateTable)
-				.set({ pyramidGenerationStepStatus: 'ongoing' })
-				.where(eq(areasToGenerateTable.id, nextPyramidJob.areaToGenerateId))
-				.run();
-
-			return new Response(
-				JSON.stringify({
-					type: 'pyramid',
-					data: {
-						x: nextPyramidJob.x,
-						y: nextPyramidJob.y,
-						z: nextPyramidJob.zoom,
-						baseZoomLevelTileId: nextPyramidJob.baseZoomLevelTileId,
-						areaId: nextPyramidJob.areaToGenerateId
-					}
-				} satisfies PyramidJob),
-				{ status: 202 }
-			);
-		} else return noJobLeftResponse;
+		return noJobLeftResponse;
 	}
 
 	return noJobLeftResponse;
