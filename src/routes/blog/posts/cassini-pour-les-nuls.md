@@ -159,6 +159,13 @@ Créez un dossier n'importe où sur votre ordinateur (disons un dossier `lidar` 
 
 ![Fichiers LiDAR dans l'exploreur de fichier](/images/lidar-files-in-explorer.png)
 
+!!! caution Attention
+Il est préférable que les noms de tous les dossiers
+parents du dossier `in` ne comportent pas d'espace (si cela n'est pas possible,
+il faudra mettre le chemin absolu vers le dossier LiDAR entre guillements dans
+le commandes suivantes).
+!!!
+
 Ouvrez un terminal Powershell : tapez `Powershell` dans la barre de recherche Windows et cliquez sur le premier résultat. Ensuite, il va falloir naviguer jusqu'au dossier préalablement créé (notre dossier `lidar` dans mes `Documents par exemple`). Pour cela, copiez/collez et validez la commande suivante en replaçant `CHEMIN_ABSOLU_VERS_DOSSIER_LIDAR` par le chemin absolu vers votre dossier.
 
 ```sh
