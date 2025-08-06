@@ -12,6 +12,8 @@ import { and, eq, inArray, lt, or, sql } from 'drizzle-orm';
 import { getWorkerIdOrErrorStatus } from '../utils';
 import type { LidarJob, NoJob, PyramidJob, RenderJob } from './schemas';
 
+const JOBS_LIMIT = 16;
+
 export async function POST({ request }) {
 	const [workerId, errorStatus] = await getWorkerIdOrErrorStatus(request.headers);
 	if (errorStatus !== null) return new Response(null, { status: errorStatus });
@@ -40,7 +42,7 @@ export async function POST({ request }) {
 		.innerJoin(tilesTable, eq(lidarStepJobTable.tileId, tilesTable.id))
 		.where(nextLidarJobWhereClose)
 		.orderBy(lidarStepJobTable.index)
-		.limit(12)
+		.limit(JOBS_LIMIT)
 		.all();
 
 	if (nextLidarJobs.length !== 0) {
@@ -90,7 +92,7 @@ export async function POST({ request }) {
 		.innerJoin(tilesTable, eq(mapRenderingStepJobTable.tileId, tilesTable.id))
 		.where(nextRenderJobWhereClause)
 		.orderBy(mapRenderingStepJobTable.index)
-		.limit(12)
+		.limit(JOBS_LIMIT)
 		.all();
 
 	if (nextRenderJobs.length !== 0) {
@@ -103,10 +105,9 @@ export async function POST({ request }) {
 				.orderBy(lidarStepJobTable.index)
 				.all();
 
-
 			if (
-				neigbhoringLidarJobs.some((j) => j.tiles.lidarStepStatus !== 'finished')
-				|| nextRenderJob.tiles.lidarStepStatus !== 'finished'
+				neigbhoringLidarJobs.some((j) => j.tiles.lidarStepStatus !== 'finished') ||
+				nextRenderJob.tiles.lidarStepStatus !== 'finished'
 			) {
 				continue;
 			}
@@ -155,7 +156,7 @@ export async function POST({ request }) {
 		.from(pyramidRenderingStepJobTable)
 		.where(pyramidJobWhereClause)
 		.orderBy(pyramidRenderingStepJobTable.index)
-		.limit(12)
+		.limit(JOBS_LIMIT)
 		.all();
 
 	if (nextPyramidJobs.length !== 0) {
