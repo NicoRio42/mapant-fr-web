@@ -24,54 +24,39 @@ export async function POST({ request }) {
 
 	const db = getDb();
 
-	const nextLidarJobWhereClose = or(
-		eq(tilesTable.lidarStepStatus, 'not-started'),
-		// If a job is ongoing for more than X minutes, it is canceled and reassigned
-		and(
-			eq(tilesTable.lidarStepStatus, 'ongoing'),
-			lt(
-				sql`${tilesTable.lidarStepStartTime}`,
-				new Date().getTime() - MAX_JOB_TIME_IN_SECONDS * 1000
+	const [nextLidarJob] = await db
+		.update(tilesTable)
+		.set({
+			lidarStepStatus: 'ongoing',
+			lidarStepWorkerId: workerId,
+			lidarStepStartTime: new Date()
+		})
+		.where(
+			or(
+				eq(tilesTable.lidarStepStatus, 'not-started'),
+				// If a job is ongoing for more than X minutes, it is canceled and reassigned
+				and(
+					eq(tilesTable.lidarStepStatus, 'ongoing'),
+					lt(
+						sql`${tilesTable.lidarStepStartTime}`,
+						new Date().getTime() - MAX_JOB_TIME_IN_SECONDS * 1000
+					)
+				)
 			)
 		)
-	);
+		.returning();
 
-	const nextLidarJobs = await db
-		.select()
-		.from(lidarStepJobTable)
-		.innerJoin(tilesTable, eq(lidarStepJobTable.tileId, tilesTable.id))
-		.where(nextLidarJobWhereClose)
-		.orderBy(lidarStepJobTable.index)
-		.limit(JOBS_LIMIT)
-		.all();
-
-	if (nextLidarJobs.length !== 0) {
-		for (const nextLidarJob of nextLidarJobs) {
-			const updatedTiles = await db
-				.update(tilesTable)
-				.set({
-					lidarStepStatus: 'ongoing',
-					lidarStepWorkerId: workerId,
-					lidarStepStartTime: new Date()
-				})
-				.where(and(eq(tilesTable.id, nextLidarJob.tiles.id), nextLidarJobWhereClose))
-				.returning();
-
-			if (updatedTiles.length !== 0) {
-				return new Response(
-					JSON.stringify({
-						type: 'lidar',
-						data: {
-							tileId: nextLidarJob.tiles.id,
-							tileUrl: nextLidarJob.tiles.lidarFileUrl
-						}
-					} satisfies LidarJob),
-					{ status: 202 }
-				);
-			}
-		}
-
-		return noJobLeftResponse;
+	if (nextLidarJob !== undefined) {
+		return new Response(
+			JSON.stringify({
+				type: 'lidar',
+				data: {
+					tileId: nextLidarJob.id,
+					tileUrl: nextLidarJob.lidarFileUrl
+				}
+			} satisfies LidarJob),
+			{ status: 202 }
+		);
 	}
 
 	const nextRenderJobWhereClause = or(
