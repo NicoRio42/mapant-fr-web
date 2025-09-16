@@ -49,8 +49,8 @@ export const tilesTable = sqliteTable(
 	'tiles',
 	{
 		id,
-		minX: real('min_x').notNull(),
-		minY: real('min_y').notNull(),
+		minX: real('min_x').notNull(), // TODO divide by 1000
+		minY: real('min_y').notNull(), // TODO divide by 1000
 		maxX: real('max_x').notNull(), // TODO remove
 		maxY: real('max_y').notNull(), // TODO remove
 		lidarFileUrl: text('lidar_file_url').notNull(),

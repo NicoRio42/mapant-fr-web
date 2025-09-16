@@ -37,7 +37,7 @@ export async function GET({ url }) {
 	// SQLite error: Expression tree is too large (maximum depth 100)
 	for (let x = floorTo1000(minX); x < ceilTo1000(maxX); x += 1000) {
 		for (let y = floorTo1000(minY); y < ceilTo1000(maxY); y += 1000) {
-			if (tilesCoordinatesChunks.length === 0 || tilesCoordinatesChunks.at(-1)!.length === 100) {
+			if (tilesCoordinatesChunks.length === 0 || tilesCoordinatesChunks.at(-1)!.length === 50) {
 				tilesCoordinatesChunks.push([and(eq(tilesTable.minX, x), eq(tilesTable.minY, y))]);
 			} else {
 				tilesCoordinatesChunks.at(-1)!.push(and(eq(tilesTable.minX, x), eq(tilesTable.minY, y)));
