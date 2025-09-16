@@ -32,20 +32,39 @@ export async function GET({ url }) {
 
 	const db = getDb();
 
-	const tilesCoordinates: [number, number][] = [];
+	const tilesCoordinatesChunks: ReturnType<typeof and>[][] = [];
 
+	// SQLite error: Expression tree is too large (maximum depth 100)
 	for (let x = floorTo1000(minX); x < ceilTo1000(maxX); x += 1000) {
 		for (let y = floorTo1000(minY); y < ceilTo1000(maxY); y += 1000) {
-			tilesCoordinates.push([x, y]);
+			if (tilesCoordinatesChunks.length === 0 || tilesCoordinatesChunks.at(-1)!.length === 100) {
+				tilesCoordinatesChunks.push([and(eq(tilesTable.minX, x), eq(tilesTable.minY, y))]);
+			} else {
+				tilesCoordinatesChunks.at(-1)!.push(and(eq(tilesTable.minX, x), eq(tilesTable.minY, y)));
+			}
 		}
 	}
 
-	const tiles = await db.query.tilesTable.findMany({
-		where: or(
-			...tilesCoordinates.map(([x, y]) => and(eq(tilesTable.minX, x), eq(tilesTable.minY, y)))
-		),
-		with: { lidarJob: { columns: { id: true } } }
-	});
+	const firstChunk = tilesCoordinatesChunks.shift();
+
+	if (firstChunk === undefined) {
+		return json([]);
+	}
+
+	const batchedTiles = await db.batch([
+		db.query.tilesTable.findMany({
+			where: or(...firstChunk),
+			with: { lidarJob: { columns: { id: true } } }
+		}),
+		...tilesCoordinatesChunks.map((statement) =>
+			db.query.tilesTable.findMany({
+				where: or(...statement),
+				with: { lidarJob: { columns: { id: true } } }
+			})
+		)
+	]);
+
+	const tiles = batchedTiles.flatMap((s) => s);
 
 	return json(tiles);
 }
