@@ -32,19 +32,27 @@ export async function POST({ request }) {
 			lidarStepStartTime: new Date()
 		})
 		.where(
-			or(
-				eq(tilesTable.lidarStepStatus, 'not-started'),
-				// If a job is ongoing for more than X minutes, it is canceled and reassigned
-				and(
-					eq(tilesTable.lidarStepStatus, 'ongoing'),
-					lt(
-						sql`${tilesTable.lidarStepStartTime}`,
-						new Date().getTime() - MAX_JOB_TIME_IN_SECONDS * 1000
+			inArray(
+				tilesTable.id,
+				db
+					.select({ data: tilesTable.id })
+					.from(tilesTable)
+					.where(
+						or(
+							eq(tilesTable.lidarStepStatus, 'not-started'),
+							// If a job is ongoing for more than X minutes, it is canceled and reassigned
+							and(
+								eq(tilesTable.lidarStepStatus, 'ongoing'),
+								lt(
+									sql`${tilesTable.lidarStepStartTime}`,
+									new Date().getTime() - MAX_JOB_TIME_IN_SECONDS * 1000
+								)
+							)
+						)
 					)
-				)
+					.limit(1)
 			)
 		)
-		.limit(1)
 		.returning();
 
 	if (nextLidarJob !== undefined) {
