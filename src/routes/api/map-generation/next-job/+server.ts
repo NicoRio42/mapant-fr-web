@@ -44,6 +44,7 @@ export async function POST({ request }) {
 				)
 			)
 		)
+		.limit(1)
 		.returning();
 
 	if (nextLidarJob !== undefined) {
