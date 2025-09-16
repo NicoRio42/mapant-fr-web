@@ -37,6 +37,7 @@ export async function POST({ request }) {
 				db
 					.select({ data: tilesTable.id })
 					.from(tilesTable)
+					.innerJoin(lidarStepJobTable, eq(lidarStepJobTable.tileId, tilesTable.id))
 					.where(
 						or(
 							eq(tilesTable.lidarStepStatus, 'not-started'),
