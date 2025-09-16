@@ -1,8 +1,7 @@
-import { TILE_SIZE_IN_METERS } from '$lib/constants';
 import { getDb } from '$lib/server/db.js';
 import { tilesTable } from '$lib/server/schema';
 import { json } from '@sveltejs/kit';
-import { and, gt, lt } from 'drizzle-orm';
+import { and, eq, or } from 'drizzle-orm';
 
 const MAX_SURFACE_IN_SQUARE_METTERS = 400_000_000;
 
@@ -33,15 +32,28 @@ export async function GET({ url }) {
 
 	const db = getDb();
 
+	const tilesCoordinates: [number, number][] = [];
+
+	for (let x = floorTo1000(minX); x < ceilTo1000(maxX); x += 1000) {
+		for (let y = floorTo1000(minY); y < ceilTo1000(maxY); y += 1000) {
+			tilesCoordinates.push([x, y]);
+		}
+	}
+
 	const tiles = await db.query.tilesTable.findMany({
-		where: and(
-			gt(tilesTable.minX, minX - TILE_SIZE_IN_METERS),
-			gt(tilesTable.minY, minY - TILE_SIZE_IN_METERS),
-			lt(tilesTable.maxX, maxX + TILE_SIZE_IN_METERS),
-			lt(tilesTable.maxY, maxY + TILE_SIZE_IN_METERS)
+		where: or(
+			...tilesCoordinates.map(([x, y]) => and(eq(tilesTable.minX, x), eq(tilesTable.minY, y)))
 		),
 		with: { lidarJob: { columns: { id: true } } }
 	});
 
 	return json(tiles);
+}
+
+function floorTo1000(number: number) {
+	return Math.floor(number / 1000) * 1000;
+}
+
+function ceilTo1000(number: number) {
+	return Math.ceil(number / 1000) * 1000;
 }

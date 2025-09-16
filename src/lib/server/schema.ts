@@ -45,33 +45,40 @@ export const contributionWithoutCompensationTable = sqliteTable(
 	})
 );
 
-export const tilesTable = sqliteTable('tiles', {
-	id,
-	minX: real('min_x').notNull(),
-	minY: real('min_y').notNull(),
-	maxX: real('max_x').notNull(),
-	maxY: real('max_y').notNull(),
-	lidarFileUrl: text('lidar_file_url').notNull(),
-	lidarStepStatus: text('lidar_step_status', { enum: ['not-started', 'ongoing', 'finished'] })
-		.default('not-started')
-		.notNull(),
-	lidarStepWorkerId: text('lidar_step_worker_id').references(() => workersTable.id, {
-		onDelete: 'set null'
-	}),
-	lidarStepStartTime: integer('lidar_step_start_time', { mode: 'timestamp_ms' }),
-	lidarStepFinishTime: integer('lidar_step_finish_time', { mode: 'timestamp_ms' }),
-	mapRenderingStepStatus: text('map_rendering_step_status', {
-		enum: ['not-started', 'ongoing', 'finished']
-	})
-		.default('not-started')
-		.notNull(),
-	mapRenderingStepWorkerId: text('map_rendering_step_worker_id').references(() => workersTable.id, {
-		onDelete: 'set null'
-	}),
-	mapRenderingStepStartTime: integer('map_rendering_step_start_time', { mode: 'timestamp_ms' }),
-	mapRenderingStepFinishTime: integer('map_rendering_step_finish_time', { mode: 'timestamp_ms' }),
-	isMergeable: integer('is_mergeable', { mode: 'boolean' }).default(false)
-});
+export const tilesTable = sqliteTable(
+	'tiles',
+	{
+		id,
+		minX: real('min_x').notNull(),
+		minY: real('min_y').notNull(),
+		maxX: real('max_x').notNull(), // TODO remove
+		maxY: real('max_y').notNull(), // TODO remove
+		lidarFileUrl: text('lidar_file_url').notNull(),
+		lidarStepStatus: text('lidar_step_status', { enum: ['not-started', 'ongoing', 'finished'] })
+			.default('not-started')
+			.notNull(),
+		lidarStepWorkerId: text('lidar_step_worker_id').references(() => workersTable.id, {
+			onDelete: 'set null'
+		}),
+		lidarStepStartTime: integer('lidar_step_start_time', { mode: 'timestamp_ms' }),
+		lidarStepFinishTime: integer('lidar_step_finish_time', { mode: 'timestamp_ms' }),
+		mapRenderingStepStatus: text('map_rendering_step_status', {
+			enum: ['not-started', 'ongoing', 'finished']
+		})
+			.default('not-started')
+			.notNull(),
+		mapRenderingStepWorkerId: text('map_rendering_step_worker_id').references(
+			() => workersTable.id,
+			{
+				onDelete: 'set null'
+			}
+		),
+		mapRenderingStepStartTime: integer('map_rendering_step_start_time', { mode: 'timestamp_ms' }),
+		mapRenderingStepFinishTime: integer('map_rendering_step_finish_time', { mode: 'timestamp_ms' }),
+		isMergeable: integer('is_mergeable', { mode: 'boolean' }).default(false)
+	},
+	(table) => [index('tiles_min_x_min_y_index').on(table.minX, table.minY)]
+);
 
 export const tilesTableRelations = relations(tilesTable, ({ one }) => ({
 	lidarJob: one(lidarStepJobTable, {
