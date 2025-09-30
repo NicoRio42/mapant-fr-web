@@ -8,7 +8,8 @@ import {
 	tilesTable,
 	type Tile
 } from '$lib/server/schema';
-import { and, eq, inArray, lt, or, sql } from 'drizzle-orm';
+import { and, eq, inArray, lt, notExists, or, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/sqlite-core';
 import { getWorkerIdOrErrorStatus } from '../utils';
 import type { LidarJob, NoJob, PyramidJob, RenderJob } from './schemas';
 
@@ -69,69 +70,102 @@ export async function POST({ request }) {
 		);
 	}
 
-	const nextRenderJobWhereClause = or(
-		eq(tilesTable.mapRenderingStepStatus, 'not-started'),
-		// If a job is ongoing for more than X minutes, it is canceled and reassigned
-		and(
-			eq(tilesTable.mapRenderingStepStatus, 'ongoing'),
-			lt(
-				sql`${tilesTable.mapRenderingStepStartTime}`,
-				new Date().getTime() - MAX_JOB_TIME_IN_SECONDS * 1000
+	const neighboringTiles = alias(tilesTable, 'neighboring_tile');
+
+	const [nextRenderJob] = await db
+		.update(tilesTable)
+		.set({
+			mapRenderingStepStatus: 'ongoing',
+			mapRenderingStepWorkerId: workerId,
+			mapRenderingStepStartTime: new Date()
+		})
+		.where(
+			inArray(
+				tilesTable.id,
+				db
+					.select({ data: tilesTable.id })
+					.from(tilesTable)
+					.innerJoin(mapRenderingStepJobTable, eq(mapRenderingStepJobTable.tileId, tilesTable.id))
+					.where(
+						and(
+							or(
+								eq(tilesTable.mapRenderingStepStatus, 'not-started'),
+								// If a job is ongoing for more than X minutes, it is canceled and reassigned
+								and(
+									eq(tilesTable.mapRenderingStepStatus, 'ongoing'),
+									lt(
+										sql`${tilesTable.mapRenderingStepStartTime}`,
+										new Date().getTime() - MAX_JOB_TIME_IN_SECONDS * 1000
+									)
+								)
+							),
+							eq(tilesTable.lidarStepStatus, 'finished'),
+							// Checks that all neighboring tiles (minX and minY +- 1000) have their lidarStepStatus equal to 'finished'
+							notExists(
+								db
+									.select()
+									.from(neighboringTiles)
+									.where(
+										and(
+											eq(neighboringTiles.lidarStepStatus, 'finished'),
+											or(
+												and(
+													eq(neighboringTiles.minX, sql`${tilesTable.minX} - ${TILE_SIZE_IN_METERS}`),
+													eq(neighboringTiles.minY, sql`${tilesTable.minY} - ${TILE_SIZE_IN_METERS}`)
+												),
+												and(
+													eq(neighboringTiles.minX, tilesTable.minX),
+													eq(neighboringTiles.minY, sql`${tilesTable.minY} - ${TILE_SIZE_IN_METERS}`)
+												),
+												and(
+													eq(neighboringTiles.minX, sql`${tilesTable.minX} + ${TILE_SIZE_IN_METERS}`),
+													eq(neighboringTiles.minY, sql`${tilesTable.minY} - ${TILE_SIZE_IN_METERS}`)
+												),
+												and(
+													eq(neighboringTiles.minX, sql`${tilesTable.minX} - ${TILE_SIZE_IN_METERS}`),
+													eq(neighboringTiles.minY, tilesTable.minY)
+												),
+												and(
+													eq(neighboringTiles.minX, sql`${tilesTable.minX} + ${TILE_SIZE_IN_METERS}`),
+													eq(neighboringTiles.minY, tilesTable.minY)
+												),
+												and(
+													eq(neighboringTiles.minX, sql`${tilesTable.minX} - ${TILE_SIZE_IN_METERS}`),
+													eq(neighboringTiles.minY, sql`${tilesTable.minY} + ${TILE_SIZE_IN_METERS}`)
+												),
+												and(
+													eq(neighboringTiles.minX, tilesTable.minX),
+													eq(neighboringTiles.minY, sql`${tilesTable.minY} + ${TILE_SIZE_IN_METERS}`)
+												),
+												and(
+													eq(neighboringTiles.minX, sql`${tilesTable.minX} + ${TILE_SIZE_IN_METERS}`),
+													eq(neighboringTiles.minY, sql`${tilesTable.minY} + ${TILE_SIZE_IN_METERS}`)
+												)
+											)
+										)
+									)
+							)
+						)
+					)
+					.limit(1)
 			)
 		)
-	);
+		.returning();
 
-	const nextRenderJobs = await db
-		.select()
-		.from(mapRenderingStepJobTable)
-		.innerJoin(tilesTable, eq(mapRenderingStepJobTable.tileId, tilesTable.id))
-		.where(nextRenderJobWhereClause)
-		.orderBy(mapRenderingStepJobTable.index)
-		.limit(JOBS_LIMIT)
-		.all();
+	if (nextRenderJob !== undefined) {
+		// Get neighboring tiles for the response
+		const neighboringTilesIds = getNeigbhoringTilesIds(nextRenderJob);
 
-	if (nextRenderJobs.length !== 0) {
-		for (const nextRenderJob of nextRenderJobs) {
-			const neigbhoringLidarJobs = await db
-				.select()
-				.from(lidarStepJobTable)
-				.innerJoin(tilesTable, eq(lidarStepJobTable.tileId, tilesTable.id))
-				.where(inArray(tilesTable.id, getNeigbhoringTilesIds(nextRenderJob.tiles)))
-				.orderBy(lidarStepJobTable.index)
-				.all();
-
-			if (
-				neigbhoringLidarJobs.some((j) => j.tiles.lidarStepStatus !== 'finished') ||
-				nextRenderJob.tiles.lidarStepStatus !== 'finished'
-			) {
-				continue;
-			}
-
-			const updatedTiles = await db
-				.update(tilesTable)
-				.set({
-					mapRenderingStepStatus: 'ongoing',
-					mapRenderingStepWorkerId: workerId,
-					mapRenderingStepStartTime: new Date()
-				})
-				.where(and(eq(tilesTable.id, nextRenderJob.tiles.id), nextRenderJobWhereClause))
-				.returning();
-
-			if (updatedTiles.length !== 0) {
-				return new Response(
-					JSON.stringify({
-						type: 'render',
-						data: {
-							tileId: nextRenderJob.tiles.id,
-							neigbhoringTilesIds: neigbhoringLidarJobs.map(({ tiles }) => tiles.id)
-						}
-					} satisfies RenderJob),
-					{ status: 202 }
-				);
-			}
-		}
-
-		return noJobLeftResponse;
+		return new Response(
+			JSON.stringify({
+				type: 'render',
+				data: {
+					tileId: nextRenderJob.id,
+					neigbhoringTilesIds: neighboringTilesIds
+				}
+			} satisfies RenderJob),
+			{ status: 202 }
+		);
 	}
 
 	const pyramidJobWhereClause = or(
