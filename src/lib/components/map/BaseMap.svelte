@@ -2,14 +2,12 @@
 	import { clickOutside } from '#lib/actions/click-outside.js';
 	import Mapant from '#lib/components/map/Mapant.svelte';
 	import OLMap from '#lib/components/map/OLMap.svelte';
+	import type { Coordinate } from 'ol/coordinate';
 	import type { Extent } from 'ol/extent';
+	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import LayerControlItem from './LayerControlItem.svelte';
 	import Scan25IgnWebMercator from './Scan25IgnWebMercator.svelte';
-	import type { Coordinate } from 'ol/coordinate';
-	import { onMount } from 'svelte';
-	import { page } from '$app/state';
-	import AzimutNord from './AzimutNord.svelte';
 
 	let showLayerDropDown = $state(false);
 	let showAttributions = $state(false);
@@ -79,10 +77,6 @@
 		<Scan25IgnWebMercator visible={isIgnScan25LayerDisplayed} opacity={ignScan25LayerOpacity} />
 
 		<Mapant visible={isMapantLayerDisplayed} opacity={mapantLayerOpacity} />
-
-		{#if page.url.searchParams.has('azimut-nord')}
-			<AzimutNord />
-		{/if}
 
 		{@render children?.()}
 	</OLMap>

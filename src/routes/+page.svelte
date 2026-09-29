@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import Dialog from '#lib/components/Dialog.svelte';
 	import BaseMap from '#lib/components/map/BaseMap.svelte';
 	import DrawBox from '#lib/components/map/DrawBox.svelte';
 	import { clientExport } from '#lib/components/map/client-export.js';
 	import { EXPORT_PRINT_DPI } from '#lib/components/map/export-tiles.js';
 	import { WEBSITE_NAME } from '#lib/constants.js';
+	import { page } from '$app/state';
 	import { MetaTags } from 'svelte-meta-tags';
 	import welcomePopupContent from './welcome-popup.md';
 
@@ -33,7 +33,7 @@
 
 <Dialog bind:open={isWelcomeDialogOpen}>
 	<div flex mt-4>
-		<h2 text-5 font-bold grow>Le Mapant nouveau est arrivé !</h2>
+		<h2 text-5 font-bold grow>Le projet Mapant.fr</h2>
 
 		<button
 			type="button"
