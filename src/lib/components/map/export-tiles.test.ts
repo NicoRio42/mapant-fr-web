@@ -30,10 +30,10 @@ describe('getExportTiles', () => {
 		expect(result.height).toBe(Math.ceil((320 * resolution) / exportMetersPerPixel));
 		expect(result.scale).toBeCloseTo(exportScale);
 		expect(result.tiles).toEqual([
-			{ url: '/tiles/13/3/4.png?fresh', x: -64, y: -64 },
-			{ url: '/tiles/13/3/5.png?fresh', x: -64, y: 192 },
-			{ url: '/tiles/13/4/4.png?fresh', x: 192, y: -64 },
-			{ url: '/tiles/13/4/5.png?fresh', x: 192, y: 192 }
+			{ url: '/tiles/13/3/4.webp?fresh', x: -64, y: -64 },
+			{ url: '/tiles/13/3/5.webp?fresh', x: -64, y: 192 },
+			{ url: '/tiles/13/4/4.webp?fresh', x: 192, y: -64 },
+			{ url: '/tiles/13/4/5.webp?fresh', x: 192, y: 192 }
 		]);
 	});
 
@@ -49,7 +49,7 @@ describe('getExportTiles', () => {
 			scale: exportScale,
 			width: Math.ceil(tileSpan / exportMetersPerPixel),
 			height: Math.ceil(tileSpan / exportMetersPerPixel),
-			tiles: [{ url: '/tiles/13/6/7.png', x: 0, y: 0 }]
+			tiles: [{ url: '/tiles/13/6/7.webp', x: 0, y: 0 }]
 		});
 	});
 

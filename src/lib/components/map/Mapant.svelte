@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/env';
 	import { page } from '$app/state';
-	import { PUBLIC_MAPANT_TILES_BASE_URL } from '$app/env/public';
+	import { MAPANT_TILES_BASE_URL } from './mapant-tile-url.js';
 	import { type Map } from 'ol';
 	import TileLayer from 'ol/layer/Tile';
 	import XYZ from 'ol/source/XYZ';
@@ -36,7 +36,7 @@
 	onMount(() => {
 		map = getMap();
 
-		const url = `${PUBLIC_MAPANT_TILES_BASE_URL}/{z}/{x}/{y}.png${page.url.searchParams.has('bypass-cache') ? `?${new Date().getTime()}` : ''}`;
+		const url = `${MAPANT_TILES_BASE_URL}/{z}/{x}/{y}.webp${page.url.searchParams.has('bypass-cache') ? `?${new Date().getTime()}` : ''}`;
 		const tileGrid = new TileGrid({
 			origin: [MAPANT_MIN_X, MAPANT_MAX_Y],
 			resolutions: MAPANT_RESOLUTIONS,

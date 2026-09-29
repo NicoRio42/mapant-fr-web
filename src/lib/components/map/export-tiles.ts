@@ -36,7 +36,7 @@ export function getExportTiles(
 	for (let tileX = firstX; tileX < lastX; tileX++) {
 		for (let tileY = firstY; tileY < lastY; tileY++) {
 			tiles.push({
-				url: `${baseUrl}/${MAPANT_MAX_ZOOM}/${tileX}/${tileY}.png${cacheBust}`,
+				url: `${baseUrl}/${MAPANT_MAX_ZOOM}/${tileX}/${tileY}.webp${cacheBust}`,
 				x: (MAPANT_MIN_X + tileX * tileSpan - minX) / resolution,
 				y: (maxY - (MAPANT_MAX_Y - tileY * tileSpan)) / resolution
 			});

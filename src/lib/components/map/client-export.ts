@@ -1,4 +1,4 @@
-import { PUBLIC_MAPANT_TILES_BASE_URL } from '$app/env/public';
+import { MAPANT_TILES_BASE_URL } from './mapant-tile-url.js';
 import { getExportTiles } from './export-tiles.js';
 
 const EXPORT_AREA_LIMIT = 50 * 1_000 * 1_000;
@@ -23,7 +23,7 @@ export async function clientExport({
 		: '';
 	const { tiles, scale, width, height } = getExportTiles(
 		{ x1, y1, x2, y2 },
-		PUBLIC_MAPANT_TILES_BASE_URL,
+		new URL(MAPANT_TILES_BASE_URL, location.origin).href,
 		cacheBust
 	);
 	const worker = new Worker(new URL('./client-export-worker.ts', import.meta.url));

@@ -4,14 +4,22 @@
 	"main": ".svelte-kit/cloudflare/_worker.js",
 	"compatibility_date": "2026-09-29",
 	"compatibility_flags": ["nodejs_compat"],
+	"workers_dev": true,
+	"routes": [
+		{
+			"pattern": "mapant.fr",
+			"custom_domain": true
+		}
+	],
+	"cache": { "enabled": true },
 	"assets": {
 		"binding": "ASSETS",
 		"directory": ".svelte-kit/cloudflare"
 	},
 	"r2_buckets": [
 		{
-			"binding": "R2_BUCKET_TILES",
-			"bucket_name": "mapant-fr-tiles"
+			"binding": "R2_BUCKET_MAPANT",
+			"bucket_name": "mapant-fr"
 		}
 	]
 }
