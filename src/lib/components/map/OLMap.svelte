@@ -72,7 +72,11 @@
 				new DblClickDragZoom({ delta: -0.01 })
 			]),
 			view,
-			controls: defaultControls({ rotate: true, rotateOptions: { autoHide: false } })
+			controls: defaultControls({
+				attribution: false,
+				rotate: true,
+				rotateOptions: { autoHide: false }
+			})
 		});
 
 		map.on('moveend', (event) => {
@@ -176,72 +180,5 @@
 		mask-size: 100% 100%;
 		background-color: currentColor;
 		will-change: transform;
-	}
-
-	/* Attribution */
-	:global(.ol-attribution) {
-		position: absolute;
-		text-align: right;
-		bottom: 0.5em;
-		right: 0.5em;
-		max-width: calc(100% - 1.3em);
-		display: flex;
-		flex-flow: row-reverse;
-		align-items: center;
-	}
-
-	:global(.ol-attribution a) {
-		color: var(--ol-subtle-foreground-color);
-		text-decoration: none;
-	}
-
-	:global(.ol-attribution ul) {
-		margin: 0;
-		padding: 1px 0.5em;
-		color: var(--ol-foreground-color);
-		text-shadow: 0 0 2px var(--ol-background-color);
-		font-size: 12px;
-	}
-
-	:global(.ol-attribution li) {
-		display: inline;
-		list-style: none;
-	}
-
-	:global(.ol-attribution li:not(:last-child):after) {
-		content: ' ';
-	}
-
-	:global(.ol-attribution img) {
-		max-height: 2em;
-		max-width: inherit;
-		vertical-align: middle;
-	}
-
-	:global(.ol-attribution button) {
-		flex-shrink: 0;
-	}
-
-	:global(.ol-attribution.ol-collapsed ul) {
-		display: none;
-	}
-
-	:global(.ol-attribution:not(.ol-collapsed)) {
-		background: var(--ol-partial-background-color);
-	}
-
-	:global(.ol-attribution.ol-uncollapsible) {
-		bottom: 0;
-		right: 0;
-		border-radius: 4px 0 0;
-	}
-
-	:global(.ol-attribution.ol-uncollapsible img) {
-		margin-top: -0.2em;
-		max-height: 1.6em;
-	}
-
-	:global(.ol-attribution.ol-uncollapsible button) {
-		display: none;
 	}
 </style>

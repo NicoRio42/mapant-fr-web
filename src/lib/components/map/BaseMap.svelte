@@ -12,6 +12,7 @@
 	import AzimutNord from './AzimutNord.svelte';
 
 	let showLayerDropDown = $state(false);
+	let showAttributions = $state(false);
 	let isIgnScan25LayerDisplayed = $state(true);
 	let isMapantLayerDisplayed = $state(true);
 
@@ -125,4 +126,88 @@
 			</ul>
 		{/if}
 	</div>
+
+	<div class="attribution-control" use:clickOutside={() => (showAttributions = false)}>
+		{#if showAttributions}
+			<div class="attribution-panel" transition:fade={{ duration: 125 }}>
+				<p>Sources de la carte</p>
+				<ul>
+					{#if isMapantLayerDisplayed && mapantLayerOpacity > 0}
+						<li>
+							© <a
+								href="https://www.openstreetmap.org/copyright"
+								target="_blank"
+								rel="noopener noreferrer">OpenStreetMap contributors</a
+							>
+						</li>
+					{/if}
+					{#if isIgnScan25LayerDisplayed && ignScan25LayerOpacity > 0}
+						<li>
+							SCAN 25 : © <a href="https://www.ign.fr/" target="_blank" rel="noopener noreferrer"
+								>IGN</a
+							>
+						</li>
+					{/if}
+					{#if isMapantLayerDisplayed && mapantLayerOpacity > 0}
+						<li>
+							LiDAR HD : © <a href="https://www.ign.fr/" target="_blank" rel="noopener noreferrer"
+								>IGN</a
+							>
+						</li>
+					{/if}
+					{#if (!isMapantLayerDisplayed || mapantLayerOpacity === 0) && (!isIgnScan25LayerDisplayed || ignScan25LayerOpacity === 0)}
+						<li>Aucune couche affichée</li>
+					{/if}
+				</ul>
+			</div>
+		{/if}
+
+		<button
+			type="button"
+			class="outline attribution-button"
+			aria-label="Attributions de la carte"
+			aria-expanded={showAttributions}
+			onclick={() => (showAttributions = !showAttributions)}>© Sources</button
+		>
+	</div>
 </main>
+
+<style>
+	.attribution-control {
+		position: absolute;
+		right: 0.5rem;
+		bottom: 0.5rem;
+		z-index: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 0.5rem;
+	}
+
+	.attribution-button {
+		margin: 0;
+		background: white;
+	}
+
+	.attribution-panel {
+		max-width: min(18rem, calc(100vw - 1rem));
+		padding: 0.75rem 1rem;
+		border-radius: var(--pico-border-radius);
+		background: var(--pico-background-color);
+		box-shadow: 0 4px 16px rgb(0 0 0 / 20%);
+	}
+
+	.attribution-panel p {
+		margin-bottom: 0.5rem;
+		font-weight: bold;
+	}
+
+	.attribution-panel ul {
+		margin: 0;
+		padding-left: 1.25rem;
+	}
+
+	.attribution-panel li {
+		margin: 0;
+	}
+</style>

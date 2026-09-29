@@ -140,7 +140,7 @@
 		{/if}
 	</button>
 
-	<div absolute bottom-6 right-2>
+	<div absolute bottom-14 right-2>
 		<button
 			onclick={() => (isWelcomeDialogOpen = true)}
 			type="button"

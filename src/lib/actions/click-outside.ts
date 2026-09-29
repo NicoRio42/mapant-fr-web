@@ -25,6 +25,9 @@ export function clickOutside(element: HTMLElement, callback: Function) {
 	addEventListener('mouseup', onMouseUp);
 
 	return {
-		destroy: () => removeEventListener('click', onMouseUp)
+		destroy: () => {
+			removeEventListener('mousedown', onMouseDown);
+			removeEventListener('mouseup', onMouseUp);
+		}
 	};
 }
