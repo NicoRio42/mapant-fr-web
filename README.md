@@ -26,4 +26,4 @@ Verify a known populated tile after deployment with two GET requests and inspect
 
 ## Uploading PMTiles to R2
 
-See [Upload a large PMTiles archive to Cloudflare R2](docs/r2-pmtiles-upload.md)
+See [Upload a large PMTiles archive to Cloudflare R2](docs/r2-pmtiles-upload.md).
