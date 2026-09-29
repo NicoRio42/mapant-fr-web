@@ -6,12 +6,7 @@
 		children?: import('svelte').Snippet;
 	}
 
-	let {
-		label,
-		displayed = $bindable(),
-		opacity = $bindable(),
-		children
-	}: Props = $props();
+	let { label, displayed = $bindable(), opacity = $bindable(), children }: Props = $props();
 </script>
 
 <li text-left bg="!hover:transparent" list-none>

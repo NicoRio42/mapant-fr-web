@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { run } from 'svelte/legacy';
 
-	import { afterNavigate, onNavigate } from '$app/navigation';
-	import { navigating } from '$app/stores';
-	import { clickOutside } from '$lib/actions/click-outside';
-	import type { OnNavigate } from '@sveltejs/kit';
+	import { afterNavigate, onNavigate, type OnNavigate } from '$app/navigation';
+	import { navigating } from '$app/state';
+	import { clickOutside } from '#lib/actions/click-outside.js';
 	import { fade } from 'svelte/transition';
 	import SubMenus from './SubMenus.svelte';
 
@@ -24,7 +23,7 @@
 	let tooFast = $state(false);
 
 	run(() => {
-		if ($navigating !== null) {
+		if (navigating.to !== null) {
 			tooFast = true;
 			setTimeout(() => (tooFast = false), 250);
 		}
@@ -43,6 +42,8 @@
 	}
 
 	onNavigate((navigation) => {
+		if (navigation.shallow) return;
+
 		//@ts-ignore
 		if (!document.startViewTransition) return;
 
@@ -71,10 +72,14 @@
 		});
 	});
 
-	afterNavigate(() => (showMenu = false));
+	afterNavigate(({ shallow }) => {
+		if (shallow) return;
+
+		return (showMenu = false);
+	});
 </script>
 
-{#if $navigating !== null && !tooFast}
+{#if navigating.to !== null && !tooFast}
 	<progress fixed h-1 border rounded-none z-2></progress>
 {/if}
 

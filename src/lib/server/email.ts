@@ -1,5 +1,5 @@
-import { dev } from '$app/environment';
-import { DKIM_PRIVATE_KEY } from '$env/static/private';
+import { dev } from '$app/env';
+import { DKIM_PRIVATE_KEY } from '$app/env/private';
 
 export async function sendEmail(
 	subject: string,

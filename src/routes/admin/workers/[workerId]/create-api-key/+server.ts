@@ -1,6 +1,6 @@
-import { generateApiKey, hashApiKey } from '$lib/server/crypto';
-import { getDb } from '$lib/server/db';
-import { workersTable } from '$lib/server/schema.js';
+import { generateApiKey, hashApiKey } from '#lib/server/crypto.js';
+import { getDb } from '#lib/server/db.js';
+import { workersTable } from '#lib/server/schema.js';
 import { eq } from 'drizzle-orm';
 
 export async function POST({ params }) {

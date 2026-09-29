@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { enhance as sveltekitEnhance } from '$app/forms';
-	import { confirmSubmit } from '$lib/actions/confirm-submit';
+	import { confirmSubmit } from '#lib/actions/confirm-submit.js';
 	import { superForm } from 'sveltekit-superforms';
-	import { zodClient } from 'sveltekit-superforms/adapters';
+	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { workerFormSchema } from './worker-form-schema';
 
 	let { data } = $props();
 
-	const form = superForm(data.form, { validators: zodClient(workerFormSchema) });
+	const form = superForm(data.form, { validators: zod4Client(workerFormSchema) });
 	const { enhance, delayed, errors, form: formStore } = form;
 
 	async function rotateToken(worker: { id: string; name: string; hasToken: boolean }) {

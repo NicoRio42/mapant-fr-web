@@ -1,4 +1,4 @@
-import { pyramidRenderingStepJobTable, tilesTable } from '$lib/server/schema';
+import { pyramidRenderingStepJobTable, tilesTable } from '#lib/server/schema.js';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/libsql';
 import { env } from 'node:process';

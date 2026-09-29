@@ -1,7 +1,7 @@
-import { getDb } from '$lib/server/db';
-import { workersTable } from '$lib/server/schema';
+import { getDb } from '#lib/server/db.js';
+import { workersTable } from '#lib/server/schema.js';
 import { superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { zod4 } from 'sveltekit-superforms/adapters';
 import { workerFormSchema } from './worker-form-schema';
 import { error, redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
@@ -14,14 +14,14 @@ export async function load() {
 		hasToken: worker.hashedApiKey !== null
 	}));
 
-	const form = await superValidate(zod(workerFormSchema));
+	const form = await superValidate(zod4(workerFormSchema));
 
 	return { workers, form };
 }
 
 export const actions = {
 	add: async ({ request }) => {
-		const form = await superValidate(request, zod(workerFormSchema));
+		const form = await superValidate(request, zod4(workerFormSchema));
 		if (!form.valid) throw error(400);
 		const { name } = form.data;
 

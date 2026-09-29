@@ -1,9 +1,9 @@
 import { error } from '@sveltejs/kit';
 import { frontmatterSchema } from './frontmatter-schema';
 import type { Post } from './post.model';
-import { dev } from '$app/environment';
-import { PUBLIC_CF_PAGES_BRANCH } from '$env/static/public';
-import { STAGING_BRANCH_NAME } from '$lib/constants';
+import { dev } from '$app/env';
+import { PUBLIC_CF_PAGES_BRANCH } from '$app/env/public';
+import { STAGING_BRANCH_NAME } from '#lib/constants.js';
 
 export function load() {
 	const postsRecord = import.meta.glob('./posts/*.md', { eager: true });

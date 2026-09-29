@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import { FRANCE_CENTER } from '$lib/constants';
+	import { browser } from '$app/env';
+	import { FRANCE_CENTER } from '#lib/constants.js';
 	import { Map, View } from 'ol';
 	import { defaults as defaultControls } from 'ol/control/defaults.js';
 	import type { Coordinate } from 'ol/coordinate';

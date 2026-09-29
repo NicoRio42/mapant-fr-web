@@ -1,8 +1,8 @@
-import { getDb } from '$lib/server/db';
-import { tilesTable } from '$lib/server/schema';
+import { getDb } from '#lib/server/db.js';
+import { tilesTable } from '#lib/server/schema.js';
 import { eq } from 'drizzle-orm';
 import { getWorkerIdOrErrorStatus } from '../../utils';
-import { File as CloudflareFile } from '@cloudflare/workers-types';
+import type { File as CloudflareFile } from '@cloudflare/workers-types';
 
 export async function GET({ request, platform, params }) {
 	const [_workerId, errorStatus] = await getWorkerIdOrErrorStatus(request.headers);

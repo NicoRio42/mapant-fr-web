@@ -1,8 +1,8 @@
-import { getDb } from '$lib/server/db';
-import { pyramidRenderingStepJobTable } from '$lib/server/schema';
+import { getDb } from '#lib/server/db.js';
+import { pyramidRenderingStepJobTable } from '#lib/server/schema.js';
 import { and, eq } from 'drizzle-orm';
 import { getWorkerIdOrErrorStatus } from '../../../../../utils';
-import { File as CloudflareFile } from '@cloudflare/workers-types';
+import type { File as CloudflareFile } from '@cloudflare/workers-types';
 
 export async function GET({ request, params: { x, y, zoom }, platform }) {
 	const [_, errorStatus] = await getWorkerIdOrErrorStatus(request.headers);

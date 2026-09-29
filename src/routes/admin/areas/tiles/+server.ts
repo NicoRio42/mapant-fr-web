@@ -1,6 +1,5 @@
-import { getDb } from '$lib/server/db.js';
-import { tilesTable } from '$lib/server/schema';
-import { json } from '@sveltejs/kit';
+import { getDb } from '#lib/server/db.js';
+import { tilesTable } from '#lib/server/schema.js';
 import { and, eq, or } from 'drizzle-orm';
 
 const MAX_SURFACE_IN_SQUARE_METTERS = 400_000_000;
@@ -48,7 +47,7 @@ export async function GET({ url }) {
 	const firstChunk = tilesCoordinatesChunks.shift();
 
 	if (firstChunk === undefined) {
-		return json([]);
+		return Response.json([]);
 	}
 
 	const batchedTiles = await db.batch([
@@ -66,7 +65,7 @@ export async function GET({ url }) {
 
 	const tiles = batchedTiles.flatMap((s) => s);
 
-	return json(tiles);
+	return Response.json(tiles);
 }
 
 function floorTo1000(number: number) {

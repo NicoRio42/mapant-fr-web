@@ -1,23 +1,23 @@
-import { getAuth } from '$lib/server/auth.js';
-import { getDb } from '$lib/server/db.js';
-import { userTable } from '$lib/server/schema.js';
-import { Scrypt } from '$lib/server/scrypt.js';
+import { getAuth } from '#lib/server/auth.js';
+import { getDb } from '#lib/server/db.js';
+import { userTable } from '#lib/server/schema.js';
+import { Scrypt } from '#lib/server/scrypt.js';
 import { error, redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { loginSchema } from './login-schema.js';
 import { setError, superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { zod4 } from 'sveltekit-superforms/adapters';
 
 export async function load({ locals }) {
 	if (locals.user !== null) redirect(302, '/');
-	const form = await superValidate(zod(loginSchema));
+	const form = await superValidate(zod4(loginSchema));
 
 	return { form };
 }
 
 export const actions = {
 	default: async ({ request, cookies, url }) => {
-		const form = await superValidate(request, zod(loginSchema));
+		const form = await superValidate(request, zod4(loginSchema));
 		if (!form.valid) throw error(400);
 		const { email, password } = form.data;
 

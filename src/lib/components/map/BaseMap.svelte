@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { clickOutside } from '$lib/actions/click-outside';
-	import LidarHdTiles from '$lib/components/map/LidarHdTiles.svelte';
-	import MapantLegacy from '$lib/components/map/MapantLegacy.svelte';
-	import Mapant from '$lib/components/map/Mapant.svelte';
-	import OLMap from '$lib/components/map/OLMap.svelte';
-	import { MAPANT_V1_CENTER, MAPANT_V1_EXTENT } from '$lib/constants';
+	import { clickOutside } from '#lib/actions/click-outside.js';
+	import LidarHdTiles from '#lib/components/map/LidarHdTiles.svelte';
+	import MapantLegacy from '#lib/components/map/MapantLegacy.svelte';
+	import Mapant from '#lib/components/map/Mapant.svelte';
+	import OLMap from '#lib/components/map/OLMap.svelte';
+	import { MAPANT_V1_CENTER, MAPANT_V1_EXTENT } from '#lib/constants.js';
 	import type { Feature, Map } from 'ol';
 	import type { Extent } from 'ol/extent';
 	import { fade } from 'svelte/transition';
@@ -14,7 +14,7 @@
 	import type { Coordinate } from 'ol/coordinate';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import AzimutNord from './AzimutNord.svelte';
 
 	let map: Map | undefined = $state(undefined);
@@ -108,7 +108,7 @@
 			bind:selected
 		/>
 
-		{#if $page.url.searchParams.has('azimut-nord')}
+		{#if page.url.searchParams.has('azimut-nord')}
 			<AzimutNord />
 		{/if}
 
@@ -135,9 +135,8 @@
 			aria-label="Layers"
 			class="outline"
 			onclick={() => (showLayerDropDown = !showLayerDropDown)}
+			><i i-carbon-layers w-5 h-5 block></i></button
 		>
-			<i i-carbon-layers w-5 h-5 block></i>
-		</button>
 
 		{#if showLayerDropDown}
 			<ul p-4 m-0 rounded shadow-2xl bg-background-color transition:fade={{ duration: 125 }}>

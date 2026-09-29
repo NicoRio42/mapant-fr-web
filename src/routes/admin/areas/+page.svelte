@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { confirmSubmit } from '$lib/actions/confirm-submit.js';
-	import BaseMap from '$lib/components/map/BaseMap.svelte';
-	import DrawBox from '$lib/components/map/DrawBox.svelte';
-	import Polygon from '$lib/components/map/Polygon.svelte';
-	import StaticImage from '$lib/components/map/StaticImage.svelte';
-	import VectorLayer from '$lib/components/map/VectorLayer.svelte';
-	import type { Tile } from '$lib/server/schema.js';
+	import { confirmSubmit } from '#lib/actions/confirm-submit.js';
+	import BaseMap from '#lib/components/map/BaseMap.svelte';
+	import DrawBox from '#lib/components/map/DrawBox.svelte';
+	import Polygon from '#lib/components/map/Polygon.svelte';
+	import StaticImage from '#lib/components/map/StaticImage.svelte';
+	import VectorLayer from '#lib/components/map/VectorLayer.svelte';
+	import type { Tile } from '#lib/server/schema.js';
 	import type { Extent } from 'ol/extent.js';
 	import { tick } from 'svelte';
 

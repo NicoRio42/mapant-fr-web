@@ -1,4 +1,4 @@
-import { getAuth } from '$lib/server/auth.js';
+import { getAuth } from '#lib/server/auth.js';
 import { fail, redirect } from '@sveltejs/kit';
 
 export const actions = {

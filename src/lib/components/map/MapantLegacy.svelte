@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import { MAPANT_V1_EXTENT, TILES_BASE_URL } from '$lib/constants';
+	import { browser } from '$app/env';
+	import { MAPANT_V1_EXTENT, TILES_BASE_URL } from '#lib/constants.js';
 	import { type Map } from 'ol';
 	import TileLayer from 'ol/layer/Tile';
 	import XYZ from 'ol/source/XYZ';

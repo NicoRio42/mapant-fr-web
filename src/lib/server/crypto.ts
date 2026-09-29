@@ -1,6 +1,6 @@
-import { CRYPTO_SECRET_KEY } from '$env/static/private';
+import { CRYPTO_SECRET_KEY } from '$app/env/private';
 
-function stringToArrayBuffer(str: string): Uint8Array {
+function stringToArrayBuffer(str: string): Uint8Array<ArrayBuffer> {
 	return new TextEncoder().encode(str);
 }
 

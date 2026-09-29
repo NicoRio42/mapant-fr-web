@@ -1,5 +1,5 @@
-import { getDb } from '$lib/server/db';
-import { tilesTable } from '$lib/server/schema';
+import { getDb } from '#lib/server/db.js';
+import { tilesTable } from '#lib/server/schema.js';
 import { eq } from 'drizzle-orm';
 
 export async function GET({ platform, params }) {

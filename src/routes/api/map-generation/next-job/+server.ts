@@ -1,5 +1,5 @@
-import { MAX_JOB_TIME_IN_SECONDS, TILE_SIZE_IN_METERS } from '$lib/constants';
-import { getDb } from '$lib/server/db.js';
+import { MAX_JOB_TIME_IN_SECONDS, TILE_SIZE_IN_METERS } from '#lib/constants.js';
+import { getDb } from '#lib/server/db.js';
 import {
 	areasToGenerateTable,
 	lidarStepJobTable,
@@ -7,7 +7,7 @@ import {
 	pyramidRenderingStepJobTable,
 	tilesTable,
 	type Tile
-} from '$lib/server/schema';
+} from '#lib/server/schema.js';
 import { and, eq, inArray, lt, or, sql } from 'drizzle-orm';
 import { getWorkerIdOrErrorStatus } from '../utils';
 import type { LidarJob, NoJob, PyramidJob, RenderJob } from './schemas';

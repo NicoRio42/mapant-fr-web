@@ -1,4 +1,4 @@
-import { dev } from '$app/environment';
+import { dev } from '$app/env';
 
 export async function GET({ params, platform }) {
 	if (!dev) return new Response(null, { status: 400 });

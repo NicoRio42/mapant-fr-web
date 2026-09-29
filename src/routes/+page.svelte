@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import Dialog from '$lib/components/Dialog.svelte';
-	import BaseMap from '$lib/components/map/BaseMap.svelte';
-	import DrawBox from '$lib/components/map/DrawBox.svelte';
-	import { clientExport } from '$lib/components/map/client-export';
-	import { WEBSITE_NAME } from '$lib/constants';
+	import { page } from '$app/state';
+	import Dialog from '#lib/components/Dialog.svelte';
+	import BaseMap from '#lib/components/map/BaseMap.svelte';
+	import DrawBox from '#lib/components/map/DrawBox.svelte';
+	import { clientExport } from '#lib/components/map/client-export.js';
+	import { WEBSITE_NAME } from '#lib/constants.js';
 	import { MetaTags } from 'svelte-meta-tags';
 	import welcomePopupContent from './welcome-popup.md';
 
@@ -18,9 +18,9 @@
 <MetaTags
 	title={WEBSITE_NAME}
 	description="Une carte de course d'orientation de la France entière (en cours de création)"
-	canonical={new URL($page.url.pathname, $page.url.origin).href}
+	canonical={new URL(page.url.pathname, page.url.origin).href}
 	openGraph={{
-		url: new URL($page.url.pathname, $page.url.origin).href,
+		url: new URL(page.url.pathname, page.url.origin).href,
 		locale: 'fr_FR',
 		images: [
 			{ url: '/facebook.png', width: 1200, height: 630, alt: 'A LiDAR generated orienteering map' },
@@ -43,9 +43,8 @@
 			class="outline"
 			aria-label="Fermer le popup"
 			onclick={() => (isWelcomeDialogOpen = false)}
+			><i i-carbon-close-large w-5 h-5 block></i></button
 		>
-			<i i-carbon-close-large w-5 h-5 block></i>
-		</button>
 	</div>
 
 	{@html welcomePopupContent}
@@ -53,9 +52,9 @@
 	<p text="right 5 gray-6"><em>Nicolas Rio</em></p>
 
 	<p flex justify-end gap-4>
-		<button type="button" class="outline" m-0 onclick={() => (isWelcomeDialogOpen = false)}>
-			Retour à la carte
-		</button>
+		<button type="button" class="outline" m-0 onclick={() => (isWelcomeDialogOpen = false)}
+			>Retour à la carte</button
+		>
 	</p>
 </Dialog>
 
@@ -79,9 +78,9 @@
 	</p>
 
 	<p flex justify-end gap-4>
-		<button type="button" m-0 class="outline" onclick={() => (isExportWarningPopupOpen = false)}>
-			Annuler
-		</button>
+		<button type="button" m-0 class="outline" onclick={() => (isExportWarningPopupOpen = false)}
+			>Annuler</button
+		>
 
 		<button
 			type="button"
@@ -106,9 +105,9 @@
 	<p font-bold mt-4>La zone est trop grande pour être exportée.</p>
 
 	<p flex justify-end gap-4>
-		<button type="button" m-0 class="outline" onclick={() => (isExportAreaTooBigPopupOpen = false)}>
-			Fermer
-		</button>
+		<button type="button" m-0 class="outline" onclick={() => (isExportAreaTooBigPopupOpen = false)}
+			>Fermer</button
+		>
 	</p>
 </Dialog>
 

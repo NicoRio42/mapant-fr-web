@@ -1,6 +1,6 @@
-import { TILE_SIZE_IN_METERS } from '$lib/constants.js';
-import { getPyramidJobsFromTileList } from '$lib/pyramid';
-import { getDb } from '$lib/server/db.js';
+import { TILE_SIZE_IN_METERS } from '#lib/constants.js';
+import { getPyramidJobsFromTileList } from '#lib/pyramid.js';
+import { getDb } from '#lib/server/db.js';
 import {
 	areasToGenerateTable,
 	lidarStepJobTable,
@@ -8,12 +8,12 @@ import {
 	pyramidRenderingStepJobTable,
 	tilesTable,
 	type Tile
-} from '$lib/server/schema.js';
+} from '#lib/server/schema.js';
 import { error, redirect } from '@sveltejs/kit';
 import { and, eq, gt, inArray, lt } from 'drizzle-orm';
 import { generateId } from 'lucia';
 import { superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { zod4 } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
 
 export async function load() {
@@ -30,7 +30,7 @@ export const actions = {
 
 		const form = await superValidate(
 			request,
-			zod(
+			zod4(
 				z.object({
 					minX: z.number(),
 					maxX: z.number(),

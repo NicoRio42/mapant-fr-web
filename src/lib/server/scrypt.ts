@@ -197,12 +197,14 @@ async function pbkdf2(
 		dkLen: number;
 	}
 ): Promise<Uint8Array> {
-	const pwKey = await crypto.subtle.importKey('raw', password, 'PBKDF2', false, ['deriveBits']);
+	const pwKey = await crypto.subtle.importKey('raw', new Uint8Array(password), 'PBKDF2', false, [
+		'deriveBits'
+	]);
 	const keyBuffer = await crypto.subtle.deriveBits(
 		{
 			name: 'PBKDF2',
 			hash: 'SHA-256',
-			salt,
+			salt: new Uint8Array(salt),
 			iterations: options.c
 		},
 		pwKey,
@@ -226,7 +228,7 @@ function u32(arr: Uint8Array): Uint32Array {
 	return new Uint32Array(arr.buffer, arr.byteOffset, Math.floor(arr.byteLength / 4));
 }
 
-async function generateScryptKey(data: string, salt: string, blockSize = 16): Promise<ArrayBuffer> {
+async function generateScryptKey(data: string, salt: string, blockSize = 16): Promise<Uint8Array> {
 	const encodedData = new TextEncoder().encode(data);
 	const encodedSalt = new TextEncoder().encode(salt);
 	const keyUint8Array = await scrypt(encodedData, encodedSalt, {

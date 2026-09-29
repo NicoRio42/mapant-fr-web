@@ -1,4 +1,4 @@
-import { userTable } from '$lib/server/schema';
+import { userTable } from '#lib/server/schema.js';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/libsql';
 import { argv, env } from 'node:process';

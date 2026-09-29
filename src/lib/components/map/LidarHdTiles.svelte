@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import type { Feature, Map, MapBrowserEvent } from 'ol';
 	import GeoJSON from 'ol/format/GeoJSON.js';
 	import type { Geometry } from 'ol/geom';

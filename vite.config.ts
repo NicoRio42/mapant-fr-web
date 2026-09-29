@@ -1,3 +1,5 @@
+import adapter from '@sveltejs/adapter-cloudflare';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig, type Plugin } from 'vite';
 import UnoCSS from 'unocss/vite';
@@ -74,6 +76,11 @@ function markdown(): Plugin {
 }
 
 export default defineConfig({
-	plugins: [markdown(), UnoCSS(), enhancedImages(), sveltekit()],
+	plugins: [
+		markdown(),
+		UnoCSS(),
+		enhancedImages(),
+		sveltekit({ preprocess: vitePreprocess(), adapter: adapter() })
+	],
 	build: { sourcemap: true }
 });

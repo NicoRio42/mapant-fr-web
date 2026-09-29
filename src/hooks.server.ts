@@ -1,5 +1,5 @@
-import { ADMIN_LOGIN } from '$env/static/private';
-import { getAuth } from '$lib/server/auth.js';
+import { ADMIN_LOGIN } from '$app/env/private';
+import { getAuth } from '#lib/server/auth.js';
 
 export const handle = async ({ event, resolve }) => {
 	const auth = getAuth();

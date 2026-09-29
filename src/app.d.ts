@@ -16,18 +16,4 @@ declare global {
 	}
 }
 
-declare module '$env/static/public' {
-	export const PUBLIC_CF_PAGES_BRANCH: string;
-	export const PUBLIC_MAPANT_TILES_BASE_URL: string;
-	export const PUBLIC_MAPANT_ASSETS_BASE_URL: string;
-}
-
-declare module '$env/static/private' {
-	export const ADMIN_LOGIN: string;
-	export const TURSO_DB_URL: string;
-	export const TURSO_DB_TOKEN: string;
-	export const DKIM_PRIVATE_KEY: string;
-	export const CRYPTO_SECRET_KEY: string;
-}
-
 export {};

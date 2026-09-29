@@ -1,7 +1,7 @@
 <script>
 	import { MetaTags } from 'svelte-meta-tags';
-	import { WEBSITE_NAME } from '$lib/constants';
-	import { page } from '$app/stores';
+	import { WEBSITE_NAME } from '#lib/constants.js';
+	import { page } from '$app/state';
 
 	let { data } = $props();
 
@@ -11,9 +11,9 @@
 <MetaTags
 	title="{WEBSITE_NAME} | Blog | {data.post.frontmatter.title}"
 	description={data.post.frontmatter.description}
-	canonical={new URL($page.url.pathname, $page.url.origin).href}
+	canonical={new URL(page.url.pathname, page.url.origin).href}
 	openGraph={{
-		url: new URL($page.url.pathname, $page.url.origin).href,
+		url: new URL(page.url.pathname, page.url.origin).href,
 		locale: 'fr_FR',
 		images: [{ url: data.post.frontmatter.banner }]
 	}}

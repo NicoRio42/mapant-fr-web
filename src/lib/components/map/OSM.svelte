@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import type { Map } from 'ol';
 	import TileLayer from 'ol/layer/Tile';
 	import OSM from 'ol/source/OSM';

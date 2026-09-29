@@ -10,7 +10,7 @@
 		form: SuperForm<T>;
 		field: FormPathLeaves<T>;
 		label?: string | undefined;
-		[key: string]: any
+		[key: string]: any;
 	}
 
 	let { form, field, label = undefined, ...rest }: Props = $props();

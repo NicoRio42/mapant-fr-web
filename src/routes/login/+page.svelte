@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { superForm } from 'sveltekit-superforms';
-	import { zodClient } from 'sveltekit-superforms/adapters';
+	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { loginSchema } from './login-schema.js';
-	import EmailField from '$lib/components/form-fields/EmailField.svelte';
-	import PasswordField from '$lib/components/form-fields/PasswordField.svelte';
+	import EmailField from '#lib/components/form-fields/EmailField.svelte';
+	import PasswordField from '#lib/components/form-fields/PasswordField.svelte';
 
 	let { data } = $props();
 
-	const form = superForm(data.form, { validators: zodClient(loginSchema) });
+	const form = superForm(data.form, { validators: zod4Client(loginSchema) });
 	const { enhance, delayed, errors } = form;
 </script>
 

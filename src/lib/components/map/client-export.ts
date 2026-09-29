@@ -1,4 +1,4 @@
-import { PUBLIC_MAPANT_ASSETS_BASE_URL } from '$env/static/public';
+import { PUBLIC_MAPANT_ASSETS_BASE_URL } from '$app/env/public';
 
 const EXPORT_TILE_LIMIT = 50 * 1_000 * 1_000;
 const TILE_PIXEL_SIZE = 2362;

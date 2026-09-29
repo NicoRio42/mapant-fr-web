@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 	import type { Map } from 'ol';
 	import WMTSCapabilities from 'ol/format/WMTSCapabilities.js';
 	import TileLayer from 'ol/layer/Tile';

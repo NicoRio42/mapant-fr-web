@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { clickOutside } from '$lib/actions/click-outside';
+	import { clickOutside } from '#lib/actions/click-outside.js';
 	import type { Snippet } from 'svelte';
 
 	interface Props {

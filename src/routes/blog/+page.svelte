@@ -1,6 +1,6 @@
 <script>
-	import { page } from '$app/stores';
-	import { WEBSITE_NAME } from '$lib/constants';
+	import { page } from '$app/state';
+	import { WEBSITE_NAME } from '#lib/constants.js';
 	import { MetaTags } from 'svelte-meta-tags';
 
 	let { data } = $props();
@@ -11,7 +11,7 @@
 <MetaTags
 	title="{WEBSITE_NAME} | Blog"
 	description="Article de blog du site mapant.fr"
-	canonical={new URL($page.url.pathname, $page.url.origin).href}
+	canonical={new URL(page.url.pathname, page.url.origin).href}
 	twitter={{ cardType: 'summary_large_image' }}
 />
 
