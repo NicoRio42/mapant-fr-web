@@ -284,23 +284,6 @@
 	{/if}
 
 	<VectorLayer zIndex={5}>
-		{#each data.contributions as { contribution, user } (contribution.id)}
-			{@const coordinates = [
-				[contribution.minX, contribution.maxY],
-				[contribution.maxX, contribution.maxY],
-				[contribution.maxX, contribution.minY],
-				[contribution.minX, contribution.minY]
-			]}
-
-			<Polygon
-				color="blue"
-				width={2}
-				coords={coordinates}
-				fill="transparent"
-				text={user?.email ?? undefined}
-			/>
-		{/each}
-
 		{#each displayedTiles as tile (`${tile.id}_${tile.mapRenderingStepStatus}_${tile.lidarStepStatus}_${tile.lidarJob !== null ? 'true' : 'false'}`)}
 			{@const tileCoordinates = [
 				[tile.minX, tile.maxY],

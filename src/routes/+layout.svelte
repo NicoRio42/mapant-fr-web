@@ -105,21 +105,6 @@
 				<SubMenus isUserConnected={data.isUserConnected} />
 			</div>
 
-			<li py-0 pr-0>
-				<a
-					href={data.isUserConnected ? '/contributions' : '/contribute/step-1'}
-					role="button"
-					class="!flex !py-1"
-					items-center
-					gap-2
-					m-0
-				>
-					<i i-carbon-crop-growth block w5 h5></i>
-
-					Faire un don
-				</a>
-			</li>
-
 			<li py-0 pr-0 class="block sm:hidden">
 				<button
 					type="button"

@@ -3,12 +3,10 @@ import { getPyramidJobsFromTileList } from '$lib/pyramid';
 import { getDb } from '$lib/server/db.js';
 import {
 	areasToGenerateTable,
-	contributionTable,
 	lidarStepJobTable,
 	mapRenderingStepJobTable,
 	pyramidRenderingStepJobTable,
 	tilesTable,
-	userTable,
 	type Tile
 } from '$lib/server/schema.js';
 import { error, redirect } from '@sveltejs/kit';
@@ -21,16 +19,9 @@ import { z } from 'zod';
 export async function load() {
 	const db = getDb();
 
-	const [contributions, areas] = await db.batch([
-		db
-			.select()
-			.from(contributionTable)
-			.leftJoin(userTable, eq(userTable.id, contributionTable.fkUser))
-			.where(eq(contributionTable.paied, true)),
-		db.query.areasToGenerateTable.findMany()
-	]);
+	const areas = await db.query.areasToGenerateTable.findMany();
 
-	return { contributions, areas };
+	return { areas };
 }
 
 export const actions = {

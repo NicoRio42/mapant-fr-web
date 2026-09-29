@@ -23,11 +23,10 @@ declare module '$env/static/public' {
 }
 
 declare module '$env/static/private' {
+	export const ADMIN_LOGIN: string;
 	export const TURSO_DB_URL: string;
 	export const TURSO_DB_TOKEN: string;
 	export const DKIM_PRIVATE_KEY: string;
-	export const STRIPE_API_KEY: string;
-	export const STRIPE_WEBHOOK_SECRET: string;
 	export const CRYPTO_SECRET_KEY: string;
 }
 

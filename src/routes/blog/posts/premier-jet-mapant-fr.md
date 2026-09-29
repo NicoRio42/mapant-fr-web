@@ -6,7 +6,7 @@ date: 2025-02-14
 author: Nicolas Rio
 ---
 
-Ça y-est, les **premières dalles** du projet Mapant.fr ont été générées. Comme promis, ce sont les zones sélectionnées par les contributeurs qui ont été **traitées en priorité**. Merci encore à eux d'avoir financé une partie des coûts et du travail pour en arriver là ! _(Il est encore possible de faire un don si vous avez envie d'aider au financement de la suite du projet : [faire un don](/contribute/step-1))_
+Ça y-est, les **premières dalles** du projet Mapant.fr ont été générées. Comme promis, ce sont les zones sélectionnées par les contributeurs qui ont été **traitées en priorité**. Merci encore à eux d'avoir financé une partie des coûts et du travail pour en arriver là !
 
 Les dalles disponibles aujourd'hui ne sont pas la version finale de la carte mapant.fr. C'est un **premier jet** qui a deux objectifs :
 

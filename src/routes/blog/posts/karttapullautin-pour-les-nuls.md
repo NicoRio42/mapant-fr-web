@@ -101,4 +101,4 @@ Vous pouvez suivre l’**avancement de la génération** de la carte en regardan
 
 Une fois la génération **terminée**, vous pouvez **assembler** toutes les tuiles `.png` en **une seule image**. Pour cela, tapez la commande suivant dans le même terminal : `./pullauta pngmergedepr` (ou `./pullauta.exe pngmergedepr` sous Windows). Cela aura pour effet de créer un fichier image `merged_depr.jpg`.
 
-Voilà, vous avez **généré votre carte grâce à Karttapullautin** ! N’hésitez pas à <a href="mailto:contact@mapant.fr">me contacter</a> si certaines étapes de ce tutoriel ne sont pas assez claires. Si vous n’avez pas envie de vous lancer dans ce processus, ou si vous voulez **soutenir le projet mapant.fr**, vous pouvez également [contribuer en sélectionnant une zone](/contribute/step-1) sur la carte de France. La zone sera traitée en **priorité** lors de la réalisation du **projet mapant.fr**.
+Voilà, vous avez **généré votre carte grâce à Karttapullautin** ! N’hésitez pas à <a href="mailto:contact@mapant.fr">me contacter</a> si certaines étapes de ce tutoriel ne sont pas assez claires.

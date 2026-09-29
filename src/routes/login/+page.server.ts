@@ -9,7 +9,7 @@ import { setError, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
 export async function load({ locals }) {
-	if (locals.user !== null) redirect(302, '/contributions');
+	if (locals.user !== null) redirect(302, '/');
 	const form = await superValidate(zod(loginSchema));
 
 	return { form };
@@ -65,6 +65,6 @@ export const actions = {
 			}
 		}
 
-		throw redirect(302, '/contributions');
+		throw redirect(302, '/');
 	}
 };

@@ -4,7 +4,6 @@
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
-		"dev:stripe": "stripe listen --forward-to localhost:5173/api/stripe/webhook --skip-verify",
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -62,7 +61,6 @@
 		"ol": "^9.1.0",
 		"oslo": "^1.2.0",
 		"proj4": "^2.11.0",
-		"stripe": "^15.5.0",
 		"sveltekit-superforms": "^2.14.0",
 		"zod": "^3.23.8"
 	},
