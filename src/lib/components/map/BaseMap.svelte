@@ -1,36 +1,24 @@
 <script lang="ts">
 	import { clickOutside } from '#lib/actions/click-outside.js';
-	import LidarHdTiles from '#lib/components/map/LidarHdTiles.svelte';
-	import MapantLegacy from '#lib/components/map/MapantLegacy.svelte';
 	import Mapant from '#lib/components/map/Mapant.svelte';
 	import OLMap from '#lib/components/map/OLMap.svelte';
-	import { MAPANT_V1_CENTER, MAPANT_V1_EXTENT } from '#lib/constants.js';
-	import type { Feature, Map } from 'ol';
 	import type { Extent } from 'ol/extent';
 	import { fade } from 'svelte/transition';
 	import LayerControlItem from './LayerControlItem.svelte';
-	import Osm from './OSM.svelte';
 	import Scan25IgnWebMercator from './Scan25IgnWebMercator.svelte';
 	import type { Coordinate } from 'ol/coordinate';
-	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import AzimutNord from './AzimutNord.svelte';
 
-	let map: Map | undefined = $state(undefined);
 	let showLayerDropDown = $state(false);
-	let isOsmLayerDisplayed = $state(false);
 	let isIgnScan25LayerDisplayed = $state(true);
-	let isMapantV1LayerDisplayed = $state(false);
 	let isMapantLayerDisplayed = $state(true);
 
 	interface Props {
 		center?: Coordinate;
 		zoom?: number;
-		allowLidarTileSelection?: boolean;
-		selected?: Feature | null;
 		fit?: Extent;
-		isLidarHdTilesLayerDisplayed?: boolean;
 		onViewChange?: (params: {
 			zoom: number;
 			extent: Extent;
@@ -44,22 +32,16 @@
 
 	let {
 		center,
-		allowLidarTileSelection = false,
-		selected = $bindable(null),
 		zoom = 6,
 		fit,
-		isLidarHdTilesLayerDisplayed = $bindable(false),
 		onViewChange,
 		children,
 		class: classList,
 		persistMapState = false
 	}: Props = $props();
 
-	let osmLayerOpacity = $state(0.5);
 	let ignScan25LayerOpacity = $state(0.25);
-	let mapantV1LayerOpacity = $state(1);
 	let mapantLayerOpacity = $state(1);
-	let lidarHdTilesLayerOpacity = $state(1);
 	let rotation = $state(0);
 
 	function onViewChangeCombined(params: {
@@ -92,21 +74,10 @@
 </script>
 
 <main grow relative bg-white class={classList}>
-	<OLMap bind:map {center} {fit} {zoom} {rotation} onViewChange={onViewChangeCombined}>
-		<Osm visible={isOsmLayerDisplayed} opacity={osmLayerOpacity} />
-
+	<OLMap {center} {fit} {zoom} {rotation} onViewChange={onViewChangeCombined}>
 		<Scan25IgnWebMercator visible={isIgnScan25LayerDisplayed} opacity={ignScan25LayerOpacity} />
 
-		<MapantLegacy visible={isMapantV1LayerDisplayed} opacity={mapantV1LayerOpacity} />
-
 		<Mapant visible={isMapantLayerDisplayed} opacity={mapantLayerOpacity} />
-
-		<LidarHdTiles
-			visible={isLidarHdTilesLayerDisplayed}
-			opacity={lidarHdTilesLayerOpacity}
-			allowSelection={allowLidarTileSelection}
-			bind:selected
-		/>
 
 		{#if page.url.searchParams.has('azimut-nord')}
 			<AzimutNord />
@@ -141,52 +112,15 @@
 		{#if showLayerDropDown}
 			<ul p-4 m-0 rounded shadow-2xl bg-background-color transition:fade={{ duration: 125 }}>
 				<LayerControlItem
-					label="OpenStreetMap"
-					bind:displayed={isOsmLayerDisplayed}
-					bind:opacity={osmLayerOpacity}
-				/>
-
-				<LayerControlItem
 					label="IGN Scan25"
 					bind:displayed={isIgnScan25LayerDisplayed}
 					bind:opacity={ignScan25LayerOpacity}
 				/>
 
 				<LayerControlItem
-					label="Mapant.fr V1"
-					bind:displayed={isMapantV1LayerDisplayed}
-					bind:opacity={mapantV1LayerOpacity}
-				>
-					<button
-						type="button"
-						class="outline"
-						aria-label="Zoom sur Mapant.fr V1"
-						p-1
-						m-0
-						onclick={() => {
-							if (map === undefined) return;
-							isMapantV1LayerDisplayed = true;
-							mapantV1LayerOpacity = 1;
-							const view = map.getView();
-							const resolution = view.getResolutionForExtent(MAPANT_V1_EXTENT);
-							showLayerDropDown = false;
-							view.animate({ resolution, center: MAPANT_V1_CENTER, rotation: 0 });
-						}}
-					>
-						<i i-carbon-zoom-fit block w-6 h-6></i>
-					</button>
-				</LayerControlItem>
-
-				<LayerControlItem
 					label="Mapant.fr"
 					bind:displayed={isMapantLayerDisplayed}
 					bind:opacity={mapantLayerOpacity}
-				/>
-
-				<LayerControlItem
-					label="Données LiDAR disponibles"
-					bind:displayed={isLidarHdTilesLayerDisplayed}
-					bind:opacity={lidarHdTilesLayerOpacity}
 				/>
 			</ul>
 		{/if}

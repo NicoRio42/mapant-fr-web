@@ -1,8 +1,6 @@
 import { drizzle } from 'drizzle-orm/libsql';
 import { tilesTable, type TileInsert } from '../lib/server/schema';
 import { env } from 'node:process';
-import { writeFileSync } from 'node:fs';
-import { join } from 'node:path';
 
 const db = drizzle({ connection: { url: env.TURSO_DB_URL ?? '', authToken: env.TURSO_DB_TOKEN } });
 
@@ -74,11 +72,6 @@ const nuageDalleBaseUrl =
 	'https://data.geopf.fr/private/wfs/?service=WFS&version=2.0.0&apikey=interface_catalogue&request=GetFeature&typeNames=IGNF_LIDAR-HD_TA:nuage-dalle&outputFormat=application/json&bbox=';
 
 const nuageBlocResponse: LidarHdBlocsGeojson = await fetch(nuageBlocUrl).then((r) => r.json());
-
-writeFileSync(
-	join('src', 'lib', 'components', 'map', 'lidar-hd.json'),
-	JSON.stringify(nuageBlocResponse)
-);
 
 for (const bloc of nuageBlocResponse.features) {
 	console.log(`Fetching bloc ${bloc.properties.name}`);
