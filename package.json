@@ -12,7 +12,8 @@
 		"format": "prettier --write .",
 		"test": "vitest",
 		"wrangler": "wrangler",
-		"miniflare": "miniflare"
+		"miniflare": "miniflare",
+		"deploy": "npm run build && wrangler deploy"
 	},
 	"devDependencies": {
 		"@iconify-json/carbon": "^1.1.31",

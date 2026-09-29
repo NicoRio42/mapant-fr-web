@@ -5,7 +5,7 @@ Use `rclone` for a roughly 200 GB archive. R2 requires multipart upload for obje
 ## Prerequisites
 
 1. Install [rclone](https://rclone.org/downloads/) version 1.59 or newer.
-2. Create the destination R2 bucket in Cloudflare. The project's current `wrangler.toml` includes `mapant-fr-tiles`, but you can use another bucket.
+2. Create the destination R2 bucket in Cloudflare. The project's current `wrangler.jsonc` includes `mapant-fr-tiles`, but you can use another bucket.
 3. Create an [R2 API token](https://developers.cloudflare.com/r2/api/tokens/) with **Object Read & Write** access to that bucket. Copy its **Access Key ID** and **Secret Access Key**, and find the 32-character **Account ID** in the Cloudflare dashboard. The script assumes the bucket already exists and works with bucket-scoped object permissions. For an EU, US, or FedRAMP jurisdiction bucket, set `R2_JURISDICTION` as described below.
 4. Keep the local archive unchanged until the upload finishes. Have a stable connection and enough time for a full upload.
 

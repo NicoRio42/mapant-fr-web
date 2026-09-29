@@ -2,8 +2,6 @@ import { error } from '@sveltejs/kit';
 import type { Post } from '../post.model.js';
 import { frontmatterSchema } from '../frontmatter-schema.js';
 import { dev } from '$app/env';
-import { PUBLIC_CF_PAGES_BRANCH } from '$app/env/public';
-import { STAGING_BRANCH_NAME } from '#lib/constants.js';
 
 export async function load({ params }) {
 	let post: Post;
@@ -21,7 +19,7 @@ export async function load({ params }) {
 		throw error(404, `Could not find ${params.slug}`);
 	}
 
-	if (post.frontmatter.draft && !dev && PUBLIC_CF_PAGES_BRANCH !== STAGING_BRANCH_NAME) {
+	if (post.frontmatter.draft && !dev) {
 		throw error(404);
 	}
 

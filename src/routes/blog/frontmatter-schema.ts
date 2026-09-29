@@ -6,7 +6,6 @@ export const frontmatterSchema = z.object({
 	banner: z.string(),
 	date: z.string().date(),
 	author: z.string(),
-	// Drafts are published to staging environment, but not prod
 	draft: z.boolean().optional().default(false)
 });
 

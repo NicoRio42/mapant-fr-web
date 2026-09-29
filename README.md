@@ -1,41 +1,16 @@
-# create-svelte
+# Mapant.fr web
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+The site is a SvelteKit app deployed to Cloudflare Workers. Its Worker configuration is in [`wrangler.jsonc`](wrangler.jsonc), including the `R2_BUCKET_TILES` binding for the `mapant-fr-tiles` bucket.
 
-## Creating a project
+## Develop locally
 
-If you're seeing this, you've probably already done this step. Congrats!
+Copy `.env.example` to `.env`, install dependencies, then run `npm run dev`. The local tile URL points to `/api/tiles`, which reads from Wrangler's local R2 binding.
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+## Deploy to Cloudflare Workers
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+Set the build-time `PUBLIC_MAPANT_TILES_BASE_URL` variable to the public tile URL used by the site. The `/api/tiles` route is for development only. In Workers Builds, use `npm run build` as the build command and `npx wrangler deploy` as the deploy command.
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+For a CLI deployment, set `PUBLIC_MAPANT_TILES_BASE_URL` in the build environment, then run `npm run deploy`. The `mapant-fr-tiles` R2 bucket must exist in the same Cloudflare account. Attach the desired custom domain to the Worker in Cloudflare after creating it.
 
 ## Uploading PMTiles to R2
 
