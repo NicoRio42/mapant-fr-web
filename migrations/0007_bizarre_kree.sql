@@ -1,1 +1,0 @@
-CREATE INDEX `tiles_min_x_min_y_index` ON `tiles` (`min_x`,`min_y`);

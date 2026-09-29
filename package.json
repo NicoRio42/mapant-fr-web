@@ -10,17 +10,6 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check .",
 		"format": "prettier --write .",
-		"db:studio": "drizzle-kit studio",
-		"db:migrations:generate": "drizzle-kit generate",
-		"db:migrations:apply:local": "drizzle-kit migrate",
-		"db:migrations:apply:staging": "bun --env-file=.env.staging drizzle-kit migrate",
-		"db:migrations:apply:prod": "bun --env-file=.env.prod drizzle-kit migrate",
-		"db:updateTiles:local": "bun ./src/scripts/update-tiles.ts",
-		"db:updateTiles:staging": "bun --env-file=.env.staging ./src/scripts/update-tiles.ts",
-		"db:updateTiles:prod": "bun --env-file=.env.prod ./src/scripts/update-tiles.ts",
-		"db:stats:local": "bun ./src/scripts/stats.ts",
-		"db:stats:staging": "bun --env-file=.env.staging ./src/scripts/stats.ts",
-		"db:stats:prod": "bun --env-file=.env.prod ./src/scripts/stats.ts",
 		"test": "vitest",
 		"wrangler": "wrangler",
 		"miniflare": "miniflare"
@@ -37,7 +26,6 @@
 		"@types/markdown-it-attrs": "^4.1.3",
 		"@types/proj4": "^2.5.5",
 		"@unocss/extractor-svelte": "^66.10.5",
-		"drizzle-kit": "^0.28.1",
 		"marked": "^14.0.0",
 		"prettier": "^3.1.1",
 		"prettier-plugin-svelte": "^3.2.6",
@@ -54,23 +42,13 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@libsql/client": "^0.15.4",
-		"@lucia-auth/adapter-drizzle": "^1.0.7",
-		"drizzle-orm": "^0.43.1",
-		"lucia": "^3.2.0",
 		"marked-admonition-extension": "^0.0.4",
 		"ol": "^9.1.0",
-		"oslo": "^1.2.0",
 		"proj4": "^2.11.0",
-		"sveltekit-superforms": "3.0.0-next.0",
 		"zod": "^4"
 	},
 	"imports": {
 		"#lib": "./src/lib/index.js",
-		"#lib/*": "./src/lib/*",
-		"#drizzle-orm/libsql": {
-			"development": "drizzle-orm/libsql",
-			"default": "drizzle-orm/libsql/web"
-		}
+		"#lib/*": "./src/lib/*"
 	}
 }

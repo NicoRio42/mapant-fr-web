@@ -17,7 +17,7 @@
 	// Do not remove this comment, it prevent prettier to reorder imports
 	import 'uno.css';
 
-	let { data, children } = $props();
+	let { children } = $props();
 
 	let showMenu = $state(false);
 	let tooFast = $state(false);
@@ -107,7 +107,7 @@
 
 		<ul>
 			<div class="hidden sm:contents">
-				<SubMenus isUserConnected={data.isUserConnected} />
+				<SubMenus />
 			</div>
 
 			<li py-0 pr-0 class="block sm:hidden">
@@ -145,7 +145,7 @@
 				if (showMenu) showMenu = false;
 			}}
 		>
-			<SubMenus isUserConnected={data.isUserConnected} />
+			<SubMenus />
 		</ul>
 	{/if}
 
