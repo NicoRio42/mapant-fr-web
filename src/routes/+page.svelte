@@ -4,6 +4,7 @@
 	import BaseMap from '#lib/components/map/BaseMap.svelte';
 	import DrawBox from '#lib/components/map/DrawBox.svelte';
 	import { clientExport } from '#lib/components/map/client-export.js';
+	import { EXPORT_PRINT_DPI } from '#lib/components/map/export-tiles.js';
 	import { WEBSITE_NAME } from '#lib/constants.js';
 	import { MetaTags } from 'svelte-meta-tags';
 	import welcomePopupContent from './welcome-popup.md';
@@ -72,8 +73,8 @@
 	</p>
 
 	<p>
-		L'export généré est une image au format png. La carte doit être imprimée à la résolution 600dpi
-		pour être à l'échelle 1:10000. Pour imprimer la carte à la bonne échelle, vous pouvez utiliser
+		L'export généré est une image au format png. La carte doit être imprimée à la résolution de {EXPORT_PRINT_DPI}
+		dpi pour être à l'échelle 1:10000. Pour imprimer la carte à la bonne échelle, vous pouvez utiliser
 		l'excellent logiciel de traçage [Purple Pen](https://purple-pen.org/).
 	</p>
 
