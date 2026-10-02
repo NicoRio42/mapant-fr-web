@@ -24,4 +24,4 @@ Run `npm run dev` and open `/guesser`. As on the main map, development requests 
 
 Run `npm run check`, `npm test -- --run`, and `npm run build`. The guesser tests cover France sampling, tile coordinates, missing tiles, server errors, timeouts, cancellation, great-circle distances, and strict exploration resolution constraints.
 
-Manual checks: select/move a guess, close/reopen the dialog, confirm once, inspect both maps, return to the start, restart during loading, and try a small screen and touch zoom. An unavailable local tile server should show a retryable error.
+Manual checks: on both maps, pan with the first mouse drag or one-finger swipe without clicking or focusing the map first, and repeat after focusing a button outside the map. On a small touch screen, also check pinch zoom and that a swipe moves the map without scrolling the page or placing a guess. Select/move a guess with a click or tap, close/reopen the dialog, confirm once, inspect both maps, return to the start, and restart during loading. An unavailable local tile server should show a retryable error.

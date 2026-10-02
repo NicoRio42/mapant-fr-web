@@ -88,7 +88,8 @@
 				new VectorLayer({ source: markers, zIndex: 10 })
 			],
 			controls: defaultControls({ attributionOptions: { collapsible: false } }),
-			interactions: defaultInteractions({ onFocusOnly: true, keyboard: mode === 'explore' })
+			// Accept the first drag even before the map receives keyboard focus.
+			interactions: defaultInteractions({ keyboard: mode === 'explore' })
 		});
 		instance.on('singleclick', (event) => {
 			if (mode === 'guess' && !revealed) onGuess?.(toLonLat(event.coordinate));
@@ -174,7 +175,8 @@
 		-webkit-tap-highlight-color: transparent;
 	}
 	.game-map :global(.ol-viewport) {
-		touch-action: pan-x pan-y;
+		/* Let OpenLayers handle touch panning and pinching without browser takeover. */
+		touch-action: none;
 	}
 	.game-map :global(.ol-viewport canvas) {
 		all: unset;
