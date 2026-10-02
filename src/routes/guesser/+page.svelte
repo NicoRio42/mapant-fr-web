@@ -131,7 +131,8 @@
 				onclick={() => (dialogOpen = false)}>✕</button
 			>
 		</div>
-		{#if dialogOpen && target}
+		<!-- Keep the map mounted while the dialog is closed to preserve its view for this round. -->
+		{#if target}
 			<div class="guess-map">
 				<GameMap
 					mode="guess"

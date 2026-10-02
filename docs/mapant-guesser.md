@@ -10,7 +10,7 @@ This is an approximate coverage check. A stored tile can still contain blank pix
 
 The exploration map uses the existing EPSG:2154 grid: initial resolution 1.953125 m/pixel, allowed range 0.9765625–1.953125 m/pixel. While playing, zooming out stops at the initial zoom. Panning is unrestricted. The IGN layer and persisted main-map position are not used. Returning to the start restores the target, resolution, and north-up rotation.
 
-The independent OSM map starts fitted to France. A click places or moves a tentative guess, retained when closing the dialog. Confirmation freezes it, calculates great-circle distance in metres from WGS84 longitude/latitude using OpenLayers, and reveals both markers and a connecting line on both maps. Exploration zoom restrictions are lifted after confirmation. A new round clears all prior state.
+The independent OSM map starts fitted to France. A click places or moves a tentative guess. The map instance stays mounted when closing the dialog, retaining the guess, center, zoom, and rotation when reopened. Confirmation freezes it, calculates great-circle distance in metres from WGS84 longitude/latitude using OpenLayers, and reveals both markers and a connecting line on both maps. Exploration zoom restrictions are lifted after confirmation. A new round clears all prior state.
 
 ## Boundary data
 
@@ -24,4 +24,4 @@ Run `npm run dev` and open `/guesser`. As on the main map, development requests 
 
 Run `npm run check`, `npm test -- --run`, and `npm run build`. The guesser tests cover France sampling, tile coordinates, missing tiles, server errors, timeouts, cancellation, great-circle distances, and strict exploration resolution constraints.
 
-Manual checks: on both maps, pan with the first mouse drag or one-finger swipe without clicking or focusing the map first, and repeat after focusing a button outside the map. On a small touch screen, also check pinch zoom and that a swipe moves the map without scrolling the page or placing a guess. Select/move a guess with a click or tap, close/reopen the dialog, confirm once, inspect both maps, return to the start, and restart during loading. An unavailable local tile server should show a retryable error.
+Manual checks: on both maps, pan with the first mouse drag or one-finger swipe without clicking or focusing the map first, and repeat after focusing a button outside the map. On a small touch screen, also check pinch zoom and that a swipe moves the map without scrolling the page or placing a guess. Pan and zoom the OSM map, select/move a guess with a click or tap, close/reopen the dialog, and verify that the view and guess are preserved. Confirm once, inspect both maps, return to the start, and restart during loading. Verify that a new round starts the OSM map fitted to France with no guess. An unavailable local tile server should show a retryable error.
