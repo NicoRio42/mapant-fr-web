@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import type { Coordinate } from 'ol/coordinate.js';
 	import Dialog from '#lib/components/Dialog.svelte';
 	import GameMap from '#lib/components/guesser/GameMap.svelte';
 	import { MAPANT_TILES_BASE_URL } from '#lib/components/map/mapant-tile-url.js';
 	import { findCoveredLocation, formatDistance, guessDistance } from '#lib/guesser/round.js';
+	import type { Coordinate } from 'ol/coordinate.js';
+	import { onMount } from 'svelte';
 
 	let status: 'loading' | 'playing' | 'revealed' | 'error' = $state('loading');
 	let target: Coordinate | undefined = $state();
@@ -69,6 +69,7 @@
 			<h1>Mapant <strong>Guesser</strong></h1>
 			<p>Un lieu en France. À vous de le retrouver.</p>
 		</div>
+		<button type="button" class="outline" onclick={newRound}>Nouveau lieu</button>
 	</header>
 
 	<div class="exploration">
@@ -105,7 +106,6 @@
 			<button type="button" class="outline" disabled={!target} onclick={() => (resetSequence += 1)}
 				>Retour au départ</button
 			>
-			<button type="button" class="outline" onclick={newRound}>Nouveau lieu</button>
 			<button type="button" disabled={!target} onclick={() => (dialogOpen = true)}>
 				{status === 'revealed' ? 'Voir le résultat' : 'Faire une proposition'}
 			</button>
@@ -177,6 +177,9 @@
 		gap: 1rem;
 		padding: 1rem 1.5rem;
 	}
+	.game-header button {
+		flex-shrink: 0;
+	}
 	h1 {
 		font-size: 1.5rem;
 		margin: 0;
@@ -232,8 +235,8 @@
 		color: var(--pico-muted-color);
 	}
 	.actions {
-		display: flex;
-		flex-wrap: wrap;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
 		gap: 0.5rem;
 	}
 	button {
