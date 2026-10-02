@@ -5,9 +5,11 @@
 	interface Props {
 		open: boolean;
 		children?: Snippet;
+		maxWidth?: string;
+		label?: string;
 	}
 
-	let { open = $bindable(), children }: Props = $props();
+	let { open = $bindable(), children, maxWidth, label }: Props = $props();
 
 	let dialog: HTMLElement | undefined = $state();
 
@@ -26,8 +28,8 @@
 	const closeCallback = () => (open = false);
 </script>
 
-<dialog bind:this={dialog} onclose={closeCallback}>
-	<article use:clickOutside={closeCallback}>
+<dialog bind:this={dialog} onclose={closeCallback} aria-label={label}>
+	<article use:clickOutside={closeCallback} style:max-width={maxWidth}>
 		{@render children?.()}
 	</article>
 </dialog>

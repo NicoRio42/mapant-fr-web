@@ -6,8 +6,7 @@
 	import type { Coordinate } from 'ol/coordinate';
 	import type { Extent } from 'ol/extent';
 	import { DblClickDragZoom, defaults as defaultInteractions } from 'ol/interaction.js';
-	import { register } from 'ol/proj/proj4.js';
-	import proj4 from 'proj4';
+	import { setupLambert93Projection } from './projection.js';
 	import { onDestroy, onMount, setContext } from 'svelte';
 
 	interface Props {
@@ -36,6 +35,7 @@
 	}: Props = $props();
 
 	let view: View | undefined = $state();
+	let container: HTMLDivElement;
 
 	$effect(() => {
 		if (browser && view !== undefined && fit !== undefined)
@@ -67,7 +67,7 @@
 		});
 
 		map = new Map({
-			target: 'mapviewer',
+			target: container,
 			interactions: defaultInteractions({ doubleClickZoom: true }).extend([
 				new DblClickDragZoom({ delta: -0.01 })
 			]),
@@ -92,50 +92,36 @@
 		});
 	});
 
-	function setupLambert93Projection() {
-		proj4.defs(
-			'EPSG:2154',
-			'+proj=lcc +lat_0=46.5 +lon_0=3 +lat_1=49 +lat_2=44 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
-		);
-
-		proj4.defs(
-			'IGNF:LAMB93',
-			'+proj=lcc +lat_0=46.5 +lon_0=3 +lat_1=49 +lat_2=44 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs'
-		);
-
-		register(proj4);
-	}
-
 	onDestroy(() => {
 		if (map !== undefined) map.dispose();
 	});
 </script>
 
-<div id="mapviewer" class="map"></div>
+<div bind:this={container} class="map"></div>
 
 {#if map}
 	{@render children?.()}
 {/if}
 
 <style>
-	#mapviewer {
+	.map {
 		width: 100%;
 		height: 100%;
 	}
 
-	:global(.ol-control) {
+	.map :global(.ol-control) {
 		position: absolute;
 	}
 
-	:global(.ol-control button),
-	:global(.ol-control button:hover),
-	:global(.ol-control button:focus) {
+	.map :global(.ol-control button),
+	.map :global(.ol-control button:hover),
+	.map :global(.ol-control button:focus) {
 		--pico-background-color: white;
 		--pico-color: var(--pico-primary-hover);
 		--pico-border-color: var(--pico-primary-hover);
 	}
 
-	:global(.ol-control button) {
+	.map :global(.ol-control button) {
 		margin: 0;
 		font-size: 1.5rem;
 		padding: 0.25rem;
@@ -147,30 +133,30 @@
 		align-items: center;
 	}
 
-	:global(.ol-zoom) {
+	.map :global(.ol-zoom) {
 		top: 0.5rem;
 		left: 0.5rem;
 		display: flex;
 		flex-direction: column;
 	}
 
-	:global(.ol-zoom .ol-zoom-in) {
+	.map :global(.ol-zoom .ol-zoom-in) {
 		border-bottom-left-radius: 0;
 		border-bottom-right-radius: 0;
 		border-bottom-width: 0;
 	}
 
-	:global(.ol-zoom .ol-zoom-out) {
+	.map :global(.ol-zoom .ol-zoom-out) {
 		border-top-left-radius: 0;
 		border-top-right-radius: 0;
 	}
 
-	:global(.ol-rotate) {
+	.map :global(.ol-rotate) {
 		top: 5.75rem;
 		left: 0.5rem;
 	}
 
-	:global(.ol-compass) {
+	.map :global(.ol-compass) {
 		content: '';
 		width: 1.5rem;
 		height: 1.5rem;

@@ -8,6 +8,10 @@ The map and browser exports retain the existing Lambert-93 (EPSG:2154) tile grid
 
 Install dependencies with `bun install`, then run `npm run dev`. No environment variables are required. Both the map and exports request `http://[::]:8080/data/mapant/{z}/{x}/{y}.webp`. Start your local tile server on port 8080 and enable CORS so browser exports can read the tiles.
 
+## Mapant Guesser
+
+The `/guesser` route is a browser-only location guessing game using Mapant and OpenStreetMap. See [POC behaviour, coverage limitations, and development checks](docs/mapant-guesser.md).
+
 ## PMTiles endpoint and caching
 
 The endpoint adapts the [Protomaps Cloudflare Worker](https://github.com/protomaps/PMTiles/blob/main/serverless/cloudflare/src/index.ts): it reads R2 byte ranges, uses native gzip decompression, and keeps resolved archive headers/directories in an isolate-local cache. It serves GET and HEAD requests, returns 204 for absent tiles and 404 for zooms outside the archive, and rejects invalid coordinates before accessing R2.
