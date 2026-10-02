@@ -12,8 +12,7 @@
 	import { Circle, Fill, Stroke, Style, Text } from 'ol/style.js';
 	import { onMount, setContext } from 'svelte';
 	import Mapant from '../map/Mapant.svelte';
-	import { START_RESOLUTION } from '#lib/guesser/round.js';
-	import { explorationView } from '#lib/guesser/view.js';
+	import { explorationStartResolution, explorationView } from '#lib/guesser/view.js';
 
 	interface Props {
 		mode: 'explore' | 'guess';
@@ -27,6 +26,7 @@
 	let { mode, target, guess, revealed, resetSequence = 0, onGuess }: Props = $props();
 	let container: HTMLDivElement;
 	let map: Map | undefined = $state.raw();
+	let mobile = false;
 	const markers = new VectorSource({ wrapX: false });
 	let pendingFit = false;
 	setContext('map', () => map);
@@ -60,7 +60,7 @@
 		if (revealed && guess) {
 			map.getView().fit(markers.getExtent(), {
 				padding: [55, 55, 55, 55],
-				minResolution: mode === 'explore' ? START_RESOLUTION : 4
+				minResolution: mode === 'explore' ? explorationStartResolution(mobile) : 4
 			});
 		} else if (mode === 'guess') {
 			map.getView().fit(transformExtent([-5.2, 41.3, 9.7, 51.2], 'EPSG:4326', 'EPSG:3857'), {
@@ -71,11 +71,13 @@
 	}
 
 	onMount(() => {
+		const mobileViewport = window.matchMedia('(max-width: 600px)');
+		mobile = mobileViewport.matches;
 		const instance = new Map({
 			target: container,
 			view:
 				mode === 'explore'
-					? explorationView(target, revealed)
+					? explorationView(target, revealed, mobile)
 					: new View({
 							projection: 'EPSG:3857',
 							center: fromLonLat([2.5, 46.5]),
@@ -95,6 +97,13 @@
 			if (mode === 'guess' && !revealed) onGuess?.(toLonLat(event.coordinate));
 		});
 		map = instance;
+		const updateMobileViewport = () => {
+			mobile = mobileViewport.matches;
+			if (mode === 'explore') {
+				instance.getView().setMinZoom(revealed ? 0 : mobile ? 11 : 12);
+			}
+		};
+		mobileViewport.addEventListener('change', updateMobileViewport);
 		pendingFit = true;
 		const resizeObserver = new ResizeObserver(() => {
 			instance.updateSize();
@@ -102,6 +111,7 @@
 		});
 		resizeObserver.observe(container);
 		return () => {
+			mobileViewport.removeEventListener('change', updateMobileViewport);
 			resizeObserver.disconnect();
 			instance.dispose();
 		};
@@ -132,9 +142,12 @@
 	$effect(() => {
 		if (!map || mode !== 'explore' || resetSequence === 0) return;
 		map.getView().cancelAnimations();
-		map
-			.getView()
-			.animate({ center: target, resolution: START_RESOLUTION, rotation: 0, duration: 250 });
+		map.getView().animate({
+			center: target,
+			resolution: explorationStartResolution(mobile),
+			rotation: 0,
+			duration: 250
+		});
 	});
 </script>
 
