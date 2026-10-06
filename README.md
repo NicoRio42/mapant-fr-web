@@ -10,7 +10,7 @@ Install dependencies with `bun install`, then run `npm run dev`. No environment 
 
 ## Mapant Guesser
 
-The `/guesser` route is a browser-only location guessing game using Mapant and OpenStreetMap. See [POC behaviour, coverage limitations, and development checks](docs/mapant-guesser.md).
+The `/guesser` route is a browser-only location guessing game using Mapant and OpenStreetMap: five rounds, five minutes per round, up to 5,000 points within 50 m, and a total out of 25,000. See [game rules, coverage limitations, and development checks](docs/mapant-guesser.md).
 
 ## PMTiles endpoint and caching
 

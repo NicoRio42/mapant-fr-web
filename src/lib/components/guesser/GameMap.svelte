@@ -57,7 +57,7 @@
 		if (!map || !pendingFit) return;
 		const size = map.getSize();
 		if (!size || size[0] < 150 || size[1] < 150) return;
-		if (revealed && guess) {
+		if (revealed) {
 			map.getView().fit(markers.getExtent(), {
 				padding: [55, 55, 55, 55],
 				minResolution: mode === 'explore' ? explorationStartResolution(mobile) : 4
@@ -107,6 +107,8 @@
 		pendingFit = true;
 		const resizeObserver = new ResizeObserver(() => {
 			instance.updateSize();
+			// The final summary shrinks the map after reveal; keep both markers in view.
+			if (revealed) pendingFit = true;
 			fitMap();
 		});
 		resizeObserver.observe(container);
@@ -127,12 +129,14 @@
 		if (chosen && (mode === 'guess' || revealed)) {
 			markers.addFeature(marker(chosen, 'Votre choix', '#1565c0'));
 		}
-		if (revealed && chosen) {
-			const line = new Feature(new LineString([start, chosen]));
-			line.setStyle(
-				new Style({ stroke: new Stroke({ color: '#343b44', width: 3, lineDash: [8, 8] }) })
-			);
-			markers.addFeature(line);
+		if (revealed) {
+			if (chosen) {
+				const line = new Feature(new LineString([start, chosen]));
+				line.setStyle(
+					new Style({ stroke: new Stroke({ color: '#343b44', width: 3, lineDash: [8, 8] }) })
+				);
+				markers.addFeature(line);
+			}
 			if (mode === 'explore') map.getView().setMinZoom(0);
 			pendingFit = true;
 			fitMap();
