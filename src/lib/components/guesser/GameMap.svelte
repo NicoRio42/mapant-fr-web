@@ -13,6 +13,7 @@
 	import { onMount, setContext } from 'svelte';
 	import Mapant from '../map/Mapant.svelte';
 	import { explorationStartResolution, explorationView } from '#lib/guesser/view.js';
+	import { edgeIndicator, type EdgeIndicator } from '#lib/guesser/edge-indicator.js';
 
 	interface Props {
 		mode: 'explore' | 'guess';
@@ -26,6 +27,7 @@
 	let { mode, target, guess, revealed, resetSequence = 0, onGuess }: Props = $props();
 	let container: HTMLDivElement;
 	let map: Map | undefined = $state.raw();
+	let startIndicator: EdgeIndicator | null = $state.raw(null);
 	let mobile = false;
 	const markers = new VectorSource({ wrapX: false });
 	let pendingFit = false;
@@ -70,6 +72,29 @@
 		pendingFit = false;
 	}
 
+	function updateStartIndicator() {
+		if (!map || (mode === 'guess' && !revealed)) {
+			startIndicator = null;
+			return;
+		}
+		const size = map.getSize();
+		const start = transform(target, 'EPSG:2154', map.getView().getProjection());
+		const pixel = map.getPixelFromCoordinate(start);
+		startIndicator = size && pixel ? edgeIndicator(pixel, size) : null;
+	}
+
+	function returnToStart() {
+		if (!map) return;
+		const view = map.getView();
+		view.cancelAnimations();
+		view.animate({
+			center: transform(target, 'EPSG:2154', view.getProjection()),
+			resolution: mode === 'explore' ? explorationStartResolution(mobile) : view.getResolution(),
+			rotation: 0,
+			duration: 250
+		});
+	}
+
 	onMount(() => {
 		const mobileViewport = window.matchMedia('(max-width: 600px)');
 		mobile = mobileViewport.matches;
@@ -97,6 +122,8 @@
 			if (mode === 'guess' && !revealed) onGuess?.(toLonLat(event.coordinate));
 		});
 		map = instance;
+		// Update on every rendered frame, including drags, zooms and rotations.
+		instance.on('postrender', updateStartIndicator);
 		const updateMobileViewport = () => {
 			mobile = mobileViewport.matches;
 			if (mode === 'explore') {
@@ -115,6 +142,7 @@
 		return () => {
 			mobileViewport.removeEventListener('change', updateMobileViewport);
 			resizeObserver.disconnect();
+			instance.un('postrender', updateStartIndicator);
 			instance.dispose();
 		};
 	});
@@ -141,17 +169,13 @@
 			pendingFit = true;
 			fitMap();
 		}
+		// Target/reveal changes also need an update when the view hasn't moved.
+		map.render();
 	});
 
 	$effect(() => {
 		if (!map || mode !== 'explore' || resetSequence === 0) return;
-		map.getView().cancelAnimations();
-		map.getView().animate({
-			center: target,
-			resolution: explorationStartResolution(mobile),
-			rotation: 0,
-			duration: 250
-		});
+		returnToStart();
 	});
 </script>
 
@@ -164,8 +188,32 @@
 	aria-label={mode === 'explore'
 		? 'Carte Mapant du lieu à retrouver'
 		: 'Carte OpenStreetMap pour votre choix'}
-	tabindex={mode === 'explore' ? 0 : undefined}
-></div>
+	tabindex={mode === 'explore' ? 0 : -1}
+>
+	{#if startIndicator && (mode === 'explore' || revealed)}
+		<button
+			type="button"
+			class="start-indicator"
+			style:left={`${startIndicator.x}px`}
+			style:top={`${startIndicator.y}px`}
+			aria-label="Retour au départ"
+			title="Retour au départ"
+			onclick={() => {
+				// The indicator disappears during the flight; keep keyboard focus on the map.
+				container.focus({ preventScroll: true });
+				returnToStart();
+			}}
+		>
+			<svg viewBox="-24 -24 48 48" aria-hidden="true">
+				<g transform={`rotate(${startIndicator.angle})`}>
+					<path d="M22 0 L8 -13 L8 13 Z" fill="#b7410e" stroke="white" stroke-width="2" />
+					<circle r="14" fill="white" stroke="#b7410e" stroke-width="3" />
+					<circle r="6" fill="#b7410e" />
+				</g>
+			</svg>
+		</button>
+	{/if}
+</div>
 
 {#if map && mode === 'explore'}
 	<Mapant />
@@ -173,10 +221,36 @@
 
 <style>
 	.game-map {
+		position: relative;
+		overflow: hidden;
 		width: 100%;
 		height: 100%;
 		min-height: 220px;
 		background: #f3f1eb;
+	}
+	.game-map .start-indicator {
+		position: absolute;
+		z-index: 1;
+		width: 48px;
+		height: 48px;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		border-radius: 50%;
+		background: transparent;
+		box-shadow: none;
+		transform: translate(-50%, -50%);
+		cursor: pointer;
+	}
+	.start-indicator svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+		filter: drop-shadow(0 1px 3px rgb(0 0 0 / 30%));
+	}
+	.game-map .start-indicator:focus-visible {
+		outline: 2px solid var(--pico-primary);
+		outline-offset: -2px;
 	}
 	.choosing {
 		cursor: crosshair;
