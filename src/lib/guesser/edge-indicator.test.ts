@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { edgeIndicator } from './edge-indicator.js';
+import { edgeIndicator, edgeIndicators } from './edge-indicator.js';
 
 describe('offscreen start indicator', () => {
 	it.each([
@@ -72,5 +72,58 @@ describe('offscreen start indicator', () => {
 		expect(edgeIndicator([900, 300], [50, 600])).toBeNull();
 		expect(edgeIndicator([NaN, 300], [800, 600])).toBeNull();
 		expect(edgeIndicator([400, Infinity], [800, 600])).toBeNull();
+	});
+});
+
+describe('multiple offscreen indicators', () => {
+	it('leaves a single indicator and visible points unchanged', () => {
+		expect(
+			edgeIndicators(
+				[
+					[900, 300],
+					[400, 300]
+				],
+				[800, 600]
+			)
+		).toEqual([edgeIndicator([900, 300], [800, 600]), null]);
+	});
+
+	it.each([
+		[
+			[900, 300],
+			[950, 300],
+			[1000, 300]
+		],
+		[
+			[-100, 590],
+			[-100, 580],
+			[-100, 600]
+		],
+		[
+			[790, -100],
+			[780, -100],
+			[800, -100]
+		],
+		[
+			[10, 700],
+			[20, 700],
+			[0, 700]
+		]
+	])('keeps nearby edge buttons apart and aimed at their points: %j', (...pixels) => {
+		const indicators = edgeIndicators(pixels, [800, 600]);
+		for (let i = 0; i < indicators.length; i++) {
+			const indicator = indicators[i]!;
+			expect(indicator.x).toBeGreaterThanOrEqual(26);
+			expect(indicator.x).toBeLessThanOrEqual(774);
+			expect(indicator.y).toBeGreaterThanOrEqual(26);
+			expect(indicator.y).toBeLessThanOrEqual(574);
+			expect(indicator.angle).toBeCloseTo(
+				(Math.atan2(pixels[i][1] - indicator.y, pixels[i][0] - indicator.x) * 180) / Math.PI
+			);
+			for (let j = i + 1; j < indicators.length; j++) {
+				const other = indicators[j]!;
+				expect(Math.hypot(indicator.x - other.x, indicator.y - other.y)).toBeGreaterThanOrEqual(48);
+			}
+		}
 	});
 });

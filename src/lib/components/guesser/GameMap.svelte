@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Map, View, Feature } from 'ol';
+	import Overlay from 'ol/Overlay.js';
 	import { defaults as defaultControls } from 'ol/control/defaults.js';
 	import type { Coordinate } from 'ol/coordinate.js';
 	import { Point, LineString } from 'ol/geom.js';
@@ -13,7 +14,7 @@
 	import { onMount, setContext } from 'svelte';
 	import Mapant from '../map/Mapant.svelte';
 	import { explorationStartResolution, explorationView } from '#lib/guesser/view.js';
-	import { edgeIndicator, type EdgeIndicator } from '#lib/guesser/edge-indicator.js';
+	import { edgeIndicators, type EdgeIndicator } from '#lib/guesser/edge-indicator.js';
 
 	interface Props {
 		mode: 'explore' | 'guess';
@@ -26,7 +27,13 @@
 
 	let { mode, target, guess, revealed, resetSequence = 0, onGuess }: Props = $props();
 	let container: HTMLDivElement;
+	let popupElement: HTMLDivElement;
 	let map: Map | undefined = $state.raw();
+	let popup: Overlay | undefined = $state.raw();
+	let popupCoordinate: Coordinate | undefined = $state.raw();
+	let checkpoints: Coordinate[] = $state.raw([]);
+	let checkpointPositions: { coordinate: Coordinate; x: number; y: number; angle?: number }[] =
+		$state.raw([]);
 	let startIndicator: EdgeIndicator | null = $state.raw(null);
 	let mobile = false;
 	const markers = new VectorSource({ wrapX: false });
@@ -72,7 +79,7 @@
 		pendingFit = false;
 	}
 
-	function updateStartIndicator() {
+	function updateIndicators() {
 		if (!map || (mode === 'guess' && !revealed)) {
 			startIndicator = null;
 			return;
@@ -80,19 +87,51 @@
 		const size = map.getSize();
 		const start = transform(target, 'EPSG:2154', map.getView().getProjection());
 		const pixel = map.getPixelFromCoordinate(start);
-		startIndicator = size && pixel ? edgeIndicator(pixel, size) : null;
+		if (!size || !pixel) {
+			startIndicator = null;
+			checkpointPositions = [];
+			return;
+		}
+		const checkpointPixels = checkpoints.map((coordinate) =>
+			map!.getPixelFromCoordinate(coordinate)
+		);
+		const indicators = edgeIndicators([pixel, ...checkpointPixels], size);
+		startIndicator = indicators[0];
+		checkpointPositions = checkpoints.map((coordinate, index) => {
+			const [x, y] = checkpointPixels[index];
+			return { coordinate, ...(indicators[index + 1] ?? { x, y }) };
+		});
 	}
 
-	function returnToStart() {
+	function flyTo(coordinate: Coordinate) {
 		if (!map) return;
+		closePopup();
 		const view = map.getView();
 		view.cancelAnimations();
 		view.animate({
-			center: transform(target, 'EPSG:2154', view.getProjection()),
+			center: coordinate,
 			resolution: mode === 'explore' ? explorationStartResolution(mobile) : view.getResolution(),
 			rotation: 0,
 			duration: 250
 		});
+	}
+
+	function returnToStart() {
+		if (!map) return;
+		flyTo(transform(target, 'EPSG:2154', map.getView().getProjection()));
+	}
+
+	function closePopup() {
+		popupCoordinate = undefined;
+		popup?.setPosition(undefined);
+	}
+
+	function addCheckpoint() {
+		if (!map || !popupCoordinate) return;
+		checkpoints = [...checkpoints, popupCoordinate.slice()];
+		closePopup();
+		container.focus({ preventScroll: true });
+		map.render();
 	}
 
 	onMount(() => {
@@ -118,12 +157,23 @@
 			// Accept the first drag even before the map receives keyboard focus.
 			interactions: defaultInteractions({ keyboard: mode === 'explore' })
 		});
+		if (mode === 'explore') {
+			popup = new Overlay({
+				element: popupElement,
+				positioning: 'bottom-center',
+				offset: [0, -12],
+				stopEvent: true,
+				autoPan: { animation: { duration: 250 }, margin: 16 }
+			});
+			instance.addOverlay(popup);
+		}
 		instance.on('singleclick', (event) => {
 			if (mode === 'guess' && !revealed) onGuess?.(toLonLat(event.coordinate));
+			if (mode === 'explore') popupCoordinate = event.coordinate.slice();
 		});
 		map = instance;
 		// Update on every rendered frame, including drags, zooms and rotations.
-		instance.on('postrender', updateStartIndicator);
+		instance.on('postrender', updateIndicators);
 		const updateMobileViewport = () => {
 			mobile = mobileViewport.matches;
 			if (mode === 'explore') {
@@ -142,9 +192,14 @@
 		return () => {
 			mobileViewport.removeEventListener('change', updateMobileViewport);
 			resizeObserver.disconnect();
-			instance.un('postrender', updateStartIndicator);
+			instance.un('postrender', updateIndicators);
+			popup?.setMap(null);
 			instance.dispose();
 		};
+	});
+
+	$effect(() => {
+		popup?.setPosition(popupCoordinate);
 	});
 
 	$effect(() => {
@@ -189,11 +244,17 @@
 		? 'Carte Mapant du lieu à retrouver'
 		: 'Carte OpenStreetMap pour votre choix'}
 	tabindex={mode === 'explore' ? 0 : -1}
+	onkeydown={(event) => {
+		if (event.key === 'Escape' && popupCoordinate) {
+			closePopup();
+			container.focus({ preventScroll: true });
+		}
+	}}
 >
 	{#if startIndicator && (mode === 'explore' || revealed)}
 		<button
 			type="button"
-			class="start-indicator"
+			class="map-indicator"
 			style:left={`${startIndicator.x}px`}
 			style:top={`${startIndicator.y}px`}
 			aria-label="Retour au départ"
@@ -213,6 +274,53 @@
 			</svg>
 		</button>
 	{/if}
+	{#each checkpointPositions as position, index (index)}
+		<button
+			type="button"
+			class="map-indicator checkpoint-indicator"
+			style:left={`${position.x}px`}
+			style:top={`${position.y}px`}
+			aria-label={`Retour au checkpoint ${index + 1}`}
+			title={`Retour au checkpoint ${index + 1}`}
+			onclick={() => {
+				container.focus({ preventScroll: true });
+				flyTo(position.coordinate);
+			}}
+		>
+			<svg viewBox="-24 -24 48 48" aria-hidden="true">
+				{#if position.angle !== undefined}
+					<path
+						d="M22 0 L8 -13 L8 13 Z"
+						transform={`rotate(${position.angle})`}
+						fill="#1565c0"
+						stroke="white"
+						stroke-width="2"
+					/>
+				{/if}
+				<circle r="14" fill="#1565c0" stroke="white" stroke-width="3" />
+				<text text-anchor="middle" dy="0.35em" fill="white">{index + 1}</text>
+			</svg>
+		</button>
+	{/each}
+</div>
+
+<div
+	bind:this={popupElement}
+	class="checkpoint-popup"
+	hidden={!popupCoordinate}
+	role="group"
+	aria-label="Ajouter un checkpoint sur la carte"
+>
+	<button type="button" class="ghost" onclick={addCheckpoint}>Ajouter un checkpoint</button>
+	<button
+		type="button"
+		class="popup-close"
+		aria-label="Fermer le popup"
+		onclick={() => {
+			closePopup();
+			container.focus({ preventScroll: true });
+		}}>✕</button
+	>
 </div>
 
 {#if map && mode === 'explore'}
@@ -228,7 +336,7 @@
 		min-height: 220px;
 		background: #f3f1eb;
 	}
-	.game-map .start-indicator {
+	.game-map .map-indicator {
 		position: absolute;
 		z-index: 1;
 		width: 48px;
@@ -242,15 +350,70 @@
 		transform: translate(-50%, -50%);
 		cursor: pointer;
 	}
-	.start-indicator svg {
+	.map-indicator svg {
 		display: block;
 		width: 100%;
 		height: 100%;
 		filter: drop-shadow(0 1px 3px rgb(0 0 0 / 30%));
 	}
-	.game-map .start-indicator:focus-visible {
+	.checkpoint-indicator text {
+		font: bold 14px sans-serif;
+	}
+	.game-map .map-indicator:focus-visible {
 		outline: 2px solid var(--pico-primary);
 		outline-offset: -2px;
+	}
+	.checkpoint-popup {
+		position: relative;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem;
+		border: 1px solid #d7d7d7;
+		border-radius: 0.35rem;
+		background: white;
+		box-shadow: 0 2px 8px rgb(0 0 0 / 20%);
+	}
+	.checkpoint-popup[hidden] {
+		display: none;
+	}
+	.checkpoint-popup::after {
+		content: '';
+		position: absolute;
+		left: calc(50% - 7px);
+		bottom: -8px;
+		width: 14px;
+		height: 14px;
+		border-right: 1px solid #d7d7d7;
+		border-bottom: 1px solid #d7d7d7;
+		background: white;
+		transform: rotate(45deg);
+	}
+	.checkpoint-popup button {
+		margin: 0;
+		padding: 0.5rem 0.75rem;
+		font-size: 0.85rem;
+		white-space: nowrap;
+	}
+	.checkpoint-popup .ghost {
+		border-color: transparent;
+		background: transparent;
+		color: var(--pico-primary);
+		box-shadow: none;
+	}
+	.checkpoint-popup .ghost:hover {
+		background: var(--pico-primary-focus);
+		color: var(--pico-primary-hover);
+	}
+	.checkpoint-popup .ghost:focus-visible {
+		outline: 2px solid var(--pico-primary);
+		outline-offset: 2px;
+	}
+	.checkpoint-popup .popup-close {
+		padding: 0.5rem;
+		border: 0;
+		background: transparent;
+		color: #343b44;
 	}
 	.choosing {
 		cursor: crosshair;
