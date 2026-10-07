@@ -21,11 +21,10 @@
 		target: Coordinate;
 		guess?: Coordinate;
 		revealed: boolean;
-		resetSequence?: number;
 		onGuess?: (point: Coordinate) => void;
 	}
 
-	let { mode, target, guess, revealed, resetSequence = 0, onGuess }: Props = $props();
+	let { mode, target, guess, revealed, onGuess }: Props = $props();
 	let container: HTMLDivElement;
 	let popupElement: HTMLDivElement;
 	let map: Map | undefined = $state.raw();
@@ -153,7 +152,7 @@
 				...(mode === 'guess' ? [new TileLayer({ source: new OSM({ wrapX: false }) })] : []),
 				new VectorLayer({ source: markers, zIndex: 10 })
 			],
-			controls: defaultControls({ attributionOptions: { collapsible: false } }),
+			controls: defaultControls({ zoom: false, attributionOptions: { collapsible: false } }),
 			// Accept the first drag even before the map receives keyboard focus.
 			interactions: defaultInteractions({ keyboard: mode === 'explore' })
 		});
@@ -226,11 +225,6 @@
 		}
 		// Target/reveal changes also need an update when the view hasn't moved.
 		map.render();
-	});
-
-	$effect(() => {
-		if (!map || mode !== 'explore' || resetSequence === 0) return;
-		returnToStart();
 	});
 </script>
 
@@ -338,7 +332,8 @@
 	}
 	.game-map .map-indicator {
 		position: absolute;
-		z-index: 1;
+		/* Keep markers above the floating map controls, including the mobile sidebar toggle. */
+		z-index: 4;
 		width: 48px;
 		height: 48px;
 		margin: 0;

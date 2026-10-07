@@ -11,6 +11,7 @@ export interface RoundResult {
 	distance?: number;
 	points: number;
 	timedOut: boolean;
+	elapsedSeconds: number;
 }
 
 export interface GameState {
@@ -56,9 +57,17 @@ export function finishRound(game: GameState, now: number): GameState {
 	const timedOut = now >= game.deadline;
 	if (!game.guess && !timedOut) return game;
 	const distance = game.guess ? guessDistance(game.target, game.guess) : undefined;
+	const elapsedSeconds = Math.floor(
+		Math.min(ROUND_DURATION_MS, Math.max(0, now - (game.deadline - ROUND_DURATION_MS))) / 1000
+	);
 	const results = [
 		...game.results,
-		{ distance, points: distance === undefined ? 0 : scoreDistance(distance), timedOut }
+		{
+			distance,
+			points: distance === undefined ? 0 : scoreDistance(distance),
+			timedOut,
+			elapsedSeconds
+		}
 	];
 	return {
 		...game,

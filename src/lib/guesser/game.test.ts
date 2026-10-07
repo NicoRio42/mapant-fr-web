@@ -62,17 +62,36 @@ describe('five-round game', () => {
 		expect(placeGuess(game, [0, 0], startedAt + 3)).toBe(game);
 	});
 
+	it('records elapsed playing time at confirmation and keeps it for later rounds', () => {
+		const chosen = placeGuess(playing(), targetLonLat, startedAt + 1000);
+		const finished = finishRound(chosen, startedAt + 123_456);
+		expect(finished.results[0].elapsedSeconds).toBe(123);
+		expect(formatTime(finished.results[0].elapsedSeconds)).toBe('2:03');
+		const next = startRound(
+			{ status: 'loading', results: finished.results },
+			target,
+			startedAt + 1_000_000
+		);
+		expect(next.results[0].elapsedSeconds).toBe(123);
+		expect(remainingSeconds(next, startedAt + 1_000_000)).toBe(300);
+	});
+
 	it('scores the current tentative guess automatically at the deadline', () => {
 		const chosen = placeGuess(playing(), targetLonLat, startedAt + 1);
 		const result = finishRound(chosen, chosen.deadline!);
-		expect(result.results[0]).toMatchObject({ points: 5000, timedOut: true });
+		expect(result.results[0]).toMatchObject({ points: 5000, timedOut: true, elapsedSeconds: 300 });
 		expect(result.guess).toEqual(targetLonLat);
 	});
 
 	it('awards zero without a guess, including after a delayed background-tab tick', () => {
 		const game = playing();
 		const expired = finishRound(game, game.deadline! + 60_000);
-		expect(expired.results[0]).toEqual({ distance: undefined, points: 0, timedOut: true });
+		expect(expired.results[0]).toEqual({
+			distance: undefined,
+			points: 0,
+			timedOut: true,
+			elapsedSeconds: 300
+		});
 		expect(expired.status).toBe('revealed');
 	});
 
