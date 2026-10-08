@@ -7,7 +7,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 	// Capture before any asynchronous database/session work.
 	event.locals.receivedAt = Date.now();
 	event.locals.user = null;
-	if (event.url.pathname.startsWith('/guesser') || event.url.pathname.startsWith('/api/guesser')) {
+	if (
+		event.url.pathname === '/login' ||
+		event.url.pathname.startsWith('/guesser') ||
+		event.url.pathname.startsWith('/api/guesser')
+	) {
 		if (
 			!['GET', 'HEAD', 'OPTIONS'].includes(event.request.method) &&
 			event.request.headers.get('origin') !== event.url.origin

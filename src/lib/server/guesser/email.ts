@@ -21,9 +21,6 @@ export async function sendCode(env: GuesserEnv, local: boolean, email: string, c
 	try {
 		await env.EMAIL.send({ to: email, from: env.EMAIL_FROM, ...message });
 	} catch {
-		throw new GuesserError(
-			503,
-			'L’envoi du code a échoué. Votre partie est conservée. Réessayez dans une minute.'
-		);
+		throw new GuesserError(503, 'L’envoi du code a échoué. Votre partie est conservée. Réessayez.');
 	}
 }

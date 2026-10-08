@@ -79,19 +79,31 @@ export async function guest(
 	setCookie(cookies, 'guest', value, local);
 	return key;
 }
+export const RATE_LIMIT_MS = 5 * 60 * 1000;
+interface RateLimitReservation {
+	key: string;
+	expiresAt: number;
+}
 export async function rateLimit(
 	env: GuesserEnv,
 	scope: string,
 	identity: string,
 	max: number,
 	now: number,
-	window = 3600000
+	window = RATE_LIMIT_MS
 ) {
 	const key = await digest(env.AUTH_SECRET, `limit:${scope}:${identity}`);
-	const row = await database(env).get(
-		sql`insert into rate_limits (key,count,expires_at) values (${key},1,${now + window}) on conflict(key) do update set count=case when expires_at<=${now} then 1 else count+1 end, expires_at=case when expires_at<=${now} then ${now + window} else expires_at end where expires_at<=${now} or count<${max} returning key`
+	const row = await database(env).get<{ expires_at: number }>(
+		sql`insert into rate_limits (key,count,expires_at) values (${key},1,${now + window}) on conflict(key) do update set count=case when expires_at<=${now} then 1 else count+1 end, expires_at=case when expires_at<=${now} then ${now + window} else expires_at end where expires_at<=${now} or count<${max} returning expires_at`
 	);
 	if (!row) throw new GuesserError(429, 'Trop de tentatives. Patientez avant de réessayer.');
+	return { key, expiresAt: row.expires_at };
+}
+export async function releaseRateLimit(env: GuesserEnv, reservation: RateLimitReservation) {
+	// A delayed failure must not refund a request from a newer window.
+	await database(env).run(
+		sql`update rate_limits set count=max(0,count-1) where key=${reservation.key} and expires_at=${reservation.expiresAt}`
+	);
 }
 export async function cleanup(env: Pick<GuesserEnv, 'DB'>, now = Date.now()) {
 	const db = database(env);

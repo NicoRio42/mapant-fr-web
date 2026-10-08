@@ -2,7 +2,15 @@ import { sql } from 'drizzle-orm';
 import type { Cookies } from '@sveltejs/kit';
 import { database, conflict, GuesserError, type GuesserEnv } from './db.js';
 import { canonicalEmail, canonicalPseudonym, CODE_MS, SESSION_MS } from '../../guesser/protocol.js';
-import { cookieName, digest, hash, rateLimit, setCookie, token } from './security.js';
+import {
+	cookieName,
+	digest,
+	hash,
+	rateLimit,
+	releaseRateLimit,
+	setCookie,
+	token
+} from './security.js';
 import { sendCode } from './email.js';
 interface Challenge {
 	id: string;
@@ -25,15 +33,24 @@ export class AuthService {
 	}
 	async send(input: Record<string, unknown>, now: number) {
 		const email = canonicalEmail(input.email);
-		if (input.intent !== 'signup' && input.intent !== 'login')
-			throw new GuesserError(400, 'Choisissez inscription ou connexion.');
-		const name = input.intent === 'signup' ? canonicalPseudonym(input.pseudonym) : null;
+		await rateLimit(this.env, 'auth-start-ip', this.ip, 60, now);
+		const existing = await this.db.get(sql`select id from users where email=${email}`);
+		if (!existing && !input.pseudonym) return { needsPseudonym: true };
+		const name = existing ? null : canonicalPseudonym(input.pseudonym);
+		const intent = existing ? 'login' : 'signup';
 		let browser = this.cookies.get(cookieName('challenge', this.local));
 		if (!browser) {
 			browser = token();
 			setCookie(this.cookies, 'challenge', browser, this.local, 600);
 		}
 		const browserHash = await hash(browser);
+		const cooldown = () => new GuesserError(429, 'Attendez 60 secondes avant de renvoyer un code.');
+		if (
+			await this.db.get(
+				sql`select id from auth_challenges where browser_hash=${browserHash} and created_at>${now - 60000}`
+			)
+		)
+			throw cooldown();
 		const id = crypto.randomUUID();
 		// Rejection sampling avoids modulo bias in the six-digit code.
 		let random: number;
@@ -41,26 +58,39 @@ export class AuthService {
 			random = crypto.getRandomValues(new Uint32Array(1))[0];
 		} while (random >= 4294000000);
 		const code = String(random % 1000000).padStart(6, '0');
-		await rateLimit(
-			this.env,
-			'send-address',
-			email,
-			Number(this.env.EMAIL_ADDRESS_LIMIT) || 5,
-			now
-		);
-		await rateLimit(this.env, 'send-ip', this.ip, Number(this.env.EMAIL_IP_LIMIT) || 20, now);
 		const codeDigest = await digest(this.env.AUTH_SECRET, `${id}:${code}`);
-		const row = await this.db
-			.get(sql`insert into auth_challenges (id,browser_hash,intent,email,pseudonym,pseudonym_key,code_digest,created_at,expires_at)
-   values (${id},${browserHash},${input.intent},${email},${name?.display ?? null},${name?.key ?? null},${codeDigest},${now},${now + CODE_MS})
+		const reservations: Awaited<ReturnType<typeof rateLimit>>[] = [];
+		let created = false;
+		try {
+			reservations.push(
+				await rateLimit(
+					this.env,
+					'send-address',
+					email,
+					Number(this.env.EMAIL_ADDRESS_LIMIT) || 5,
+					now
+				)
+			);
+			reservations.push(
+				await rateLimit(this.env, 'send-ip', this.ip, Number(this.env.EMAIL_IP_LIMIT) || 20, now)
+			);
+			const row = await this.db
+				.get(sql`insert into auth_challenges (id,browser_hash,intent,email,pseudonym,pseudonym_key,code_digest,created_at,expires_at)
+   values (${id},${browserHash},${intent},${email},${name?.display ?? null},${name?.key ?? null},${codeDigest},${now},${now + CODE_MS})
    on conflict(browser_hash) do update set id=excluded.id,intent=excluded.intent,email=excluded.email,pseudonym=excluded.pseudonym,pseudonym_key=excluded.pseudonym_key,code_digest=excluded.code_digest,created_at=excluded.created_at,expires_at=excluded.expires_at,attempts=0,verified_at=null,consumed_at=null
    where auth_challenges.created_at<=${now - 60000} returning id`);
-		if (!row) throw new GuesserError(429, 'Attendez 60 secondes avant de renvoyer un code.');
-		setCookie(this.cookies, 'challenge', browser, this.local, 600);
-		await sendCode(this.env, this.local, email, code);
+			if (!row) throw cooldown();
+			created = true;
+			setCookie(this.cookies, 'challenge', browser, this.local, 600);
+			await sendCode(this.env, this.local, email, code);
+		} catch (cause) {
+			// Only accepted deliveries consume the email budgets, including concurrent resends.
+			await Promise.all(reservations.map((reservation) => releaseRateLimit(this.env, reservation)));
+			if (created) await this.db.run(sql`delete from auth_challenges where id=${id}`);
+			throw cause;
+		}
 		return {
-			message:
-				'Si cette adresse peut être utilisée, un code a été envoyé. Vérifiez aussi les courriers indésirables.'
+			message: 'Un code a été envoyé. Vérifiez aussi les courriers indésirables.'
 		};
 	}
 	async verify(input: Record<string, unknown>, now: number) {
@@ -138,6 +168,10 @@ export class AuthService {
 		if (session)
 			await this.db.run(sql`delete from sessions where token_hash=${await hash(session)}`);
 		this.cookies.delete(cookieName('session', this.local), { path: '/', secure: !this.local });
+		const browser = this.cookies.get(cookieName('challenge', this.local));
+		if (browser)
+			await this.db.run(sql`delete from auth_challenges where browser_hash=${await hash(browser)}`);
+		this.cookies.delete(cookieName('challenge', this.local), { path: '/', secure: !this.local });
 		return { ok: true };
 	}
 }

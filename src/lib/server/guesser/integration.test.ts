@@ -8,7 +8,14 @@ import { database, type GuesserEnv } from './db.js';
 import { GameService } from './games.js';
 import { AuthService } from './auth.js';
 import { leaderboard, rankedGames } from './leaderboard.js';
-import { cleanup, resolveUser, guest, rateLimit } from './security.js';
+import {
+	cleanup,
+	resolveUser,
+	guest,
+	rateLimit,
+	releaseRateLimit,
+	RATE_LIMIT_MS
+} from './security.js';
 import { sendCode } from './email.js';
 import { SESSION_MS } from '../../guesser/protocol.js';
 let mf: Miniflare;
@@ -241,15 +248,58 @@ describe('local D1 game authority', () => {
 	}, 30000);
 });
 describe('local D1 authentication', () => {
+	it('asks new addresses for a pseudonym before sending a code or creating an account', async () => {
+		const jar = cookieJar();
+		const auth = new AuthService(env, jar.cookies, true, 'ip');
+		const now = Date.now();
+		const log = vi.spyOn(console, 'info').mockImplementation(() => {});
+		try {
+			expect(await auth.send({ email: ' New@Example.fr ' }, now)).toEqual({ needsPseudonym: true });
+			expect(log).not.toHaveBeenCalled();
+			expect(jar.values.size).toBe(0);
+			expect(await db.all(sql`select * from auth_challenges`)).toHaveLength(0);
+			expect(await db.all(sql`select * from users`)).toHaveLength(0);
+			await expect(auth.send({ email: 'new@example.fr', pseudonym: 'x' }, now)).rejects.toThrow();
+			expect(log).not.toHaveBeenCalled();
+		} finally {
+			log.mockRestore();
+		}
+		const code = await challenge(auth, { email: 'new@example.fr', pseudonym: 'New player' }, now);
+		expect(await db.all(sql`select * from users`)).toHaveLength(0);
+		expect(await auth.verify({ code }, now + 1)).toEqual({ authenticated: true });
+		expect(await resolveUser(env, jar.cookies, true, now + 2)).toMatchObject({
+			pseudonym: 'New player'
+		});
+	});
+	it('sends an existing address a code with email alone and preserves its pseudonym', async () => {
+		await user('existing', 'Original');
+		const jar = cookieJar();
+		const auth = new AuthService(env, jar.cookies, true, 'ip');
+		const now = Date.now();
+		const code = await challenge(auth, { email: ' EXISTING@EXAMPLE.FR ' }, now);
+		expect(await auth.verify({ code }, now + 1)).toEqual({ authenticated: true });
+		expect(await resolveUser(env, jar.cookies, true, now + 2)).toMatchObject({
+			pseudonym: 'Original'
+		});
+		expect(await db.all(sql`select * from users`)).toHaveLength(1);
+	});
+	it('limits email lookups before any code is sent', async () => {
+		const auth = new AuthService(env, cookieJar().cookies, true, 'ip');
+		const now = Date.now();
+		for (let i = 0; i < 60; i++) {
+			expect(await auth.send({ email: `new${i}@example.fr` }, now)).toEqual({
+				needsPseudonym: true
+			});
+		}
+		await expect(auth.send({ email: 'another@example.fr' }, now)).rejects.toMatchObject({
+			status: 429
+		});
+	});
 	it('prints code locally, verifies, consumes once, preserves existing pseudonym, logs out, and enforces fixed expiry', async () => {
 		const jar = cookieJar();
 		const auth = new AuthService(env, jar.cookies, true, 'ip');
 		const now = Date.now();
-		const code = await challenge(
-			auth,
-			{ intent: 'signup', email: ' U@EXAMPLE.FR ', pseudonym: 'Équipe' },
-			now
-		);
+		const code = await challenge(auth, { email: ' U@EXAMPLE.FR ', pseudonym: 'Équipe' }, now);
 		const results = await Promise.allSettled([
 			auth.verify({ code }, now + 1),
 			auth.verify({ code }, now + 1)
@@ -266,7 +316,7 @@ describe('local D1 authentication', () => {
 		expect(await resolveUser(env, jar.cookies, true, now + 4)).toBeNull();
 		const next = await challenge(
 			auth,
-			{ intent: 'signup', email: 'u@example.fr', pseudonym: 'Replacement' },
+			{ email: 'u@example.fr', pseudonym: 'Replacement' },
 			now + 61000
 		);
 		await auth.verify({ code: next }, now + 61001);
@@ -274,22 +324,113 @@ describe('local D1 authentication', () => {
 			pseudonym: 'Équipe'
 		});
 	});
+	it('allows immediate login after logout while keeping five-minute email limits', async () => {
+		await user();
+		const jar = cookieJar();
+		const auth = new AuthService({ ...env, EMAIL_ADDRESS_LIMIT: '2' }, jar.cookies, true, 'ip');
+		const now = Date.now();
+		for (let i = 0; i < 2; i++) {
+			const code = await challenge(auth, { email: 'u@example.fr' }, now + i * 1000);
+			expect(await auth.verify({ code }, now + i * 1000 + 1)).toEqual({ authenticated: true });
+			expect(await resolveUser(env, jar.cookies, true, now + i * 1000 + 2)).toMatchObject({
+				id: 'u'
+			});
+			await auth.logout();
+			expect(await resolveUser(env, jar.cookies, true, now + i * 1000 + 3)).toBeNull();
+			expect(await db.all(sql`select * from sessions`)).toHaveLength(0);
+			expect(await db.all(sql`select * from auth_challenges`)).toHaveLength(0);
+			expect(jar.values.has('mapant-challenge')).toBe(false);
+			await expect(auth.verify({ code }, now + i * 1000 + 4)).rejects.toThrow();
+		}
+		await expect(auth.send({ email: 'u@example.fr' }, now + 2000)).rejects.toMatchObject({
+			status: 429
+		});
+		const next = await challenge(auth, { email: 'u@example.fr' }, now + RATE_LIMIT_MS);
+		expect(await auth.verify({ code: next }, now + RATE_LIMIT_MS + 1)).toEqual({
+			authenticated: true
+		});
+	});
+	it('does not charge cooldown rejections or concurrent resends to email allowances', async () => {
+		await user();
+		const auth = new AuthService(
+			{ ...env, EMAIL_ADDRESS_LIMIT: '3', EMAIL_IP_LIMIT: '3' },
+			cookieJar().cookies,
+			true,
+			'ip'
+		);
+		const now = Date.now();
+		const log = vi.spyOn(console, 'info').mockImplementation(() => {});
+		try {
+			await auth.send({ email: 'u@example.fr' }, now);
+			for (let i = 1; i <= 6; i++) {
+				await expect(auth.send({ email: 'u@example.fr' }, now + i)).rejects.toThrow('60 secondes');
+			}
+			const results = await Promise.allSettled([
+				auth.send({ email: 'u@example.fr' }, now + 60000),
+				auth.send({ email: 'u@example.fr' }, now + 60000)
+			]);
+			expect(results.filter((result) => result.status === 'fulfilled')).toHaveLength(1);
+			await auth.send({ email: 'u@example.fr' }, now + 120000);
+			expect(log).toHaveBeenCalledTimes(3);
+			await expect(auth.send({ email: 'u@example.fr' }, now + 180000)).rejects.toMatchObject({
+				status: 429
+			});
+		} finally {
+			log.mockRestore();
+		}
+	});
+	it('refunds the address allowance when the IP allowance rejects a send', async () => {
+		await user();
+		await user('other');
+		const limitedEnv = { ...env, EMAIL_ADDRESS_LIMIT: '1', EMAIL_IP_LIMIT: '1' };
+		const now = Date.now();
+		await challenge(
+			new AuthService(limitedEnv, cookieJar().cookies, true, 'ip'),
+			{ email: 'other@example.fr' },
+			now
+		);
+		await expect(
+			new AuthService(limitedEnv, cookieJar().cookies, true, 'ip').send(
+				{ email: 'u@example.fr' },
+				now + 1
+			)
+		).rejects.toMatchObject({ status: 429 });
+		const jar = cookieJar();
+		const auth = new AuthService(limitedEnv, jar.cookies, true, 'another-ip');
+		const code = await challenge(auth, { email: 'u@example.fr' }, now + 2);
+		expect(await auth.verify({ code }, now + 3)).toEqual({ authenticated: true });
+	});
+	it('refunds failed deliveries and permits an immediate retry', async () => {
+		await user();
+		const jar = cookieJar();
+		const send = vi.fn().mockRejectedValueOnce(new Error('delivery')).mockResolvedValue(undefined);
+		const auth = new AuthService(
+			{
+				...env,
+				EMAIL_ADDRESS_LIMIT: '1',
+				EMAIL_IP_LIMIT: '1',
+				EMAIL_MODE: 'cloudflare',
+				EMAIL_FROM: 'sender@example.fr',
+				EMAIL: { send }
+			},
+			jar.cookies,
+			false,
+			'ip'
+		);
+		const now = Date.now();
+		await expect(auth.send({ email: 'u@example.fr' }, now)).rejects.toMatchObject({ status: 503 });
+		expect(await db.all(sql`select * from auth_challenges`)).toHaveLength(0);
+		await expect(auth.send({ email: 'u@example.fr' }, now + 1)).resolves.toHaveProperty('message');
+		expect(send).toHaveBeenCalledTimes(2);
+	});
 	it('supports verified pseudonym conflicts and concurrent uniqueness races without repeating email', async () => {
 		const a = cookieJar(),
 			b = cookieJar();
 		const aa = new AuthService(env, a.cookies, true, 'a'),
 			bb = new AuthService(env, b.cookies, true, 'b');
 		const now = Date.now();
-		const ca = await challenge(
-			aa,
-			{ intent: 'signup', email: 'a@example.fr', pseudonym: 'Same' },
-			now
-		);
-		const cb = await challenge(
-			bb,
-			{ intent: 'signup', email: 'b@example.fr', pseudonym: 'SAME' },
-			now
-		);
+		const ca = await challenge(aa, { email: 'a@example.fr', pseudonym: 'Same' }, now);
+		const cb = await challenge(bb, { email: 'b@example.fr', pseudonym: 'SAME' }, now);
 		const results = await Promise.all([
 			aa.verify({ code: ca }, now + 1),
 			bb.verify({ code: cb }, now + 1)
@@ -305,19 +446,15 @@ describe('local D1 authentication', () => {
 		const jar = cookieJar();
 		const auth = new AuthService(env, jar.cookies, true, 'ip');
 		const now = Date.now();
-		const first = await challenge(
-			auth,
-			{ intent: 'signup', email: 'a@example.fr', pseudonym: 'Player' },
-			now
-		);
+		const first = await challenge(auth, { email: 'a@example.fr', pseudonym: 'Player' }, now);
 		const other = new AuthService(env, cookieJar().cookies, true, 'other');
 		await expect(other.verify({ code: first }, now + 1)).rejects.toThrow();
 		await expect(
-			challenge(auth, { intent: 'login', email: 'a@example.fr' }, now + 1000)
+			challenge(auth, { email: 'a@example.fr', pseudonym: 'Player' }, now + 1000)
 		).rejects.toMatchObject({ status: 429 });
 		const second = await challenge(
 			auth,
-			{ intent: 'signup', email: 'a@example.fr', pseudonym: 'Player' },
+			{ email: 'a@example.fr', pseudonym: 'Player' },
 			now + 60000
 		);
 		if (first !== second) await expect(auth.verify({ code: first }, now + 60001)).rejects.toThrow();
@@ -326,7 +463,7 @@ describe('local D1 authentication', () => {
 		await expect(auth.verify({ code: second }, now + 60003)).rejects.toThrow();
 		const third = await challenge(
 			auth,
-			{ intent: 'signup', email: 'a@example.fr', pseudonym: 'Player' },
+			{ email: 'a@example.fr', pseudonym: 'Player' },
 			now + 120000
 		);
 		await expect(auth.verify({ code: third }, now + 720000)).rejects.toThrow();
@@ -362,6 +499,18 @@ describe('local D1 authentication', () => {
 		expect(results.filter((r) => r.status === 'fulfilled')).toHaveLength(5);
 		const rows = await db.all<{ key: string }>(sql`select key from rate_limits`);
 		expect(rows[0].key).toMatch(/^[a-f0-9]{64}$/);
-		await rateLimit(env, 'address', 'private@example.fr', 5, now + 3600000);
+		await expect(
+			rateLimit(env, 'address', 'private@example.fr', 5, now + RATE_LIMIT_MS - 1)
+		).rejects.toMatchObject({ status: 429 });
+		await rateLimit(env, 'address', 'private@example.fr', 5, now + RATE_LIMIT_MS);
+	});
+	it('does not refund a newer window', async () => {
+		const now = Date.now();
+		const reservation = await rateLimit(env, 'address', 'private@example.fr', 1, now);
+		await rateLimit(env, 'address', 'private@example.fr', 1, now + RATE_LIMIT_MS);
+		await releaseRateLimit(env, reservation);
+		await expect(
+			rateLimit(env, 'address', 'private@example.fr', 1, now + RATE_LIMIT_MS + 1)
+		).rejects.toMatchObject({ status: 429 });
 	});
 });

@@ -313,7 +313,7 @@
 			La session a peut-être expiré. Reconnectez-vous au compte propriétaire pour reprendre cette
 			partie. Votre proposition en attente est conservée ; le délai continue de courir.
 		</p>
-		<Account user={null} onauthenticated={recover} />
+		<Account user={null} />
 	</div>{/if}
 <main class="guesser" aria-busy={busy}>
 	{#if !sidebarOpen}
@@ -479,10 +479,9 @@
 				{:else}<p>
 						Partie conservée. Connectez-vous dans les 24 heures pour publier ce score.
 					</p>{/if}
-				{#if !saved?.saved}<Account
-						user={data.user}
-						onauthenticated={claim}
-					/>{#if data.user}<button disabled={saving} onclick={claim}>Enregistrer ce score</button
+				{#if !saved?.saved}<Account user={data.user} />{#if data.user}<button
+							disabled={saving}
+							onclick={claim}>Enregistrer ce score</button
 						>{/if}{/if}
 				{#if saved?.rounds.some((r) => r.submissionId === 'timeout')}<p>
 						Une manche a expiré sans proposition reçue à temps. Un rechargement ou une absence de
