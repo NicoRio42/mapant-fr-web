@@ -12,3 +12,7 @@ vite.config.ts.timestamp-*
 data
 tiles.json
 .wrangler
+
+.dev.vars
+.dev.vars.*
+!.dev.vars.example

@@ -1,621 +1,395 @@
 <script lang="ts">
-	import Dialog from '#lib/components/Dialog.svelte';
-	import GameMap from '#lib/components/guesser/GameMap.svelte';
-	import { MAPANT_TILES_BASE_URL } from '#lib/components/map/mapant-tile-url.js';
-	import { findCoveredLocation, formatDistance } from '#lib/guesser/round.js';
-	import {
-		createGame,
-		finishRound,
-		formatTime,
-		MAX_GAME_POINTS,
-		MAX_ROUND_POINTS,
-		placeGuess,
-		remainingSeconds,
-		ROUND_COUNT,
-		startRound,
-		totalPoints,
-		type RoundResult
-	} from '#lib/guesser/game.js';
-	import type { Coordinate } from 'ol/coordinate.js';
-	import { onMount } from 'svelte';
-
-	let game = $state(createGame());
-	let now = $state(0);
-	let dialogOpen = $state(false);
-	let roundId = $state(0);
-	let viewportWidth = $state(1024);
-	let sidebarOpen = $state(false);
-	let search: AbortController | undefined;
-	const revealed = $derived(game.status === 'revealed' || game.status === 'finished');
-	const roundNumber = $derived(Math.min(game.results.length + (revealed ? 0 : 1), ROUND_COUNT));
-	const result = $derived(revealed ? game.results.at(-1) : undefined);
-	const previousResults = $derived(
-		game.status === 'revealed' ? game.results.slice(0, -1) : game.results
-	);
-	const secondsLeft = $derived(remainingSeconds(game, now));
-	const score = $derived(totalPoints(game));
+	import Account from '#lib/components/guesser/Account.svelte';
+	import { formatTime } from '#lib/guesser/game.js';
+	import type { Leader } from '#lib/guesser/protocol.js';
+	import type { PageProps } from './$types';
+	let { data }: PageProps = $props();
 	const points = (value: number) => value.toLocaleString('fr-FR');
-
-	async function loadRound() {
-		search?.abort();
-		const current = new AbortController();
-		search = current;
-		game = { status: 'loading', results: game.results };
-		dialogOpen = false;
-		try {
-			const location = await findCoveredLocation({
-				baseUrl: MAPANT_TILES_BASE_URL,
-				signal: current.signal
-			});
-			if (current.signal.aborted) return;
-			now = Date.now();
-			game = startRound(game, location, now);
-			roundId += 1;
-		} catch (cause) {
-			if (current.signal.aborted) return;
-			game = {
-				status: 'error',
-				results: game.results,
-				error: cause instanceof Error ? cause.message : 'Impossible de charger un lieu. Réessayez.'
-			};
-		}
-	}
-
-	function newGame() {
-		game = createGame();
-		void loadRound();
-	}
-
-	function nextRound() {
-		if (game.status === 'revealed') void loadRound();
-	}
-
-	function updateClock() {
-		now = Date.now();
-		if (game.status === 'playing' && remainingSeconds(game, now) === 0) {
-			game = finishRound(game, now);
-			dialogOpen = true;
-		}
-	}
-
-	function chooseGuess(point: Coordinate) {
-		now = Date.now();
-		game = placeGuess(game, point, now);
-	}
-
-	function confirmGuess() {
-		now = Date.now();
-		game = finishRound(game, now);
-	}
-
-	onMount(() => {
-		void loadRound();
-		const timer = window.setInterval(updateClock, 250);
-		document.addEventListener('visibilitychange', updateClock);
-		window.addEventListener('focus', updateClock);
-		return () => {
-			search?.abort();
-			window.clearInterval(timer);
-			document.removeEventListener('visibilitychange', updateClock);
-			window.removeEventListener('focus', updateClock);
-		};
-	});
+	const time = (milliseconds: number) => formatTime(Math.floor(milliseconds / 1000));
 </script>
 
 <svelte:head>
-	<title>Mapant Guesser — Retrouvez votre position</title>
+	<title>Mapant Guesser — Classement et jeu</title>
 	<meta
 		name="description"
-		content="Retrouvez cinq lieux sur Mapant.fr : cinq minutes par manche, 5 000 points à moins de 50 m et un score total sur 25 000."
+		content="Retrouvez cinq lieux en France sur Mapant. Jouez sans compte et publiez votre meilleur score au classement Mapant Guesser."
 	/>
 </svelte:head>
 
-<svelte:window bind:innerWidth={viewportWidth} />
-
-{#snippet timer()}
-	{#if game.status === 'playing'}
-		<span class="timer" class:urgent={secondsLeft <= 30} role="timer" aria-label="Temps restant">
-			{formatTime(secondsLeft)}
+{#snippet rank(position: number)}
+	{#if position <= 3}
+		<span class="medal" role="img" aria-label={`${position === 1 ? '1re' : `${position}e`} place`}>
+			{position === 1 ? '🥇' : position === 2 ? '🥈' : '🥉'}
 		</span>
+	{:else}
+		<span class="rank-number">{position}</span>
 	{/if}
 {/snippet}
 
-{#snippet resultText(round: RoundResult | undefined = result)}
-	{#if round}
-		<strong class="distance">{points(round.points)} / {points(MAX_ROUND_POINTS)} points</strong>
-		<span>
-			{#if round.timedOut}Temps écoulé ·
-			{/if}
-			{round.distance === undefined
-				? 'Aucune proposition'
-				: `${formatDistance(round.distance)} du départ`}
-		</span>
-		<span>Temps : {formatTime(round.elapsedSeconds)}</span>
-	{/if}
+{#snippet row(player: Leader)}
+	<tr class:current-player={player.gameId === data.current?.gameId}>
+		<td class="rank">{@render rank(player.rank)}</td>
+		<th scope="row" class="player">
+			{player.pseudonym}
+			{#if player.gameId === data.current?.gameId}<span class="you">Vous</span>{/if}
+		</th>
+		<td class="numeric score">{points(player.points)}</td>
+		<td class="numeric time">{time(player.time)}</td>
+	</tr>
 {/snippet}
 
-<main class="guesser">
-	{#if !sidebarOpen}
-		<button
-			type="button"
-			class="sidebar-toggle secondary outline"
-			bg-white
-			aria-label="Afficher les commandes"
-			aria-controls="game-sidebar"
-			aria-expanded={sidebarOpen}
-			onclick={() => (sidebarOpen = true)}
-		>
-			<i i-carbon-menu w-5 h-5 block aria-hidden="true"></i>
-		</button>
-	{/if}
-	<aside
-		id="game-sidebar"
-		class="game-sidebar"
-		aria-label="Commandes du jeu"
-		hidden={viewportWidth <= 600 && !sidebarOpen}
-	>
-		<div class="game-heading">
-			<div class="game-heading-title">
-				<button
-					type="button"
-					class="sidebar-close secondary outline"
-					bg-white
-					aria-label="Fermer les commandes"
-					aria-controls="game-sidebar"
-					aria-expanded={sidebarOpen}
-					onclick={() => (sidebarOpen = false)}
-				>
-					<i i-carbon-close-large w-5 h-5 block aria-hidden="true"></i>
-				</button>
-				<h1>Mapant <strong>Guesser</strong></h1>
-			</div>
-			<p>{ROUND_COUNT} manches · 5 min par manche · 5 000 points à 50 m ou moins</p>
-		</div>
-		<div class="progress-info" aria-live="polite">
-			<strong>Score total</strong>
-			<span>{points(score)} / {points(MAX_GAME_POINTS)} points</span>
-		</div>
-		<div class="sidebar-round">
-			{#each previousResults as round, index}
-				<div class="round-info sidebar-result">
-					<strong>Manche {index + 1}</strong>
-					{@render resultText(round)}
+<main class="landing">
+	<div class="content">
+		<header class="hero">
+			<h1>Mapant Guesser</h1>
+			<ul class="game-facts" aria-label="Les règles en bref">
+				<li><strong>5</strong> manches</li>
+				<li><strong>5 min</strong> par manche</li>
+				<li><strong>25 000</strong> points possibles</li>
+			</ul>
+			<a class="play big" href="/guesser/game" role="button">
+				Jouer ou reprendre <i class="i-carbon-arrow-right" aria-hidden="true"></i>
+			</a>
+		</header>
+
+		<Account user={data.user} />
+
+		<section class="leaderboard" aria-labelledby="leaderboard-title">
+			<div class="section-heading">
+				<div>
+					<h2 id="leaderboard-title">Classement</h2>
 				</div>
-			{/each}
-			{#if game.status !== 'finished'}
-				<div class="game-stats">
-					<div class="progress-info" aria-live="polite">
-						<strong>Manche {roundNumber} / {ROUND_COUNT}</strong>
+				<span class="top-label">Top 100</span>
+			</div>
+
+			{#if data.current}
+				<aside class="personal-best" aria-label="Votre meilleur score">
+					<div class="personal-title">
+						<i class="i-carbon-trophy" aria-hidden="true"></i><strong>Votre record</strong>
 					</div>
-					{@render timer()}
-				</div>
-				{#if result}
-					<div class="round-info" aria-live="polite">{@render resultText()}</div>
-				{/if}
+					<dl>
+						<div>
+							<dt>Rang</dt>
+							<dd>#{data.current.rank}</dd>
+						</div>
+						<div>
+							<dt>Points</dt>
+							<dd>{points(data.current.points)}</dd>
+						</div>
+						<div>
+							<dt>Temps</dt>
+							<dd>{time(data.current.time)}</dd>
+						</div>
+					</dl>
+				</aside>
 			{/if}
-			{#if game.status === 'finished'}
-				<div class="round-info" aria-live="polite">
-					<span>Partie terminée ! Retrouvez le détail des cinq manches dans le bilan.</span>
-				</div>
-			{/if}
-			{#if game.status === 'revealed'}
-				<div class="actions">
-					<button type="button" onclick={nextRound}>Manche suivante</button>
-				</div>
-			{/if}
-		</div>
-		<div class="sidebar-footer">
-			{#if !revealed}
-				<div class="round-info">
-					<strong>Où se trouve le point de départ ?</strong>
-					<span>À la fin du chrono, votre choix est validé. Sans choix : 0 point.</span>
-				</div>
-			{/if}
-			<button type="button" class="outline" onclick={newGame}>Nouvelle partie</button>
-		</div>
-	</aside>
 
-	<div class="exploration">
-		{#if game.target}
-			{#key roundId}
-				<GameMap mode="explore" target={game.target} guess={game.guess} {revealed} />
-			{/key}
-		{:else}
-			<div class="placeholder" role="status" aria-live="polite">
-				{#if game.status === 'loading'}
-					<span aria-busy="true"></span>
-					<h2>À la recherche d’un lieu…</h2>
-					<p>
-						Nous vérifions la couverture Mapant autour du point de départ. Le chrono démarre
-						ensuite.
-					</p>
-				{:else}
-					<h2>La carte se fait attendre</h2>
-					<p class="error-msg">{game.error}</p>
-					<button type="button" onclick={loadRound}>Réessayer</button>
-				{/if}
-			</div>
-		{/if}
-		{#if viewportWidth <= 600 && game.status === 'playing'}
-			<div class="map-timer">
-				{@render timer()}
-			</div>
-		{/if}
-		<button
-			type="button"
-			class="guess-button"
-			disabled={!game.target}
-			aria-haspopup="dialog"
-			onclick={() => (dialogOpen = true)}
-		>
-			<span>
-				{game.status === 'finished'
-					? 'Voir le bilan'
-					: revealed
-						? 'Voir le résultat'
-						: 'Faire une proposition'}
-			</span>
-		</button>
+			{#if data.error}
+				<div class="empty-state">
+					<p role="alert">{data.error}</p>
+					<a href="/guesser" data-sveltekit-reload>Réessayer</a>
+				</div>
+			{:else if !data.leaders.length}
+				<div class="empty-state">
+					<i class="i-carbon-trophy" aria-hidden="true"></i>
+					<h3>La première place vous attend</h3>
+					<p>Terminez une partie et publiez votre score pour ouvrir le classement.</p>
+					<a href="/guesser/game">À vous de jouer →</a>
+				</div>
+			{:else}
+				<div class="scores">
+					<table>
+						<caption class="sr-only">Les 100 meilleurs joueurs de Mapant Guesser</caption>
+						<thead
+							><tr
+								><th scope="col" class="rank">Rang</th><th scope="col">Joueur</th><th
+									scope="col"
+									class="numeric">Points</th
+								><th scope="col" class="numeric">Temps</th></tr
+							></thead
+						>
+						<tbody
+							>{#each data.leaders as player (player.gameId)}{@render row(player)}{/each}</tbody
+						>
+					</table>
+				</div>
+			{/if}
+		</section>
 	</div>
 </main>
 
-<Dialog bind:open={dialogOpen} maxWidth="1040px" label="Votre proposition Mapant Guesser">
-	<div class="guess-dialog">
-		<div class="dialog-header">
-			<div>
-				<h2>
-					{game.status === 'finished'
-						? 'Partie terminée !'
-						: revealed
-							? `Résultat de la manche ${roundNumber}`
-							: `Manche ${roundNumber} — Où êtes-vous ?`}
-				</h2>
-				<p>
-					{revealed ? 'Départ en orange · Votre choix en bleu' : 'Cliquez pour placer votre choix.'}
-				</p>
-			</div>
-			{@render timer()}
-			<button
-				type="button"
-				class="outline"
-				aria-label="Fermer la carte"
-				onclick={() => (dialogOpen = false)}>✕</button
-			>
-		</div>
-		{#if game.status === 'finished'}
-			<div class="game-summary" aria-live="polite">
-				<p class="final-score">
-					<strong>{points(score)}</strong> / {points(MAX_GAME_POINTS)} points
-				</p>
-				<table>
-					<caption>Vos cinq manches</caption>
-					<thead
-						><tr
-							><th scope="col">Manche</th><th scope="col">Distance</th><th scope="col">Temps</th><th
-								scope="col">Points</th
-							></tr
-						></thead
-					>
-					<tbody>
-						{#each game.results as round, index}
-							<tr>
-								<th scope="row">{index + 1}{round.timedOut ? ' · Temps écoulé' : ''}</th>
-								<td
-									>{round.distance === undefined
-										? 'Sans choix'
-										: formatDistance(round.distance)}</td
-								>
-								<td>{formatTime(round.elapsedSeconds)}</td>
-								<td>{points(round.points)}</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
-		{/if}
-		<!-- Keep the map mounted while the dialog is closed to preserve its view for this round. -->
-		{#if game.target}
-			<div class="guess-map" class:final-map={game.status === 'finished'}>
-				<GameMap
-					mode="guess"
-					target={game.target}
-					guess={game.guess}
-					{revealed}
-					onGuess={chooseGuess}
-				/>
-			</div>
-		{/if}
-		<div class="dialog-footer">
-			{#if revealed}
-				<div class="round-info" aria-live="polite">{@render resultText()}</div>
-				{#if game.status === 'finished'}
-					<button type="button" onclick={newGame}>Rejouer une partie</button>
-				{:else}
-					<button type="button" onclick={nextRound}>Manche suivante</button>
-				{/if}
-			{:else}
-				<button type="button" class="outline" onclick={() => (dialogOpen = false)}
-					>Continuer à explorer</button
-				>
-				<button
-					type="button"
-					disabled={!game.guess || game.status !== 'playing'}
-					onclick={confirmGuess}>Valider mon choix</button
-				>
-			{/if}
-		</div>
-	</div>
-</Dialog>
-
 <style>
-	.guesser {
-		position: relative;
-		display: flex;
+	.landing {
 		flex: 1;
 		min-height: 0;
-		overflow: hidden;
+		overflow: auto;
+		padding: 1.75rem 1.25rem 3rem;
 	}
-	.game-sidebar {
-		display: flex;
-		flex-direction: column;
-		flex: 0 0 20rem;
-		gap: 1.5rem;
-		padding: 1.5rem;
-		overflow-y: auto;
-		background: var(--pico-background-color);
-		border-right: 1px solid var(--pico-muted-border-color);
+	.content {
+		width: 100%;
+		max-width: 52rem;
+		margin-inline: auto;
 	}
-	.game-sidebar[hidden] {
-		display: none;
+	.hero {
+		padding-block: 0 1.5rem;
+		text-align: center;
 	}
-	.sidebar-toggle,
-	.sidebar-close {
-		display: none;
-	}
-	.game-stats {
+	.eyebrow {
 		display: flex;
 		align-items: center;
-		gap: 1rem;
-		justify-content: space-between;
-		padding: 1rem 0;
-		border-block: 1px solid var(--pico-muted-border-color);
+		justify-content: center;
+		gap: 0.4rem;
+		color: var(--pico-primary);
+		font-size: 0.75rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		margin-bottom: 0.75rem;
 	}
-	.progress-info {
-		display: flex;
-		flex-direction: column;
-		font-variant-numeric: tabular-nums;
-	}
-	.progress-info span {
-		font-size: 0.85rem;
-		color: var(--pico-muted-color);
-	}
-	.timer {
-		font-size: 1.5rem;
-		font-weight: bold;
-		font-variant-numeric: tabular-nums;
-		white-space: nowrap;
-	}
-	.timer.urgent {
-		color: #b42318;
+	i {
+		display: inline-block;
+		width: 1.25rem;
+		height: 1.25rem;
+		flex-shrink: 0;
 	}
 	h1 {
-		font-size: 1.5rem;
-		margin: 0;
+		margin-top: 0;
+		font-size: clamp(2rem, 5vw, 2.6rem);
+		font-weight: 700;
+		letter-spacing: -0.04em;
+		margin-bottom: 0.75rem;
 	}
-	h1 strong {
-		color: var(--pico-primary);
-	}
-	.game-heading p,
-	.dialog-header p {
-		margin: 0.25rem 0 0;
+	.intro {
+		max-width: 35rem;
+		margin: 0 auto;
 		color: var(--pico-muted-color);
+		line-height: 1.6;
 	}
-	.exploration {
-		position: relative;
-		flex: 1;
-		min-width: 0;
-		min-height: 250px;
-	}
-	.guess-button {
-		position: absolute;
-		right: 0.75rem;
-		bottom: 2rem;
-		z-index: 1;
-		display: grid;
-		place-items: center;
-		width: 7rem;
-		aspect-ratio: 1;
-		padding: 0.5rem;
-		border: 2px solid white;
-		border-radius: 0.35rem;
-		background: #f3f1eb url('/images/guesser-osm-preview.png') center / cover;
-		box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
-		color: #343b44;
-		font-size: 0.8rem;
-		font-weight: 600;
-		line-height: 1.3;
-		text-align: center;
-	}
-	.guess-button span {
-		padding: 0.35rem 0.5rem;
-		border-radius: 0.2rem;
-		background: rgb(255 255 255 / 92%);
-	}
-	.guess-button:not(:disabled):hover {
-		border-color: var(--pico-primary);
-	}
-	.guess-button:focus-visible {
-		outline: 3px solid var(--pico-primary);
-		outline-offset: 3px;
-	}
-	.placeholder {
-		height: 100%;
-		min-height: 250px;
+	.game-facts {
 		display: flex;
-		flex-direction: column;
+		flex-wrap: wrap;
 		justify-content: center;
-		align-items: center;
-		text-align: center;
-		padding: 2rem;
-		background: #f3f1eb;
-		gap: 1rem;
-	}
-	.placeholder h2 {
-		margin: 0;
-		font-size: 1.35rem;
-	}
-	.placeholder p {
-		max-width: 30rem;
-		margin: 0;
-	}
-	.sidebar-round {
-		display: flex;
-		flex-direction: column;
-		flex-shrink: 0;
-		gap: 1rem;
-	}
-	.sidebar-result {
-		padding-bottom: 1rem;
-		border-bottom: 1px solid var(--pico-muted-border-color);
-	}
-	.sidebar-result .distance {
-		font-size: 1rem;
-		color: inherit;
-	}
-	.sidebar-result + .game-stats {
-		border-top: 0;
-	}
-	.sidebar-footer {
-		display: flex;
-		flex-direction: column;
-		flex-shrink: 0;
-		gap: 1rem;
-		margin-top: auto;
-	}
-	.round-info {
-		display: flex;
-		flex-direction: column;
-	}
-	.round-info span {
+		gap: 0.5rem 1.5rem;
+		padding: 0;
+		margin: 1.5rem 0 1rem;
 		font-size: 0.85rem;
 		color: var(--pico-muted-color);
 	}
-	.actions {
-		display: grid;
-		gap: 0.5rem;
-	}
-	button {
+	.game-facts li {
+		list-style: none;
 		margin: 0;
 	}
-	.distance {
-		font-size: 1.5rem;
-		color: var(--pico-primary);
-		font-variant-numeric: tabular-nums;
+	.game-facts strong {
+		color: var(--pico-color);
 	}
-	.guess-dialog {
-		width: 100%;
-	}
-	.dialog-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
+	.play {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 		gap: 1rem;
-		margin-bottom: 1rem;
+		padding: 0.8rem 1.5rem;
+		border-radius: 0.65rem;
+		font-weight: 600;
 	}
-	.dialog-header h2 {
-		margin: 0;
-		font-size: 1.4rem;
+	.free-play {
+		font-size: 0.8rem;
+		color: var(--pico-muted-color);
+		margin: 0.65rem 0 0;
 	}
-	.guess-map {
-		height: min(56dvh, 550px);
-		min-height: 250px;
-		overflow: hidden;
-		border-radius: 0.35rem;
+	.leaderboard {
+		margin-top: 2rem;
 	}
-	.dialog-footer {
+	.section-heading {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		flex-wrap: wrap;
-		gap: 0.75rem;
-		margin-top: 1rem;
+		gap: 1rem;
+		margin-bottom: 1.25rem;
 	}
-	.game-summary table {
-		font-size: 0.9rem;
+	h2 {
+		margin-top: 0;
+		font-size: 1.4rem;
+		font-weight: 650;
+		letter-spacing: -0.02em;
+		margin-bottom: 0.3rem;
 	}
-	.game-summary caption {
-		text-align: left;
+	.section-heading p {
+		font-size: 0.85rem;
 		color: var(--pico-muted-color);
+		margin: 0;
 	}
-	.final-score {
-		margin: 0 0 1rem;
-		font-size: 1.5rem;
+	.top-label {
+		white-space: nowrap;
+		color: var(--pico-muted-color);
+		font-size: 0.75rem;
+		font-weight: 600;
+		padding: 0.3rem 0.7rem;
+		border: 1px solid var(--pico-muted-border-color);
+		border-radius: 2rem;
+	}
+	.scores {
+		overflow-x: auto;
+		border: 1px solid var(--pico-muted-border-color);
+		border-radius: 0.75rem;
+	}
+	table {
+		width: 100%;
+		margin: 0;
+		font-size: 0.95rem;
+	}
+	th,
+	td {
+		padding: 1rem 1.25rem;
+		vertical-align: middle;
+	}
+	thead th {
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: var(--pico-muted-color);
+		background: var(--pico-card-sectioning-background-color);
+	}
+	tbody tr:last-child > * {
+		border-bottom: 0;
+	}
+	.rank {
+		width: 4.5rem;
 		text-align: center;
+	}
+	.medal {
+		font-size: 1.6rem;
+		line-height: 1;
+	}
+	.rank-number {
+		color: var(--pico-muted-color);
 		font-variant-numeric: tabular-nums;
 	}
-	.final-score strong {
-		color: var(--pico-primary);
-		font-size: 2rem;
+	.player {
+		font-weight: 600;
+		overflow-wrap: anywhere;
 	}
-	.guess-map.final-map {
-		height: 28dvh;
-		min-height: 220px;
+	.numeric {
+		text-align: right;
+		white-space: nowrap;
+		font-variant-numeric: tabular-nums;
+	}
+	.score {
+		font-weight: 650;
+	}
+	.time {
+		color: var(--pico-muted-color);
+	}
+	.current-player > * {
+		background: color-mix(in srgb, var(--pico-primary) 7%, var(--pico-background-color));
+	}
+	.you {
+		display: inline-block;
+		font-size: 0.65rem;
+		font-weight: 500;
+		padding: 0.1rem 0.35rem;
+		border-radius: 0.3rem;
+		margin-left: 0.35rem;
+		color: var(--pico-primary);
+		background: color-mix(in srgb, var(--pico-primary) 10%, var(--pico-background-color));
+		vertical-align: middle;
+	}
+	.personal-best {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1.5rem;
+		margin-bottom: 1rem;
+		padding: 1.1rem 1.25rem;
+		border: 1px solid color-mix(in srgb, var(--pico-primary) 30%, var(--pico-muted-border-color));
+		border-radius: 0.75rem;
+		background: color-mix(in srgb, var(--pico-primary) 5%, var(--pico-background-color));
+	}
+	.personal-title {
+		display: flex;
+		align-items: center;
+		gap: 0.65rem;
+		font-size: 0.9rem;
+	}
+	.personal-title i {
+		color: var(--pico-primary);
+	}
+	dl {
+		display: flex;
+		gap: 2rem;
+		margin: 0;
+	}
+	dt {
+		font-size: 0.7rem;
+		color: var(--pico-muted-color);
+		margin-bottom: 0.2rem;
+	}
+	dd {
+		margin: 0;
+		font-size: 1.05rem;
+		font-weight: 650;
+		font-variant-numeric: tabular-nums;
+	}
+	.empty-state {
+		padding: 2.5rem 1.5rem;
+		text-align: center;
+		border: 1px dashed var(--pico-muted-border-color);
+		border-radius: 0.75rem;
+	}
+	.empty-state > i {
+		color: var(--pico-primary);
+		width: 2rem;
+		height: 2rem;
+		margin-bottom: 0.75rem;
+	}
+	.empty-state h3 {
+		margin-top: 0;
+		font-size: 1.1rem;
+		margin-bottom: 0.5rem;
+	}
+	.empty-state p {
+		font-size: 0.9rem;
+		color: var(--pico-muted-color);
+	}
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
 	}
 	@media (max-width: 600px) {
-		.game-sidebar {
-			position: absolute;
-			inset: 0 auto 0 0;
-			/* The open sidebar must still cover the map markers. */
-			z-index: 5;
-			width: min(20rem, calc(100% - 3.5rem));
-			padding: 1rem;
-			box-shadow: 4px 0 16px rgb(0 0 0 / 15%);
+		.landing {
+			padding: 1.5rem 1rem 2.5rem;
 		}
-		.sidebar-toggle,
-		.sidebar-close {
-			display: grid;
-			place-items: center;
-			width: 2.75rem;
-			height: 2.75rem;
-			padding: 0;
-			flex-shrink: 0;
+		.game-facts {
+			column-gap: 1rem;
+			font-size: 0.8rem;
 		}
-		.sidebar-toggle {
-			position: absolute;
-			top: 0.75rem;
-			left: 0.75rem;
-			z-index: 3;
+		.hero {
+			padding-bottom: 1.5rem;
 		}
-		.game-heading-title {
-			display: flex;
-			align-items: center;
-			gap: 0.75rem;
+		.leaderboard {
+			margin-top: 2rem;
 		}
-		.game-heading p {
+		th,
+		td {
+			padding: 0.85rem 0.6rem;
+		}
+		table {
 			font-size: 0.85rem;
 		}
-		.map-timer {
-			position: absolute;
-			top: 0.75rem;
-			right: 0.75rem;
-			z-index: 1;
-			display: flex;
-			align-items: center;
-			height: 2.75rem;
-			padding: 0 0.75rem;
-			border: 1px solid var(--pico-muted-border-color);
-			border-radius: var(--pico-border-radius);
-			background: white;
-			color: #343b44;
-			box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
-			pointer-events: none;
+		.rank {
+			width: 3rem;
 		}
-		.guess-map {
-			min-height: 220px;
-			height: 48dvh;
+		.personal-best {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 0.9rem;
 		}
-		.dialog-footer button {
-			flex: 1;
+		dl {
+			justify-content: space-between;
+			gap: 1rem;
 		}
 	}
 </style>

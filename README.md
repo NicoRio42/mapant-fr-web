@@ -6,11 +6,11 @@ The map and browser exports retain the existing Lambert-93 (EPSG:2154) tile grid
 
 ## Develop locally
 
-Install dependencies with `bun install`, then run `npm run dev`. No environment variables are required. Both the map and exports request `http://[::]:8080/data/mapant/{z}/{x}/{y}.webp`. Start your local tile server on port 8080 and enable CORS so browser exports can read the tiles.
+Install dependencies with `bun install`. For Guesser, copy `.dev.vars.example` to `.dev.vars`, replace `AUTH_SECRET` with at least 32 random characters, and run `npm run db:migrate:local` before `npm run dev`. Local verification e-mails, including their six-digit codes, appear in the Vite terminal. No email account, binding credentials, or Cloudflare access is needed locally. Both the map and exports request `http://[::]:8080/data/mapant/{z}/{x}/{y}.webp`. Start your local tile server on port 8080 and enable CORS so browser exports can read the tiles.
 
 ## Mapant Guesser
 
-The `/guesser` route is a browser-only location guessing game using Mapant and OpenStreetMap: five rounds, five minutes per round, up to 5,000 points within 50 m, and a total out of 25,000. See [game rules, coverage limitations, and development checks](docs/mapant-guesser.md).
+The `/guesser` route shows the public leaderboard and account controls. Play at `/guesser/game` using Mapant and OpenStreetMap: five rounds, five minutes per round, up to 5,000 points within 50 m, and a total out of 25,000. Games and rounds are stored in D1; email-verified accounts can publish their best game. See [game rules, setup, rollout, and development checks](docs/mapant-guesser.md).
 
 ## PMTiles endpoint and caching
 
@@ -23,6 +23,8 @@ The archive key is defined in `src/lib/server/mapant-pmtiles.ts`. For a future a
 ## Deploy to Cloudflare Workers
 
 The `mapant-fr` R2 bucket and `2026-09-28-mapant-fr.pmtiles` object must exist in the same Cloudflare account. The old `mapant-fr-tiles` bucket binding is removed from the application configuration; this does not delete the remote bucket or its contents.
+
+Before the first deployment, create the `mapant-fr` D1 database, replace the placeholder database ID in `wrangler.jsonc`, configure Cloudflare Email Sending and `EMAIL_FROM`, and set `AUTH_SECRET` with `wrangler secret put AUTH_SECRET`. Run `npm run db:migrate:remote` before deploying code that depends on new migrations. See the [Guesser rollout checklist](docs/mapant-guesser.md#deployment-and-rollout).
 
 In Workers Builds, use `npm run build` as the build command and `npx wrangler deploy` as the deploy command. For a CLI deployment, run `npm run deploy`. No `PUBLIC_MAPANT_TILES_BASE_URL` variable is needed: production uses the same-origin `/api/tiles` endpoint. Attach the desired custom domain to the Worker in Cloudflare after creating it.
 

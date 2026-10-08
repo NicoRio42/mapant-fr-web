@@ -1,0 +1,2 @@
+DROP INDEX IF EXISTS `games_best`;--> statement-breakpoint
+CREATE INDEX `games_best_rank` ON `games` (`user_id`,"total_points" desc,`total_time`,`completed_at`,`id`) WHERE "games"."status" = 'completed' and "games"."user_id" is not null;

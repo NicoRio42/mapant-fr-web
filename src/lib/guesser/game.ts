@@ -12,6 +12,7 @@ export interface RoundResult {
 	points: number;
 	timedOut: boolean;
 	elapsedSeconds: number;
+	elapsedMs?: number;
 }
 
 export interface GameState {
