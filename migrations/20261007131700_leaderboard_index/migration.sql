@@ -1,0 +1,1 @@
+CREATE INDEX `games_user` ON `games` (`user_id`);

@@ -11,7 +11,9 @@
 			"custom_domain": true
 		}
 	],
-	"cache": { "enabled": true },
+	"cache": {
+		"enabled": true
+	},
 	"assets": {
 		"binding": "ASSETS",
 		"directory": ".svelte-kit/cloudflare"
@@ -20,6 +22,27 @@
 		{
 			"binding": "R2_BUCKET_MAPANT",
 			"bucket_name": "mapant-fr"
+		}
+	],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "mapant-guesser",
+			"database_id": "00000000-0000-0000-0000-000000000000",
+			"migrations_dir": "migrations",
+			"migrations_pattern": "migrations/*/migration.sql"
+		}
+	],
+	"vars": {
+		"EMAIL_MODE": "cloudflare",
+		"EMAIL_FROM": ""
+	},
+	"triggers": {
+		"crons": ["17 3 * * *"]
+	},
+	"send_email": [
+		{
+			"name": "EMAIL"
 		}
 	]
 }

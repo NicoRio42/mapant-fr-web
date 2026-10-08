@@ -1,0 +1,4 @@
+# Copy to .dev.vars for explicit local-only email delivery to the Vite console.
+EMAIL_MODE="console"
+AUTH_SECRET="replace-with-at-least-32-random-characters"
+LOCAL_TILE_URL="http://localhost:8080/data/mapant"
