@@ -24,7 +24,7 @@ The archive key is defined in `src/lib/server/mapant-pmtiles.ts`. For a future a
 
 The `mapant-fr` R2 bucket and `2026-09-28-mapant-fr.pmtiles` object must exist in the same Cloudflare account. The old `mapant-fr-tiles` bucket binding is removed from the application configuration; this does not delete the remote bucket or its contents.
 
-Before the first deployment, create the `mapant-guesser` D1 database, replace the placeholder database ID in `wrangler.jsonc`, configure Cloudflare Email Sending and `EMAIL_FROM`, and set `AUTH_SECRET` with `wrangler secret put AUTH_SECRET`. Run `npm run db:migrate:remote` before deploying code that depends on new migrations. See the [Guesser rollout checklist](docs/mapant-guesser.md#deployment-and-rollout).
+Before the first deployment, create the `mapant-fr` D1 database, replace the placeholder database ID in `wrangler.jsonc`, configure Cloudflare Email Sending and `EMAIL_FROM`, and set `AUTH_SECRET` with `wrangler secret put AUTH_SECRET`. Run `npm run db:migrate:remote` before deploying code that depends on new migrations. See the [Guesser rollout checklist](docs/mapant-guesser.md#deployment-and-rollout).
 
 In Workers Builds, use `npm run build` as the build command and `npx wrangler deploy` as the deploy command. For a CLI deployment, run `npm run deploy`. No `PUBLIC_MAPANT_TILES_BASE_URL` variable is needed: production uses the same-origin `/api/tiles` endpoint. Attach the desired custom domain to the Worker in Cloudflare after creating it.
 

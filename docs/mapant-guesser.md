@@ -74,7 +74,7 @@ Production requires `EMAIL_MODE="cloudflare"`, the `EMAIL` sending binding, a ve
 
 ## Deployment and rollout
 
-1. Create D1 with `npx wrangler d1 create mapant-guesser` and replace the all-zero placeholder ID in `wrangler.jsonc`. Development remains in local D1; never use `--remote` for development.
+1. Create D1 with `npx wrangler d1 create mapant-fr` and replace the all-zero placeholder ID in `wrangler.jsonc`. Development remains in local D1; never use `--remote` for development.
 2. Configure the domain in Cloudflare Email Sending, retain the `EMAIL` binding, and set `EMAIL_FROM` to a sender on that domain. Provision `AUTH_SECRET` with `npx wrangler secret put AUTH_SECRET` (at least 32 random characters). Do not commit secrets or `.dev.vars`.
 3. Review generated SQL, run `npm run db:migrate:remote`, then deploy (`npm run deploy`). The custom Worker entry adds scheduled cleanup to the built SvelteKit application.
 4. Smoke-test email delivery, verification, production cookie persistence, logout, a complete guest game and claim, an authenticated game, and immediate leaderboard visibility. Observe game/auth/email failures without sensitive payloads. Check the daily cleanup trigger.
