@@ -28,14 +28,14 @@
 		{
 			"binding": "DB",
 			"database_name": "mapant-fr",
-			"database_id": "00000000-0000-0000-0000-000000000000",
+			"database_id": "1020dbe5-c193-4add-95fe-d220d1af5e3b",
 			"migrations_dir": "migrations",
 			"migrations_pattern": "migrations/*/migration.sql"
 		}
 	],
 	"vars": {
 		"EMAIL_MODE": "cloudflare",
-		"EMAIL_FROM": ""
+		"EMAIL_FROM": "noreply@mapant.fr"
 	},
 	"triggers": {
 		"crons": ["17 3 * * *"]
