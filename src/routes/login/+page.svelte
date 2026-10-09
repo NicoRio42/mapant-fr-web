@@ -152,7 +152,10 @@
 				>
 			{/if}
 		</form>
-		<p class="privacy">Votre e-mail sert uniquement à vous authentifier.</p>
+		<p class="privacy">
+			Votre e-mail sert à vous authentifier et à vous prévenir si vous perdez la première place du
+			classement Mapant Guesser.
+		</p>
 	{/if}
 </main>
 

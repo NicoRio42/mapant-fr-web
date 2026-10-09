@@ -35,7 +35,9 @@ const handler: RequestHandler = async (event) => {
 			);
 			const games = new GameService(
 				{ ...env, LOCAL_TILE_URL: dev ? env.LOCAL_TILE_URL : undefined },
-				{ guestHash, userId: locals.user?.id ?? null }
+				{ guestHash, userId: locals.user?.id ?? null },
+				undefined,
+				dev
 			);
 			if (request.method === 'POST' && action === 'games') result = await games.create(now);
 			else {

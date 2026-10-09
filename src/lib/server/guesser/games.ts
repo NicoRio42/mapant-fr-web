@@ -11,6 +11,7 @@ import { scoreDistance } from '../../guesser/game.js';
 import { findCoveredLocation, guessDistance } from '../../guesser/round.js';
 import { serveMapantTile } from '../mapant-pmtiles.js';
 import { leaderboard } from './leaderboard.js';
+import { leaderNotifications, sendLeaderNotifications } from './notifications.js';
 export interface Owner {
 	userId: string | null;
 	guestHash: string | null;
@@ -45,7 +46,8 @@ export class GameService {
 	constructor(
 		private env: GuesserEnv,
 		private owner: Owner,
-		private pick = () => pickLocation(env)
+		private pick = () => pickLocation(env),
+		private local = false
 	) {
 		this.db = database(env);
 	}
@@ -70,21 +72,32 @@ export class GameService {
 		return this.read(id, now);
 	}
 	private totals(id: string, now: number) {
-		return this.db.run(sql`update games set
+		return [
+			leaderNotifications(
+				this.db,
+				sql`
+    select g.user_id,sum(r.points) as total_points,sum(r.elapsed_ms) as total_time
+    from games g join game_rounds r on r.game_id=g.id
+    where g.id=${id} and g.status='playing' and g.user_id is not null
+    group by g.id having count(r.received_at)=5`
+			),
+			this.db.run(sql`update games set
    total_points=(select coalesce(sum(points),0) from game_rounds where game_id=${id}),
    total_time=(select coalesce(sum(elapsed_ms),0) from game_rounds where game_id=${id}),
    status=case when (select count(*) from game_rounds where game_id=${id} and received_at is not null)=5 then 'completed' else 'playing' end,
    completed_at=case when (select count(*) from game_rounds where game_id=${id} and received_at is not null)=5 then ${now} else null end,
    claim_until=case when (select count(*) from game_rounds where game_id=${id} and received_at is not null)=5 then ${now + 86400000} else null end
-   where id=${id} and status='playing'`);
+   where id=${id} and status='playing'`)
+		] as const;
 	}
 	private async expire(id: string, now: number) {
-		await this.db.batch([
+		const [, recipients] = await this.db.batch([
 			this.db.run(
 				sql`update game_rounds set received_at=${now},points=0,elapsed_ms=300000,submission_id='timeout' where game_id=${id} and received_at is null and deadline_at+${GRACE_MS}<${now}`
 			),
-			this.totals(id, now)
+			...this.totals(id, now)
 		]);
+		await sendLeaderNotifications(this.env, this.local, recipients);
 	}
 	async read(id: string, now: number): Promise<SavedGame> {
 		await this.owned(id);
@@ -192,12 +205,13 @@ export class GameService {
 		if (!r) throw conflict();
 		if (r.received_at === null && withinDeadline(r.deadline_at, receivedAt)) {
 			const distance = coordinate ? guessDistance([r.target_x, r.target_y], coordinate) : null;
-			await this.db.batch([
+			const [, recipients] = await this.db.batch([
 				this.db.run(
 					sql`update game_rounds set guess_lon=${coordinate?.[0] ?? null},guess_lat=${coordinate?.[1] ?? null},received_at=${receivedAt},distance=${distance},points=${distance === null ? 0 : scoreDistance(distance)},elapsed_ms=${coordinate ? elapsed(r.started_at, receivedAt) : 300000},submission_id=${submissionId} where id=${roundId} and received_at is null and deadline_at+${GRACE_MS}>=${receivedAt}`
 				),
-				this.totals(id, receivedAt)
+				...this.totals(id, receivedAt)
 			]);
+			await sendLeaderNotifications(this.env, this.local, recipients);
 		} else if (r.received_at === null) await this.expire(id, receivedAt);
 		r = (await this.db.get<RoundRow>(sql`select * from game_rounds where id=${roundId}`))!;
 		if (
@@ -213,9 +227,17 @@ export class GameService {
 	async claim(id: string, now: number) {
 		if (!this.owner.userId || !this.owner.guestHash)
 			throw new GuesserError(401, 'Connectez-vous dans le navigateur où vous avez joué.');
-		const row = await this.db.get(
-			sql`update games set user_id=${this.owner.userId},claimed_at=${now} where id=${id} and guest_hash=${this.owner.guestHash} and user_id is null and status='completed' and claim_until>${now} and exists(select 1 from guest_sessions where token_hash=${this.owner.guestHash} and expires_at>${now}) returning id`
-		);
+		const eligible = sql`id=${id} and guest_hash=${this.owner.guestHash} and user_id is null and status='completed' and claim_until>${now} and exists(select 1 from guest_sessions where token_hash=${this.owner.guestHash} and expires_at>${now})`;
+		const [recipients, row] = await this.db.batch([
+			leaderNotifications(
+				this.db,
+				sql`
+    select ${this.owner.userId} as user_id,total_points,total_time from games where ${eligible}`
+			),
+			this.db.get(
+				sql`update games set user_id=${this.owner.userId},claimed_at=${now} where ${eligible} returning id`
+			)
+		]);
 		if (
 			!row &&
 			!(await this.db.get(
@@ -223,6 +245,7 @@ export class GameService {
 			))
 		)
 			throw conflict();
+		await sendLeaderNotifications(this.env, this.local, recipients);
 		return this.read(id, now);
 	}
 }

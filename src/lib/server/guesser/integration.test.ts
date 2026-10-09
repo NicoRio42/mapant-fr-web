@@ -16,7 +16,7 @@ import {
 	releaseRateLimit,
 	RATE_LIMIT_MS
 } from './security.js';
-import { sendCode } from './email.js';
+import { leaderboardEmail, sendCode } from './email.js';
 import { SESSION_MS } from '../../guesser/protocol.js';
 let mf: Miniflare;
 let env: GuesserEnv;
@@ -246,6 +246,187 @@ describe('local D1 game authority', () => {
 			`Leaderboard: 2,100 games, ${Math.round(performance.now() - start)} ms (local D1 including query plan).`
 		);
 	}, 30000);
+});
+describe('leaderboard loss notifications', () => {
+	let send = vi.fn<NonNullable<GuesserEnv['EMAIL']>['send']>();
+	let mailEnv: GuesserEnv;
+	let local: boolean;
+	beforeEach(() => {
+		send = vi.fn().mockResolvedValue(undefined);
+		mailEnv = {
+			...env,
+			EMAIL_MODE: 'cloudflare',
+			EMAIL_FROM: 'noreply@mapant.fr',
+			EMAIL: { send }
+		};
+		local = false;
+	});
+	async function rankedUser(id: string, points: number, time: number) {
+		await user(id);
+		await db.run(sql`insert into games (id,user_id,status,total_points,total_time,created_at,completed_at)
+   values (${id + '-best'},${id},'completed',${points},${time},1,1)`);
+	}
+	async function claimable(points: number, time: number, userId = 'challenger') {
+		const { game, key } = await guestGame();
+		await db.run(
+			sql`update games set status='completed',total_points=${points},total_time=${time},completed_at=${Date.now()},claim_until=${Date.now() + 86400000} where id=${game.id}`
+		);
+		return {
+			game,
+			service: new GameService(mailEnv, { guestHash: key, userId }, undefined, local)
+		};
+	}
+	it.each([
+		['higher points', 10001, 1000, 1],
+		['faster equal score', 10000, 99, 1],
+		['exact tie', 10000, 100, 0],
+		['slower equal score', 10000, 101, 0],
+		['lower points despite faster time', 9999, 1, 0]
+	])('handles a claimed game with %s', async (_, points, time, count) => {
+		await rankedUser('leader', 10000, 100);
+		await user('challenger');
+		const { game, service } = await claimable(points as number, time as number);
+		const results = await Promise.all([
+			service.claim(game.id, Date.now()),
+			service.claim(game.id, Date.now())
+		]);
+		expect(results.every((g) => g.saved)).toBe(true);
+		await service.claim(game.id, Date.now());
+		await service.read(game.id, Date.now());
+		expect(send).toHaveBeenCalledTimes(count as number);
+		if (count)
+			expect(send).toHaveBeenCalledWith(
+				expect.objectContaining({
+					to: 'leader@example.fr',
+					text: expect.stringContaining('challenger')
+				})
+			);
+	});
+	it('does not notify for the first player or their own improved record', async () => {
+		await user('challenger');
+		for (const points of [10000, 11000]) {
+			const { game, service } = await claimable(points, 100);
+			await service.claim(game.id, Date.now());
+		}
+		expect(send).not.toHaveBeenCalled();
+	});
+	it('notifies every dethroned co-leader, but never the challenger or lower ranks', async () => {
+		await rankedUser('a', 10000, 100);
+		await rankedUser('b', 10000, 100);
+		await rankedUser('challenger', 10000, 100);
+		await rankedUser('lower', 9000, 100);
+		const { game, service } = await claimable(10000, 99);
+		await service.claim(game.id, Date.now());
+		expect(send.mock.calls.map(([message]) => message.to).sort()).toEqual([
+			'a@example.fr',
+			'b@example.fr'
+		]);
+	});
+	it.each([false, true])(
+		'sends once on signed-in completion (last round timeout: %s)',
+		async (timeout) => {
+			await rankedUser('leader', 10000, 100);
+			await user('challenger');
+			const service = new GameService(
+				mailEnv,
+				{ guestHash: null, userId: 'challenger' },
+				async () => target
+			);
+			const game = await service.create(Date.now());
+			for (let number = 1; number <= 5; number++) {
+				const state = await service.next(game.id, number, Date.now());
+				const r = state.rounds.at(-1)!;
+				if (number === 5 && timeout) {
+					await Promise.all([
+						service.read(game.id, r.deadlineAt + 5001),
+						service.read(game.id, r.deadlineAt + 5001)
+					]);
+				} else {
+					const submission = crypto.randomUUID();
+					await Promise.all([
+						service.submit(game.id, r.id, submission, guess, r.startedAt + 1),
+						service.submit(game.id, r.id, submission, guess, r.startedAt + 1)
+					]);
+				}
+				if (number < 5) expect(send).not.toHaveBeenCalled();
+			}
+			expect((await service.read(game.id, Date.now())).saved).toBe(true);
+			expect(send).toHaveBeenCalledTimes(1);
+			expect(send).toHaveBeenCalledWith(expect.objectContaining({ to: 'leader@example.fr' }));
+		}
+	);
+	it('serializes competing new leaders and preserves both changes of leader', async () => {
+		await rankedUser('leader', 10000, 100);
+		await user('a');
+		await user('b');
+		const a = await claimable(11000, 100, 'a');
+		const b = await claimable(12000, 100, 'b');
+		await Promise.all([
+			a.service.claim(a.game.id, Date.now()),
+			b.service.claim(b.game.id, Date.now())
+		]);
+		const messages = send.mock.calls.map(([message]) => message);
+		const previous = messages.filter((m) => m.to === 'leader@example.fr');
+		expect(previous).toHaveLength(1);
+		// If a publishes first, b dethrones a, rather than notifying the old leader twice.
+		if (previous[0].text.startsWith('a ')) {
+			expect(messages).toHaveLength(2);
+			expect(messages).toContainEqual(
+				expect.objectContaining({ to: 'a@example.fr', text: expect.stringMatching(/^b /) })
+			);
+		} else expect(messages).toHaveLength(1);
+	});
+	it('never retries failed emails and still saves the game', async () => {
+		await rankedUser('leader', 10000, 100);
+		await user('challenger');
+		const { game, service } = await claimable(11000, 100);
+		send.mockRejectedValue(new Error('provider failure'));
+		const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+		try {
+			await expect(service.claim(game.id, Date.now())).resolves.toMatchObject({ saved: true });
+			await service.claim(game.id, Date.now());
+			await service.read(game.id, Date.now());
+			await service.read(game.id, Date.now() + 86400000);
+			expect(send).toHaveBeenCalledTimes(1);
+			expect(log).toHaveBeenCalledExactlyOnceWith('guesser_leaderboard_email_failed');
+		} finally {
+			log.mockRestore();
+		}
+	});
+	it('continues notifying other co-leaders when one delivery fails', async () => {
+		await rankedUser('a', 10000, 100);
+		await rankedUser('b', 10000, 100);
+		await user('challenger');
+		const { game, service } = await claimable(11000, 100);
+		send.mockRejectedValueOnce(new Error('provider failure'));
+		const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+		try {
+			expect((await service.claim(game.id, Date.now())).saved).toBe(true);
+			expect(send.mock.calls.map(([message]) => message.to).sort()).toEqual([
+				'a@example.fr',
+				'b@example.fr'
+			]);
+		} finally {
+			log.mockRestore();
+		}
+	});
+	it('prints notification emails only in explicit local mode and escapes HTML', async () => {
+		await rankedUser('leader', 10000, 100);
+		await user('challenger');
+		mailEnv.EMAIL_MODE = 'console';
+		local = true;
+		const { game, service } = await claimable(11000, 100);
+		const log = vi.spyOn(console, 'info').mockImplementation(() => {});
+		try {
+			await service.claim(game.id, Date.now());
+			expect(send).not.toHaveBeenCalled();
+			expect(log).toHaveBeenCalledWith(expect.stringContaining('leader@example.fr'));
+			expect(log).toHaveBeenCalledWith(expect.stringContaining('https://mapant.fr/guesser'));
+		} finally {
+			log.mockRestore();
+		}
+		expect(leaderboardEmail('<A & B>').html).toContain('&lt;A &amp; B&gt;');
+	});
 });
 describe('local D1 authentication', () => {
 	it('asks new addresses for a pseudonym before sending a code or creating an account', async () => {
