@@ -145,8 +145,7 @@
 							projection: 'EPSG:3857',
 							center: fromLonLat([2.5, 46.5]),
 							zoom: 5,
-							minZoom: 2,
-							maxZoom: 19
+							minZoom: 2
 						}),
 			layers: [
 				...(mode === 'guess' ? [new TileLayer({ source: new OSM({ wrapX: false }) })] : []),

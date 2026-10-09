@@ -18,7 +18,6 @@ setupLambert93Projection();
 const france = new MultiPolygon(boundary.coordinates).transform('EPSG:4326', 'EPSG:2154');
 const bounds = france.getExtent();
 export const START_RESOLUTION = MAPANT_RESOLUTIONS[12];
-export const MIN_RESOLUTION = MAPANT_RESOLUTIONS[13];
 export const MAX_PLAY_RESOLUTION = START_RESOLUTION;
 
 export function isInFrance(point: Coordinate): boolean {
